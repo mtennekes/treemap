@@ -250,6 +250,7 @@ function(dtf,
 	## Plot treemap(s)
 	############
 
+	grid.newpage()
 	
 	pushViewport(viewport(name="grid",layout=grid.layout(nRow, nCol)))
 
@@ -312,9 +313,9 @@ function(dtf,
 		tmSave$tm <- tm
 		tmSave$nRow <- nRow
 		tmSave$nCol <- nCol
-		return(tmSave)
+		invisible(tmSave)
 	} else{
-		return()
+		invisible()
 	}
 }
 

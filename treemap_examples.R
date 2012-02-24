@@ -19,7 +19,7 @@ tmPlot(sbsData,index=c("section", "subsection"), vSize="turnover09",vColor="empl
 tmPlot(sbsData,index=c("section", "subsection"), vSize="employees09",vColor="turnover09/employees09", sortID="-size")
 
 # linked treemaps
-	tmPlot(sbsData[sbsData$section=="Manufacturing",],index="subsection",
+tmPlot(sbsData[sbsData$section=="Manufacturing",],index="subsection",
 vSize="income09+employees09+expenditures09+salaries09",vColor="", sortID="-size")
 
 
