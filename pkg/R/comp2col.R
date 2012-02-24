@@ -1,18 +1,7 @@
-#' Creates colors and legenda for comparisson treemaps
-#'
-#' Creates colors and legenda for comparisson treemaps
-#'
-#' @param dat 
-#' @param upperboundText
-#' @param showScale
-#' @param neg
-#' @return colorscale 
 comp2col <-
-function(dat, upperboundText, showScale,neg) {
-	color <- colorRampPalette(brewer.pal(11,"RdBu"),space="rgb")(99)
-	if (neg) {
-		color <- color[99:1]
-	}
+function(dat, showScale, palette) {
+	color <- colorRampPalette(palette,space="rgb")(99)
+
 	perc <-((dat$value - dat$value2)/dat$value2)*100
 	prettyP <- pretty(perc,n=8)
 	n <- length(prettyP)	
@@ -34,7 +23,7 @@ function(dat, upperboundText, showScale,neg) {
 		grid.rect(x=unit(leg$X,"npc"), y=unit(leg$Y,"npc"), width=unit(leg$W,"npc"), 
 			height=unit(leg$H,"npc"), just=c("left","bottom"), gp = gpar(fill = as.character(leg$Col)))
 		grid.text(paste(prettyP,"%",sep=""),x=unit(leg$X+.5*leg$W, "npc"),y=unit(0, "npc") + unit(0.5,"lines"),
-			gp=gpar(cex=upperboundText*0.8))
+			gp=gpar(cex=0.8))
 	}
 	return (color[scale])
 }

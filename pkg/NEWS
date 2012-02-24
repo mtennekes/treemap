@@ -1,0 +1,5 @@
+version 0.11
+- added treemap type "value", which means that values of the color variable are directly mapped to the color palette. This type is mostly used for the Map of the Market kind of treemaps, with negative values colored red, zeros yellow, and positive values green.
+- added the possibility to use own palettes
+- added parameters to tweak the font sizes
+- cleaned up the code

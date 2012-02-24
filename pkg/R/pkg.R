@@ -9,9 +9,9 @@
 #' LazyLoad: \tab yes\cr
 #' }
 #'
-#' With this package, different kind of treemaps can be generated such as comparison treemaps and density treemaps. Further, it is possible to show small multiples.
+#' Different kind of treemaps can be generated, such as comparison treemaps, density treemaps, and 'Map of the Market' kind of treemaps. Small multiples are also supported.
 #'
-#' The function \code{\link{tmPlot}} is used to plot treemaps. The functions \code{\link{tmClick}} and \code{\link{tmLocate}} are used to respectively capture a mouse click on a treemap and locate the corresponding object. The other functions are only used internally.
+#' The function \code{\link{tmPlot}} is used to plot treemaps. The functions \code{\link{tmClick}} and \code{\link{tmLocate}} are used to respectively capture a mouse click on a treemap and locate the corresponding object.
 #'
 #' @name treemap-package
 #' @docType package

@@ -5,9 +5,9 @@ Version: 0.11
 Date: 2010-12-24
 Author: Martijn Tennekes
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
-Description: With this package, different kind of treemaps can be generated
-    such as comparison treemaps and density treemaps. Further, it is possible
-    to show small multiples.
+Description: Different kind of treemaps can be generated, such as comparison
+    treemaps, density treemaps, and 'Map of the Market' kind of treemaps. Small
+    multiples are also supported.
 License: GPL version 3
 LazyLoad: yes
 Depends:
@@ -27,3 +27,4 @@ Collate:
     'tmClick.R'
     'tmLocate.R'
     'tmPlot.R'
+    'value2col.R'

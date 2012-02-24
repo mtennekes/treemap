@@ -1,9 +1,3 @@
-#' Ordered treemap algorithm (pivot by size)
-#'
-#' Ordered treemap algorithm, pivot by size
-#'
-#' @param dat
-#' @param rec
 pivotSize <-
 function(dat, rec){
 	names(rec)=c("X0","Y0", "W", "H")

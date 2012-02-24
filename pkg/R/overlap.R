@@ -1,9 +1,4 @@
-#' Checks whether rectangles overlap 
-#'
-#' Determines whether one group of rectangles is overlapped by another group of rectangles
-#'
-#' @param rec1
-#' @param rec2
+# Determines whether one group of rectangles is overlapped by another group of rectangles
 overlap <-
 function(rec1, rec2) {	
 	if (is.na(rec1[1])) return(NA)

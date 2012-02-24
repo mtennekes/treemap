@@ -1,8 +1,3 @@
-export(baseTreemap)
-export(comp2col)
-export(dens2col)
-export(fill2col)
-export(fixed2col)
 export(tmClick)
 export(tmLocate)
 export(tmPlot)

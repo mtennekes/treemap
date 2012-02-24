@@ -1,12 +1,4 @@
-#' Creates graphical rectangle objects out of coordinates
-#'
-#' Creates graphical rectangle objects out of coordinates
-#' @param recList
-#' @param filled
-#' @param label
-#' @param labelbg
-#' @param labellb
-#' @param lwd
+# Creates graphical rectangle objects out of coordinates
 createRec <-
 function(recList, filled=TRUE, label="", labelbg=FALSE, labellb=0, lwd=1) {
 #browser()

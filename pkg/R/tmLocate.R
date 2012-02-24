@@ -6,7 +6,11 @@
 #' @export
 #' @examples data(sbsData)
 #' \dontrun{
-#' tmSave <- tmPlot(sbsData, index="section", vSize="employees09+value added09+turnover09+salaries09", vColor="employees08+value added08+turnover08+salaries08", sortID="-size", saveTm=TRUE)
+#' tmSave <- tmPlot(sbsData, 
+#'				 index="section", 
+#'				 vSize="employees09+value added09+turnover09+salaries09",
+#'				 vColor="employees08+value added08+turnover08+salaries08",
+#'				 sortID="-size")
 #'	# capture mouseclick
 #'	npcClick <- tmClick()
 #'	
