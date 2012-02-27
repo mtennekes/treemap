@@ -7,7 +7,7 @@ function(recList, filled=TRUE, label="", labelbg=FALSE, labellb=0, lwd=1) {
 	}
 	transp <- c(rep(255,nrow(recList)))
 	rgbcol <- col2rgb(as.character(recList$color))
-	rgbcol2 <- rgb(rgbcol["red",],rgbcol["green",],rgbcol["blue",],alpha=transp,max=255)
+	rgbcol2 <- rgb(rgbcol["red",],rgbcol["green",],rgbcol["blue",],alpha=transp,maxColorValue=255)
 
 	fill <- as.character(rgbcol2)
 	
