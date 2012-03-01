@@ -13,29 +13,30 @@
 #' @param dtf a data.frame (required).
 #' @param index	a character vector containing the column names in \code{dtf} that contain the indices (required).
 #' @param vSize character containing the formula of the variables that determine the sizes (required). For details about the syntax see below.
-#' @param vColor a character containing the formula of the variables that determine the colors (optional). For details about the syntax see below.
-#' @param sortID the name of the column in \code{dtf} on which the rectangles should be sorted (from top left to bottom right). To inverse the sorting order, use "-" in the prefix. Optional.
-#' @param type the type of the treemap (optional):
+#' @param vColor a character containing the formula of the variables that determine the colors. For details about the syntax see below.
+#' @param sortID the name of the column in \code{dtf} on which the rectangles should be sorted (from top left to bottom right). To inverse the sorting order, use "-" in the prefix.
+#' @param type the type of the treemap:
 #' \itemize{
 #'		\item \code{auto}	automatic determination of type (default setting)
 #'		\item \code{dens}	density treemap (dense areas get darker colors)
 #'		\item \code{comp} comparison treemap (colors are used to compare variables)
 #'		\item \code{perc}	treemap (color variable is in percentages)
-#'		\item \code{linked} each index has an own, distinctive, color (useful for small multiples)
-#'		\item \code{value}	treemap where values of the color variable are directly mapped to a color palette. By default a diverging color scale (Brewer's "RdYlGn") is used where negative values are red and positive green. By setting the parameters \code{palette} and \code{vColorRange} any color palette can be used.}
-#' @param titles A character vector containing the title(s) of the treemap(s) (optional). Use this for describing the sizes of the rectangles. Optional.
-#' @param subtitles A character vector containing the subtitle(s) of the treemap(s) (optional). Use this for describing the colors of the rectangles. Optional.
-#' @param palette Either a color palette or a name of a Brewer palette (see \code{display.brewer.all()}) (optional)
-#' @param vColorRange Range of the color variable values that is mapped to \code{palette} (optional)
-#' @param fontsize.title maximum) font size of the title (optional)
-#' @param fontsize.data maximum font size of the data labeling (optional)
-#' @param fontsize.legend maximum font size of the legend (optional)
+#'		\item \code{linked} each index has an own, distinctive, color (useful to compare small multiples)
+#'		\item \code{value}	treemap where values of the color variable are directly mapped to a color palette. By default a diverging color scale (Brewer's "RdYlGn") is used where negative values are red and positive green. By setting \code{palette} (in combination with \code{vColorRange}), any color palette can be used.}
+#' @param titles A character vector containing the title(s) of the treemap(s) (optional). Use this for describing the sizes of the rectangles.
+#' @param subtitles A character vector containing the subtitle(s) of the treemap(s) (optional). Use this for describing the colors of the rectangles.
+#' @param palette Either a color palette or a name of a Brewer palette (see \code{display.brewer.all()})
+#' @param vColorRange Range of the color variable values that is mapped to \code{palette}. Only applicable for \code{type="value"}.
+#' @param fontsize.title maximum) font size of the title
+#' @param fontsize.data maximum font size of the data labeling
+#' @param fontsize.legend maximum font size of the legend
 #' @param lowerbound.cex.data number between 0 and 1 that indicates the minimum fontsize of the data labels: 0 means draw all data labels, and 1 means only draw data labels if they fit at font size \code{fontsize.data}
 #' @return A list is silently returned:
 #'	\item{tm}{List with for each treemap a \code{data.frame} containing information about the rectangles}
 #'	\item{nRow}{Number of rows in the treemap grid}
 #'	\item{nCol}{Number of rows in the treemap grid}
 #'	This list can be used to locate a mouse click (see \code{\link{tmLocate}}).
+#' @example ../examples/tmPlot.R
 #' @export
 tmPlot <-
 function(dtf, 

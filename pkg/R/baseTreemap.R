@@ -109,7 +109,7 @@ function(dat,
 #		grid.rect()
 	}
 	
-	if (is.na(palette)) {
+	if (is.na(palette[1])) {
 		if (type == "comp") {
 			palette <- brewer.pal(11,"RdBu")
 		} else if (type == "perc") {

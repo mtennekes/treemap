@@ -1,8 +1,8 @@
 Package: treemap
 Type: Package
 Title: Treemap visualization
-Version: 0.11
-Date: 2010-12-24
+Version: 0.11-1
+Date: 2012-03-01
 Author: Martijn Tennekes
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
 Description: Different kind of treemaps can be generated, such as comparison

@@ -2,7 +2,7 @@
 data(sbsData)
 
 # comparisson treemaps
-tmPlot(sbsData, index=c("section", "subsection"), vSize="employees09", vColor="employees08", sortID="-size", lowerboundText=0.6)
+tmPlot(sbsData, index=c("section", "subsection"), vSize="employees09", vColor="employees08", sortID="-size")
 
 tmPlot(sbsData, index=c("section"), vSize="employees09", vColor="employees08", sortID="-size")
 
@@ -11,7 +11,7 @@ tmPlot(sbsData, index=c("section"), vSize="employees09", vColor="employees08", s
 tmPlot(sbsData, 
 	   index="section", 
 	   vSize="employees09+value added09+turnover09+salaries09",
-	   vColor="employees08+value  added08+turnover08+salaries08", 
+	   vColor="employees08+value added08+turnover08+salaries08", 
 	   sortID="-size")
 
 
@@ -27,7 +27,7 @@ tmPlot(sbsData,
 	   vSize="employees09",
 	   vColor="turnover09/employees09", 
 	   sortID="-size", 
-	   palette="RdYlGn")
+	   palette=terrain.colors(8))
 
 
 # linked treemaps

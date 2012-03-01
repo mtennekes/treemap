@@ -19,52 +19,50 @@
   details about the syntax see below.}
 
   \item{vColor}{a character containing the formula of the
-  variables that determine the colors (optional). For
-  details about the syntax see below.}
+  variables that determine the colors. For details about
+  the syntax see below.}
 
   \item{sortID}{the name of the column in \code{dtf} on
   which the rectangles should be sorted (from top left to
   bottom right). To inverse the sorting order, use "-" in
-  the prefix. Optional.}
+  the prefix.}
 
-  \item{type}{the type of the treemap (optional): \itemize{
-  \item \code{auto} automatic determination of type
-  (default setting) \item \code{dens} density treemap
-  (dense areas get darker colors) \item \code{comp}
-  comparison treemap (colors are used to compare variables)
-  \item \code{perc} treemap (color variable is in
-  percentages) \item \code{linked} each index has an own,
-  distinctive, color (useful for small multiples) \item
-  \code{value} treemap where values of the color variable
-  are directly mapped to a color palette. By default a
-  diverging color scale (Brewer's "RdYlGn") is used where
-  negative values are red and positive green. By setting
-  the parameters \code{palette} and \code{vColorRange} any
-  color palette can be used.}}
+  \item{type}{the type of the treemap: \itemize{ \item
+  \code{auto} automatic determination of type (default
+  setting) \item \code{dens} density treemap (dense areas
+  get darker colors) \item \code{comp} comparison treemap
+  (colors are used to compare variables) \item \code{perc}
+  treemap (color variable is in percentages) \item
+  \code{linked} each index has an own, distinctive, color
+  (useful to compare small multiples) \item \code{value}
+  treemap where values of the color variable are directly
+  mapped to a color palette. By default a diverging color
+  scale (Brewer's "RdYlGn") is used where negative values
+  are red and positive green. By setting \code{palette} (in
+  combination with \code{vColorRange}), any color palette
+  can be used.}}
 
   \item{titles}{A character vector containing the title(s)
   of the treemap(s) (optional). Use this for describing the
-  sizes of the rectangles. Optional.}
+  sizes of the rectangles.}
 
   \item{subtitles}{A character vector containing the
   subtitle(s) of the treemap(s) (optional). Use this for
-  describing the colors of the rectangles. Optional.}
+  describing the colors of the rectangles.}
 
   \item{palette}{Either a color palette or a name of a
-  Brewer palette (see \code{display.brewer.all()})
-  (optional)}
+  Brewer palette (see \code{display.brewer.all()})}
 
   \item{vColorRange}{Range of the color variable values
-  that is mapped to \code{palette} (optional)}
+  that is mapped to \code{palette}. Only applicable for
+  \code{type="value"}.}
 
-  \item{fontsize.title}{maximum) font size of the title
-  (optional)}
+  \item{fontsize.title}{maximum) font size of the title}
 
   \item{fontsize.data}{maximum font size of the data
-  labeling (optional)}
+  labeling}
 
-  \item{fontsize.legend}{maximum font size of the legend
-  (optional)}
+  \item{fontsize.legend}{maximum font size of the legend}
 
   \item{lowerbound.cex.data}{number between 0 and 1 that
   indicates the minimum fontsize of the data labels: 0
@@ -91,5 +89,56 @@
   optional when treemap type is "linked", this formula has
   no use} \item multiple treemaps formulas for each treemap
   are seperated with +}
+}
+\examples{
+# fictive structural business statistics (sbs) data of 2008 and 2009
+data(sbsData)
+
+# comparisson treemaps
+tmPlot(sbsData, index=c("section", "subsection"), vSize="employees09", vColor="employees08", sortID="-size")
+
+tmPlot(sbsData, index=c("section"), vSize="employees09", vColor="employees08", sortID="-size")
+
+
+# four comparisson treemaps
+tmPlot(sbsData, 
+	   index="section", 
+	   vSize="employees09+value added09+turnover09+salaries09",
+	   vColor="employees08+value added08+turnover08+salaries08", 
+	   sortID="-size")
+
+
+# density treemaps
+tmPlot(sbsData,
+	   index=c("section", "subsection"),
+	   vSize="turnover09",
+	   vColor="employees09/1000*turnover09", 
+	   sortID="-size")
+
+tmPlot(sbsData,
+	   index=c("section", "subsection"),
+	   vSize="employees09",
+	   vColor="turnover09/employees09", 
+	   sortID="-size", 
+	   palette=terrain.colors(8))
+
+
+# linked treemaps
+tmPlot(sbsData[sbsData$section=="Manufacturing",],
+	   index="subsection",
+	   vSize="income09+employees09+expenditures09+salaries09",
+	   vColor="", 
+	   sortID="-size")
+
+
+# value treemap (aka Map of the Market)
+sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="employees.growth", 
+	   sortID="-size", 
+	   type="value", 
+	   palette="RdBu")
 }
 

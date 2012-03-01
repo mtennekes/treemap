@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #' Package: \tab treemap\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.11\cr
-#' Date: \tab 2012-02-24\cr
+#' Version: \tab 0.11-1\cr
+#' Date: \tab 2012-03-01\cr
 #' License: \tab GPL-3\cr
 #' LazyLoad: \tab yes\cr
 #' }
@@ -14,6 +14,7 @@
 #' The function \code{\link{tmPlot}} is used to plot treemaps. The functions \code{\link{tmClick}} and \code{\link{tmLocate}} are used to respectively capture a mouse click on a treemap and locate the corresponding object.
 #'
 #' @name treemap-package
+#' @aliases treemap
 #' @docType package
 #' @author Martijn Tennekes \email{mtennekes@@gmail.com}
 #' @keywords treemap
