@@ -8,7 +8,7 @@
 # @param bold logical defining whe the text is bold
 # @param enlargable logical defining whether the textsize may exceed \code{cex=1}
 str2rect <-
-function(grb, fontcol="black", fill=NA, bold=FALSE, enlargable = FALSE) {
+function(grb, fontcol, fill, bold, inflate.labels) {
 	# wrap text to 1-5 sentences
 	txtWraps <- lapply(grb$name, FUN=function(txt) {
 		txtWrap <- list(txt)
@@ -42,12 +42,12 @@ function(grb, fontcol="black", fill=NA, bold=FALSE, enlargable = FALSE) {
 		incr <- pmin.int(incrH, incrW)
 		
 		# determine best fit
-		if (!enlargable) {
-			incr[incr>1] <- 1
-			winningStr <- which.max(incr)[1]
-		} else {
+		if (inflate.labels) {
 			aspR <- pmax.int(incrH, incrW) / incr
 			winningStr <- which.min(aspR)
+		} else {
+			incr[incr>1] <- 1
+			winningStr <- which.max(incr)[1]
 		}
 		return(list(txt=wrap$txt[winningStr], cex=incr[winningStr], lines=wrap$lines[winningStr]))
 	})

@@ -1,15 +1,17 @@
 baseTreemap <-
 function(dat,
-	type="linked",
-	legenda=TRUE,
-	sizeTitle="", 
-	colorTitle="",
-	palette=NA,
-	vColorRange=NA,
-	fontsize.title=14, 
-	fontsize.data=11, 
-	fontsize.legend=12, 
-	lowerboundText=0.4) {
+	type,
+	legenda,
+	sizeTitle, 
+	colorTitle,
+	palette,
+	vColorRange,
+	fontsize.title, 
+	fontsize.labels, 
+	fontsize.legend, 
+	lowerbound.cex.labels,
+	inflate.labels,
+	force.print.labels) {
 
 	width <- convertWidth(unit(1,"npc"),"inches",valueOnly = TRUE)
 	height <- convertHeight(unit(1,"npc"),"inches",valueOnly = TRUE)
@@ -18,7 +20,7 @@ function(dat,
 	plotMargin <- unit(0.5,"cm")
 	
 	fsTitle <- min(fontsize.title, (height*3.6), (width*3.6))
-	fsData <- min(fontsize.data, (height*3.6), (width*3.6))
+	fsData <- min(fontsize.labels, (height*3.6), (width*3.6))
 	fsLegend <- min(fontsize.legend, (height*3.6), (width*3.6))
 	
 	
@@ -202,7 +204,7 @@ function(dat,
 
 	if (depth==1) {
 		whichFill <- rep(TRUE, nrow(recList))
-		recs_fill <- createRec(recList, filled=TRUE, label="normal", labellb=lowerboundText, lwd = 1)
+		recs_fill <- createRec(recList, filled=TRUE, label="normal", labellb=lowerbound.cex.labels, lwd = 1, inflate.labels=inflate.labels, force.print.labels=force.print.labels)
 		grid.draw(recs_fill$recs)
 		grid.draw(recs_fill$txt)
 	} else {
@@ -210,11 +212,11 @@ function(dat,
 		lwds <- depth - recList$clevel + 1
 		whichFill <- recList$clevel==recList$dlevel
 		
-		recs_fill_bold <- createRec(recList[whichFill & whichBold,], filled=TRUE, label="bold", labellb=lowerboundText, lwd = lwds[whichFill & whichBold])
-		recs_fill_norm <- createRec(recList[whichFill & !whichBold,], filled=TRUE, label="normal", labellb=lowerboundText, lwd = lwds[whichFill & !whichBold])
+		recs_fill_bold <- createRec(recList[whichFill & whichBold,], filled=TRUE, label="bold", labellb=lowerbound.cex.labels, lwd = lwds[whichFill & whichBold], inflate.labels=inflate.labels, force.print.labels=force.print.labels)
+		recs_fill_norm <- createRec(recList[whichFill & !whichBold,], filled=TRUE, label="normal", labellb=lowerbound.cex.labels, lwd = lwds[whichFill & !whichBold], inflate.labels=inflate.labels, force.print.labels=force.print.labels)
 		
-		recs_trans_bold <- createRec(recList[!whichFill & whichBold,], filled=FALSE, label="bold", labellb=lowerboundText, labelbg = TRUE, lwd = lwds[!whichFill & whichBold]) 
-		recs_trans_norm <- createRec(recList[!whichFill & !whichBold,], filled=FALSE, label="normal", labellb=lowerboundText, lwd = lwds[!whichFill & !whichBold]) 
+		recs_trans_bold <- createRec(recList[!whichFill & whichBold,], filled=FALSE, label="bold", labellb=lowerbound.cex.labels, labelbg = TRUE, lwd = lwds[!whichFill & whichBold], inflate.labels=inflate.labels, force.print.labels=force.print.labels) 
+		recs_trans_norm <- createRec(recList[!whichFill & !whichBold,], filled=FALSE, label="normal", labellb=lowerbound.cex.labels, lwd = lwds[!whichFill & !whichBold], inflate.labels=inflate.labels, force.print.labels=force.print.labels) 
 		
 		cover <- overlap(recs_fill_norm$txtbg, recs_trans_norm$txtbg)
 		if (!is.na(cover[1])) {

@@ -8,7 +8,7 @@ load_all("pkg")
 # data(sbsData)
 	
 # comparisson treemaps
-tmPlot(sbsData, index=c("section", "subsection"), vSize="employees09", vColor="employees08", sortID="-size", lowerboundText=0.6)
+tmPlot(sbsData, index=c("section", "subsection"), vSize="employees09", vColor="employees08", sortID="-size", fontsize.labels=14, lowerbound.cex.labels=.1, inflate.labels=FALSE, force.print.labels = TRUE)
 
 tmPlot(sbsData, index=c("section"), vSize="employees09", vColor="employees08", sortID="-size")
 

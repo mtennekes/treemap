@@ -27,10 +27,12 @@
 #' @param subtitles A character vector containing the subtitle(s) of the treemap(s) (optional). Use this for describing the colors of the rectangles.
 #' @param palette Either a color palette or a name of a Brewer palette (see \code{display.brewer.all()})
 #' @param vColorRange Range of the color variable values that is mapped to \code{palette}. Only applicable for \code{type="value"}.
-#' @param fontsize.title maximum) font size of the title
-#' @param fontsize.data maximum font size of the data labeling
-#' @param fontsize.legend maximum font size of the legend
-#' @param lowerbound.cex.data number between 0 and 1 that indicates the minimum fontsize of the data labels: 0 means draw all data labels, and 1 means only draw data labels if they fit at font size \code{fontsize.data}
+#' @param fontsize.title (maximum) font size of the title
+#' @param fontsize.labels font size of the data labeling
+#' @param fontsize.legend (maximum) font size of the legend
+#' @param lowerbound.cex.labels number between 0 and 1 that indicates the minimum fontsize of the data labels: 0 means draw all data labels, and 1 means only draw data labels if they fit at font size \code{fontsize.data}
+#' @param inflate.labels boolean that determines whether data labels are inflated inside the rectangles
+#' @param force.print.labels boolean that determines whether data labels are being forced to be printed (also when they don't fit)
 #' @return A list is silently returned:
 #'	\item{tm}{List with for each treemap a \code{data.frame} containing information about the rectangles}
 #'	\item{nRow}{Number of rows in the treemap grid}
@@ -50,9 +52,11 @@ function(dtf,
 	palette=NA,
 	vColorRange=NA,
 	fontsize.title=14, 
-	fontsize.data=11, 
+	fontsize.labels=11, 
 	fontsize.legend=12,
-	lowerbound.cex.data=0.4) {
+	lowerbound.cex.labels=0.4,
+	inflate.labels=FALSE,
+	force.print.labels=FALSE) {
 	#############
 	## Process variable names and titles
 	#############
@@ -238,27 +242,6 @@ function(dtf,
 	}
 	
 	
-	###########
-	## Agggregate data
-	###########
-	
-	# varNames <- as.character(na.omit(unique(c(vSizeVector, vColorVector[2,]))))
-	
-
-	# dtf <- ddply(dtf, index, colwise(sum, varNames))
-	
-	
-	
-	
-	# if (is.na(subindex)) {
-		# varNames <- as.character(na.omit(unique(c(vSizeVector, vColorVector[2,]))))
-
-		# dtf <-aggregate(x=dtf[varNames], by=list(dtf[,index]), FUN="sum", na.rm = TRUE)
-		# names(dtf) <- c(index, names(dtf)[-1])
-		# tempSubindices <- NA 
-	# } else tempSubindices <- dtf[subindex]
-
-	
 	############
 	## Plot treemap(s)
 	############
@@ -311,9 +294,11 @@ function(dtf,
 			palette=palette,
 			vColorRange=vColorRange,
 			fontsize.title=fontsize.title, 
-			fontsize.data=fontsize.data, 
+			fontsize.labels=fontsize.labels, 
 			fontsize.legend=fontsize.legend,
-			lowerboundText=lowerbound.cex.data)
+			lowerbound.cex.labels=lowerbound.cex.labels,
+			inflate.labels=inflate.labels,
+			force.print.labels=force.print.labels)
 			
 		upViewport()
 		iRow<-iRow+1
