@@ -7,26 +7,27 @@
 #'		\item one treemap
 #'			\itemize{
 #'			\item \code{vSize = <variable name>}
-#'			\item \code{vColor = <variable name>/<scale>*<variable name>} second part (after /), useful for density treemaps, is optional when treemap type is "linked", this formula has no use}
-#'		\item multiple treemaps	formulas for each treemap are seperated with +}
+#'			\item \code{vColor = <variable name>/<scale>*<variable name>}  
+#'          The second part (starting with /) is optional. This part is useful for density treemaps.}
+#'		\item multiple treemaps: formulas are seperated with +}
 #' 
 #' @param dtf a data.frame (required).
 #' @param index	a character vector containing the column names in \code{dtf} that contain the indices (required).
 #' @param vSize character containing the formula of the variables that determine the sizes (required). For details about the syntax see below.
-#' @param vColor a character containing the formula of the variables that determine the colors. For details about the syntax see below.
-#' @param sortID the name of the column in \code{dtf} on which the rectangles should be sorted (from top left to bottom right). To inverse the sorting order, use "-" in the prefix.
+#' @param vColor a character containing the formula of the variables that determine the colors. Not applicable when \code{type=="value"}. For details about the syntax see below.
+#' @param sortID name of the column in \code{dtf} on which the rectangles should be sorted (from top left to bottom right). To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left.
 #' @param type the type of the treemap:
-#' \itemize{
-#'		\item \code{auto}	automatic determination of type (default setting)
-#'		\item \code{dens}	density treemap (dense areas get darker colors)
-#'		\item \code{comp} comparison treemap (colors are used to compare variables)
-#'		\item \code{perc}	treemap (color variable is in percentages)
-#'		\item \code{linked} each index has an own, distinctive, color (useful to compare small multiples)
-#'		\item \code{value}	treemap where values of the color variable are directly mapped to a color palette. By default a diverging color scale (Brewer's "RdYlGn") is used where negative values are red and positive green. By setting \code{palette} (in combination with \code{vColorRange}), any color palette can be used.}
-#' @param titles A character vector containing the title(s) of the treemap(s) (optional). Use this for describing the sizes of the rectangles.
-#' @param subtitles A character vector containing the subtitle(s) of the treemap(s) (optional). Use this for describing the colors of the rectangles.
-#' @param palette Either a color palette or a name of a Brewer palette (see \code{display.brewer.all()})
-#' @param vColorRange Range of the color variable values that is mapped to \code{palette}. Only applicable for \code{type="value"}.
+#' \describe{
+#'		\item{\code{auto}:}{automatic determination of type (default setting)}
+#'		\item{\code{comp}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable (in percentages)}
+#'		\item{\code{dens}:}{colors indicate density (like a population density map): \code{vColor} should be defined as something (e.g.\ population) per unit of \code{vSize} (e.g.\ area size)}
+#'		\item{\code{perc}:}{the \code{vColor} variable should consist of percentages between 0 and 100.}
+#'		\item{\code{linked}:}{objects are linked by color over different treemaps}
+#'		\item{\code{value}:}{the \code{vColor}-variable is directly mapped to a color palette (by default Brewer's diverging color palette "RdYlGn").}}
+#' @param titles A character vector containing the title(s) of the treemap(s). Use this for describing the sizes of the rectangles.
+#' @param subtitles A character vector containing the subtitle(s) of the treemap(s). Use this for describing the colors of the rectangles.
+#' @param palette Either a color palette or a name of a Brewer palette (see \code{display.brewer.all()}).
+#' @param vColorRange Range of the color variable values that is mapped to \code{palette}. Only applicable for \code{type=="value"}.
 #' @param fontsize.title (maximum) font size of the title
 #' @param fontsize.labels font size of the data labeling
 #' @param fontsize.legend (maximum) font size of the legend
@@ -45,7 +46,7 @@ function(dtf,
 	index, 
 	vSize, 
 	vColor="", 
-	sortID="",
+	sortID="-size",
 	type="auto",
 	titles=NA,
 	subtitles=NA,
@@ -270,8 +271,6 @@ function(dtf,
 			sortDat <- datSize
 		} else if (sortID=="color") {
 			sortDat <- datColor
-		} else if (sortID=="") {
-			sortDat <- datSize #NA
 		} else {
 			sortDat <- dtf[sortID]
 		}

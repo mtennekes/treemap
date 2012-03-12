@@ -23,13 +23,10 @@ function(dat,
 	fsData <- min(fontsize.labels, (height*3.6), (width*3.6))
 	fsLegend <- min(fontsize.legend, (height*3.6), (width*3.6))
 	
-	
-	#cexTitle <- min(maxfontsize,(height*3.6), (width*3.6))
-	#cexSmall <- cexLarge * 0.8
-
 	# Determine legenda viewports
 	if (legenda) {
-		legWidth <- min(unit(5, "inches"), convertWidth(unit(0.9, "npc")-2*plotMargin,"inches"))
+		legWidth <- min(unit(5, "inches"), convertWidth(unit(0.9,
+															 "npc")-2*plotMargin,"inches"))
 		legHeight <- unit(fsLegend * 0.06, "inches")
 		
 		vpLeg <- viewport(name = "legenda",
@@ -75,6 +72,7 @@ function(dat,
 	dats <- list()
 
 	datV <- data.frame(value=numeric(0), value2=numeric(0))
+	
 	for (i in 1:depth) {
 		indexList <- paste("index", 1:i, sep="")
 		if (type=="dens") {
@@ -82,21 +80,23 @@ function(dat,
 			value <- NULL; rm(value)
 			value2abs <- NULL; rm(value2abs)
 			sortInd <- NULL; rm(sortInd)
-			dats[[i]] <- ddply(dat, indexList, colwise(sum, .(value, value2abs, sortInd)))
+			dats_i <- ddply(dat, indexList, colwise(sum, .(value, value2abs, sortInd)))
 			
-			dats[[i]]$value2 <- dats[[i]]$value2abs / dats[[i]]$value
-			dats[[i]]$value2abs <- NULL
-			dats[[i]]$value2abs <- NULL
+			dats_i$value2 <- dats_i$value2abs / dats_i$value
+			dats_i$value2abs <- NULL
+			dats_i$value2abs <- NULL
 		} else {
 			value <- NULL; rm(value)
 			value2 <- NULL; rm(value2)
 			sortInd <- NULL; rm(sortInd)
-			dats[[i]] <- ddply(dat, indexList, colwise(sum, .(value, value2, sortInd)))
+			dats_i <- ddply(dat, indexList, colwise(sum, .(value, value2, sortInd)))
 		}
-		dats[[i]] <- unique(merge(dats[[i]], dat[c(indexList, "dlevel")], by=indexList))
-		dats[[i]]$clevel <- i
-		dats[[i]] <- dats[[i]][order(dats[[i]]$sortInd),]
-		datV <- rbind(datV, dats[[i]][c("value", "value2", "index1")])
+		dats_i <- unique(merge(dats_i, dat[c(indexList, "dlevel")], by=indexList))
+		dats_i$clevel <- i
+		dats_i <- dats_i[order(dats_i$sortInd),]
+		
+		datV <- rbind(datV, dats_i[c("value", "value2", "index1")])
+		dats[[i]] <- dats_i
 	}
 	
 
@@ -105,10 +105,8 @@ function(dat,
 	# Show legenda and determine colors
 	if (legenda) {	
 		pushViewport(vpLeg)
-#		grid.rect()
 		grid.text(colorTitle, y = unit(0.5, "lines"))
 		pushViewport(vpLeg2)
-#		grid.rect()
 	}
 	
 	if (is.na(palette[1])) {
@@ -180,7 +178,10 @@ function(dat,
 		n <- nrow(recSel)
 		if (n!=0) {for (i in 1:n) {
 			smallRec <- recSel[i, c("x0", "y0", "w", "h")]
-			datSel <- dats[[level+1]][dats[[level+1]][paste("index", level, sep="")]==as.character(recSel[i,"ind"]),c(paste("index", level+1, sep=""),"value", "value2", "dlevel", "clevel", "color")]
+			datSel <- dats[[level+1]][dats[[level+1]][
+				paste("index", level, sep="")]==as.character(recSel[i,"ind"]),
+									  c(paste("index", level+1, sep=""),
+									    "value", "value2", "dlevel", "clevel", "color")]
 			recDat <- rbind(recDat, findRecs(datSel, level+1, smallRec, dats))
 		}}
 		return(recDat)
@@ -188,7 +189,6 @@ function(dat,
 
 	recList <- findRecs(dats[[1]], 1, dataRec, dats)
 	
-#browser()
 
 	# convert to npc (0 to 1)
 	recList$x0 <- recList$x0 / dataRec$W
@@ -204,7 +204,13 @@ function(dat,
 
 	if (depth==1) {
 		whichFill <- rep(TRUE, nrow(recList))
-		recs_fill <- createRec(recList, filled=TRUE, label="normal", labellb=lowerbound.cex.labels, lwd = 1, inflate.labels=inflate.labels, force.print.labels=force.print.labels)
+		recs_fill <- createRec(recList, 
+							   filled=TRUE, 
+							   label="normal", 
+							   labellb=lowerbound.cex.labels, 
+							   lwd = 1,
+							   inflate.labels=inflate.labels,
+							   force.print.labels=force.print.labels)
 		grid.draw(recs_fill$recs)
 		grid.draw(recs_fill$txt)
 	} else {
@@ -212,11 +218,36 @@ function(dat,
 		lwds <- depth - recList$clevel + 1
 		whichFill <- recList$clevel==recList$dlevel
 		
-		recs_fill_bold <- createRec(recList[whichFill & whichBold,], filled=TRUE, label="bold", labellb=lowerbound.cex.labels, lwd = lwds[whichFill & whichBold], inflate.labels=inflate.labels, force.print.labels=force.print.labels)
-		recs_fill_norm <- createRec(recList[whichFill & !whichBold,], filled=TRUE, label="normal", labellb=lowerbound.cex.labels, lwd = lwds[whichFill & !whichBold], inflate.labels=inflate.labels, force.print.labels=force.print.labels)
+		recs_fill_bold <- createRec(recList[whichFill & whichBold,], 
+									filled=TRUE, 
+									label="bold", 
+									labellb=lowerbound.cex.labels, 
+									lwd = lwds[whichFill & whichBold],
+									inflate.labels=inflate.labels,
+									force.print.labels=force.print.labels)
+		recs_fill_norm <- createRec(recList[whichFill & !whichBold,], 
+									filled=TRUE, 
+									label="normal", 
+									labellb=lowerbound.cex.labels, 
+									lwd = lwds[whichFill & !whichBold], 
+									inflate.labels=inflate.labels,
+									force.print.labels=force.print.labels)
 		
-		recs_trans_bold <- createRec(recList[!whichFill & whichBold,], filled=FALSE, label="bold", labellb=lowerbound.cex.labels, labelbg = TRUE, lwd = lwds[!whichFill & whichBold], inflate.labels=inflate.labels, force.print.labels=force.print.labels) 
-		recs_trans_norm <- createRec(recList[!whichFill & !whichBold,], filled=FALSE, label="normal", labellb=lowerbound.cex.labels, lwd = lwds[!whichFill & !whichBold], inflate.labels=inflate.labels, force.print.labels=force.print.labels) 
+		recs_trans_bold <- createRec(recList[!whichFill & whichBold,], 
+									 filled=FALSE, 
+									 label="bold", 
+									 labellb=lowerbound.cex.labels, 
+									 labelbg = TRUE, 
+									 lwd = lwds[!whichFill & whichBold], 
+									 inflate.labels=inflate.labels,
+									 force.print.labels=force.print.labels) 
+		recs_trans_norm <- createRec(recList[!whichFill & !whichBold,], 
+									 filled=FALSE, 
+									 label="normal",
+									 labellb=lowerbound.cex.labels, 
+									 lwd = lwds[!whichFill & !whichBold],
+									 inflate.labels=inflate.labels,
+									 force.print.labels=force.print.labels) 
 		
 		cover <- overlap(recs_fill_norm$txtbg, recs_trans_norm$txtbg)
 		if (!is.na(cover[1])) {
@@ -241,12 +272,7 @@ function(dat,
 		
 	}
 		
-		#lowMerge <- merge(dat, recList_low, by.x="subindex", by.y="ind")
-		#highMerge <- merge(dat, recList_high_fill, by.x="index", by.y="ind")
-		#resultDat <- rbind(highMerge,lowMerge)[,c("index", "subindex", "x0", "y0", "w",		"h")]
-		
 		resultDat <- recList[whichFill, c("ind", "clevel", "x0", "y0", "w", "h")]
-		
 
 	upViewport()
 	upViewport()
