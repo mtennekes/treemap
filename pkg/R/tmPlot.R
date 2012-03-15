@@ -2,23 +2,22 @@
 #'
 #' User-friendly treemap function
 #'
-#' For the arguments \code{vSize} and \code{vColor}, use the following formula syntax:
+#' For the argument \code{vColor}, use the following formula syntax:
 #'		\itemize{
 #'		\item one treemap
 #'			\itemize{
 #'			\item \code{vSize = <variable name>}
-#'			\item \code{vColor = <variable name>/<scale>*<variable name>}  
+#'			\item \code{vColor = <scale>*<variable name>} 
 #'          The second part (starting with /) is optional. This part is useful for density treemaps.}
 #'		\item multiple treemaps: formulas are seperated with +}
 #' 
 #' @param dtf a data.frame (required).
-#' @param index	a character vector containing the column names in \code{dtf} that contain the indices (required).
-#' @param vSize character containing the formula of the variables that determine the sizes (required). For details about the syntax see below.
-#' @param vColor a character containing the formula of the variables that determine the colors. Not applicable when \code{type=="value"}. For details about the syntax see below.
-#' @param sortID name of the column in \code{dtf} on which the rectangles should be sorted (from top left to bottom right). To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left.
+#' @param index	character vector containing the column names in \code{dtf} that contain the aggregation indices (required). 
+#' @param vSize character vector of variable names (one for each treemap) that determine the sizes (required).
+#' @param vColor character vector of variable names (one for each treemap) that determine the colors. For details about the syntax see below.
+#' @param sortID character vector of variable names (one for each treemap) that determine the sorting order of the rectangles (from top left to bottom right). Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left.
 #' @param type the type of the treemap:
 #' \describe{
-#'		\item{\code{auto}:}{automatic determination of type (default setting)}
 #'		\item{\code{comp}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable (in percentages)}
 #'		\item{\code{dens}:}{colors indicate density (like a population density map): \code{vColor} should be defined as something (e.g.\ population) per unit of \code{vSize} (e.g.\ area size)}
 #'		\item{\code{perc}:}{the \code{vColor} variable should consist of percentages between 0 and 100.}
@@ -45,9 +44,9 @@ tmPlot <-
 function(dtf, 
 	index, 
 	vSize, 
-	vColor="", 
+	vColor=NULL, 
 	sortID="-size",
-	type="auto",
+	type="value",
 	titles=NA,
 	subtitles=NA,
 	palette=NA,
@@ -57,7 +56,8 @@ function(dtf,
 	fontsize.legend=12,
 	lowerbound.cex.labels=0.4,
 	inflate.labels=FALSE,
-	force.print.labels=FALSE) {
+	force.print.labels=FALSE,
+	na.rm = FALSE) {
 	#############
 	## Process variable names and titles
 	#############
@@ -80,100 +80,90 @@ function(dtf,
 			string <- paste(toupper(substring(s, 1,1)), substring(s, 2),
 			  sep="", collapse=" ")
 
-			if (isnumeric(substring(string,nchar(string)-1,nchar(string)))&&
-			!isnumeric(substring(string,nchar(string)-2,nchar(string)))) {
-			string <- paste(substring(string,1,nchar(string)-2)," '",substring(string,nchar(string)-1,nchar(string)),sep="")
-		} else if (isnumeric(substring(string,nchar(string)-3,nchar(string)))&&
-			!isnumeric(substring(string,nchar(string)-4,nchar(string)))) {
-			string <- paste(substring(string,1,nchar(string)-4),substring(string,nchar(string)-3,nchar(string)),sep=" ")
+			if (isnumeric(substring(string,nchar(string)-1,nchar(string)))
+				&&	!isnumeric(
+					substring(string,nchar(string)-2,nchar(string)))) {
+				string <- paste(substring(string,1,nchar(string)-2),
+								" '",substring(string,nchar(string)-1,
+											   nchar(string)),sep="")
+		} else if (isnumeric(substring(string,nchar(string)-3,
+									   nchar(string)))
+				   && !isnumeric(substring(string, nchar(string)-4,
+								 nchar(string)))) {
+			string <- paste(substring(string,1,nchar(string)-4),
+							substring(string,nchar(string)-3,
+									  nchar(string)),sep=" ")
 		}
 		string	
 	}
 	
-	formatColorTitle <- function(sx,x,sdiv,div) {
+	formatColorTitle <- function(x, div=NA, sdiv=NA) {
 		string <- formatTitle(x)
-		if (sx!=1) {	
-			string<-paste(sx,string,sep=" ")
-		}
 		if (!is.na(div)) {
 			stringDiv <- formatTitle(div)
 			if (sdiv!=1) {
-				stringDiv<-paste(sdiv,stringDiv,sep=" ")
+				stringDiv<-paste(1/sdiv,stringDiv,sep=" ")
 			}
 			string<-paste(string,"per",stringDiv,sep=" ")
 		}
 		string
 	}
 	
-	vColorDivSplit <- function(vColor) {
-		vColorDiv <- unlist(strsplit(vColor, split="/", fixed=TRUE))
-		return (vColorDiv)
+	
+	## Get size variable(s)
+	n <- length(vSize)
+	
+	## Checks if all vSizes are valid
+	if (!all(vSize %in% names(dtf))) stop(paste(vSize," contains invalid column names", sep=""))
+	classes <- sapply(dtf[, vSize, drop=FALSE],
+					  FUN=function(x)class(x)[1])
+	if (!all(classes %in% c("numeric", "integer")))
+		stop(paste("Column(s) in ", vSize, " not numeric or integer",sep=""))
+	
+	
+	## Checks if titles and subtitles have length n
+	if (!is.na(titles[1]) && length(titles) != n) {
+		warning(paste("Number of titles should be ", n, 
+					  ". Titles will be ignored.", sep=""))
+		titles <- NA}
+	if (!is.na(subtitles[1]) && length(subtitles) != n) {
+		warning(paste("Number of subtitles should be ", n, 
+					  ". Subtitles will be ignored.", sep=""))
+		titles <- NA}
+		
+	## Determine titles
+	if (is.na(titles[1])) {	
+		options(warn=-1) 
+		vSizeNames <- mapply(FUN="formatTitle", vSize)
+		options(warn=0) 
+	} else {
+		vSizeNames <- as.character(titles)
 	}
 	
 	vColorMplySplit <- function(vColor) {
 		vColorMply <- unlist(strsplit(vColor, split="*", fixed=TRUE))
 		if (length(vColorMply)==1) {
-			vColorMply <- c(1,vColorMply)
+			vColorMply <- unlist(strsplit(vColor, split="/", fixed=TRUE))
+			if (length(vColorMply)==1) {
+				vColorMply <- c(vColorMply, 1)
+			} else {
+				vColorMply[2] <- (1/as.numeric(vColorMply[2]))
+			}
 		}
 		return (vColorMply)
 	}
-
-
 	
-	## Get size variable(s)
-	vSizeVector <- unlist(strsplit(vSize, split="+", fixed=TRUE))
-	n <- length(vSizeVector)
-
-	## Checks if all vSizes are valid
-	for (i in 1:n) {
-		if (!vSizeVector[i] %in% names(dtf)) stop(paste(vSizeVector[i]," is not a column in <dtf>", sep=""))
-		if (class(dtf[,vSizeVector[i]])!="numeric" && class(dtf[,vSizeVector[i]])!="integer") stop(paste("Column ", vSizeVector[i], " is not numeric or integer",sep=""))
-		if (any(is.na(dtf[,vSizeVector[i]]))) stop(paste("Column ", vSizeVector[i], " contains missing values.",sep=""))
-		if (min(dtf[,vSizeVector[i]])<0) stop(paste("Column ", vSizeVector[i], " contains negative values.",sep=""))
-	}
-
-	## Checks if titles and subtitles have length n
-	if (!is.na(titles[1]) && length(titles) != n) {warning(paste("Number of titles should be ", n, ". Titles will be ignored.", sep="")); titles <- NA}
-	if (!is.na(subtitles[1]) && length(subtitles) != n) {warning(paste("Number of subtitles should be ", n, ". Subtitles will be ignored.", sep="")); titles <- NA}
-		
-	## Determine titles
-	if (is.na(titles[1])) {	
-		options(warn=-1) 
-		vSizeNames <- mapply(FUN="formatTitle", vSizeVector)
-		options(warn=0) 
-	} else {
-		vSizeNames <- as.character(titles)
-	}
-
 	## Process formula for color variables
-	vColorAdd <- unlist(strsplit(vColor, split="+", fixed=TRUE))
-	vColorDiv <- unlist(mapply(FUN="vColorDivSplit", vColorAdd))
-			
-	if (vColor=="") {
-		vColorVector <- matrix(data=NA,nrow=2,ncol=n)
-		vColorVectorBy <- matrix(data=NA,nrow=2,ncol=n)
-	} else if (is.vector(vColorDiv)) {
-		vColorVector <- unlist(mapply(FUN="vColorMplySplit", vColorDiv))
-		vColorVectorBy <- matrix(data=NA,nrow=2,ncol=n)
-	} else {
-		vColorVector <- unlist(mapply(FUN="vColorMplySplit", vColorDiv[1,]))
-		if (is.matrix(vColorVector)) {
-			vColorVectorBy <- unlist(mapply(FUN="vColorMplySplit", vColorDiv[2,]))
-		}
+	if (!is.null(vColor)) {
+		vColor2 <- lapply(FUN="vColorMplySplit", vColor)
+		vColorX <- as.numeric(sapply(vColor2, function(x)x[2]))
+		if (any(is.na(vColorX))) stop("Invalid vColor.")
+		vColor <- sapply(vColor2, function(x)x[1])
+	
+		## Check is column names in vColor are valid
+		if (!all(vColor %in% names(dtf)))
+					stop("Invalid column name(s) found in vColor.")
 	}
-
-	## Determine subtitles
-	if (is.na(subtitles)) {	
-		options(warn=-1) 
-		if (!all(is.na(vColorVector))) {
-			vColorNames <- mapply(FUN="formatColorTitle", vColorVector[1,],vColorVector[2,],vColorVectorBy[1,],vColorVectorBy[2,])
-		} else vColorNames <- rep("",n)
-		options(warn=0) 
-	} else {
-		vColorNames <- as.character(subtitles)
-	}
-		
-
 	
 	##########
 	## Determine grid
@@ -210,82 +200,80 @@ function(dtf,
 	############
 	## Determine sorting order
 	############
-	ascending <- TRUE
-	if (substr(sortID,1,1)=="-") {
-		ascending <- FALSE
-		sortID <- substr(sortID,2,nchar(sortID))
-	}
+	ascending <- rep(TRUE, n)
+	sortID <- rep(sortID, length.out=n)
 
-	############
-	## Determine treemap type
-	############
+	negSort <- substr(sortID,1,1)=="-"
+	ascending[negSort] <- FALSE
+	sortID[negSort] <- substr(sortID[negSort],2,nchar(sortID[negSort]))
+	sortID[sortID=="size"] <- vSize[sortID=="size"]
+	sortID[sortID=="color"] <- vSize[sortID=="color"]
 	
-	legenda <- TRUE
-	if (type=="auto") {
-		if (all(is.na(vColorVector))) {
-			type <- "linked"
-			legenda <- FALSE
-		} else if (!all(is.na(vColorVectorBy))) {
-			type <- "dens"
-		} else {
-			perc <- ((dtf[vSizeVector] - dtf[vColorVector[2,]] )/dtf[vColorVector[2,]])*100
-			isNaN <- apply(perc, 2, FUN=is.nan)
-			perc[isNaN] <- 0
-			
-			if (min(perc)<=-60|| max(perc)>=150) {
-				if (min(dtf[vSizeVector])>=0 && max(dtf[vSizeVector])<=100) {
-					type <- "perc"	
-				} else type <- "value"
-			} else type <- "comp"
-		}
-	} else if (type=="linked") {
-		legenda <- FALSE
+	
+	############
+	## Determine legend
+	############
+	legenda <- (type!="linked")
+	
+	## Determine subtitles
+	if (is.na(subtitles)) {	
+		options(warn=-1) 
+		if (!is.null(vColor)) {
+			if (type=="dens") 
+				vColorNames <- mapply(FUN="formatColorTitle", vColor, vSize, vColorX)
+			else
+				vColorNames <- mapply(FUN="formatColorTitle", vColor)
+		} else vColorNames <- rep("",n)
+		options(warn=0) 
+	} else {
+		vColorNames <- as.character(subtitles)
 	}
+	
+	
+	###########
+	## Aggregate
+	###########
+	vars <- unique(c(vSize, vColor))
+	dat <- ddply(dtf, index, colwise(sum, vars), na.rm=na.rm)
+	depth <- length(index)
+	indexList <- paste("index", 1:depth, sep="")
+	names(dat)[1:depth] <- indexList
+
+	minima <- sapply(dat[, -(1:depth), drop=FALSE], min)
+	if (any(is.na(minima)))
+		stop(paste("Column(s) ",
+				   paste(names(minima)[is.na(minima)],
+collapse=", "), " contain missing values.", sep=""))
+	if (min(minima) < 0)
+		stop(paste("Column(s) ",
+				   paste(names(minima)[minima<0], collapse=", "),
+				   " contain negative values.", 
+				   sep=""))
+
 	
 	
 	############
 	## Plot treemap(s)
 	############
-
 	grid.newpage()
 	
 	pushViewport(viewport(name="grid",layout=grid.layout(nRow, nCol)))
-
 
 	iCol<-1
 	iRow<-1
 	tm<-list()
 	for (i in 1:n) {
-		datSize<-as.numeric(dtf[[vSizeVector[i]]])
-		if (all(is.na(vColorVector))) { 
-			datColor<-dtf[[vSizeVector[1]]]
-		} else {
-			datColor<-dtf[[vColorVector[2,i]]]/as.numeric(vColorVector[1,i])
-			if (!is.na(vColorVectorBy[i])) {
-				datColor<-datColor/(dtf[[vColorVectorBy[2,i]]]/as.numeric(vColorVectorBy[1,i]))
-			}
-		}
-		pushViewport(viewport(name=paste("tm",i,sep=""),layout.pos.col=iCol, layout.pos.row=iRow))
-#		grid.rect(gp=gpar(col="red"))
-		if (sortID=="size") {
-			sortDat <- datSize
-		} else if (sortID=="color") {
-			sortDat <- datColor
-		} else {
-			sortDat <- dtf[sortID]
-		}
-		if (!ascending) {
-			sortDat <- -sortDat
-		}
-		dat<-data.frame(value=datSize, value2=datColor, sortInd=sortDat)
-		names(dat) <- c("value", "value2", "sortInd")
-		for (j in 1:length(index)) {
-			indName <- paste("index", j, sep="")
-			dat[[indName]] <- dtf[[index[j]]]
-		}		
+		  
+		dat_i <- subset(dat, select=c(vSize[i], vColor[i], sortID[i], indexList))
+		names(dat_i) <- c("value", "value2", "sortInd", indexList)
 
+		if (!ascending[i]) {
+			dat_i[["sortInd"]] <- -dat_i[["sortInd"]]
+		}
+
+		pushViewport(viewport(name=paste("tm",i,sep=""),layout.pos.col=iCol, layout.pos.row=iRow))
 		tm[[i]] <- baseTreemap(
-			dat=dat,
+			dat=dat_i,
 			type=type,
 			legenda=legenda,
 			sizeTitle=vSizeNames[i],

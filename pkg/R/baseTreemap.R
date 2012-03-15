@@ -13,12 +13,13 @@ function(dat,
 	inflate.labels,
 	force.print.labels) {
 
+	# determine available plot width and height
 	width <- convertWidth(unit(1,"npc"),"inches",valueOnly = TRUE)
 	height <- convertHeight(unit(1,"npc"),"inches",valueOnly = TRUE)
 	
-	
 	plotMargin <- unit(0.5,"cm")
 	
+	# determine fontsizes
 	fsTitle <- min(fontsize.title, (height*3.6), (width*3.6))
 	fsData <- min(fontsize.labels, (height*3.6), (width*3.6))
 	fsLegend <- min(fontsize.legend, (height*3.6), (width*3.6))
@@ -64,34 +65,26 @@ function(dat,
 	  just = c("left", "bottom"))
 	
 	#determine depth
-	dat <- dat[dat$value>0,]
 	depth <- sum(substr(colnames(dat),1,5)=="index")
-
-	dat$dlevel <- apply(dat[paste("index", 1:depth, sep="")], MARGIN=1, FUN=function(x, d){d-pmax(sum(is.na(x)), sum(x=="", na.rm=TRUE))}, depth)
 
 	dats <- list()
 
 	datV <- data.frame(value=numeric(0), value2=numeric(0))
-	
 	for (i in 1:depth) {
 		indexList <- paste("index", 1:i, sep="")
+		value <- NULL; rm(value)
+		value2 <- NULL; rm(value2)
+		sortInd <- NULL; rm(sortInd)
+		dats_i <- ddply(dat, indexList, colwise(sum, .(value, value2, sortInd)))
+		
+		## remove rectangles of size 0
+		dats_i <- dats_i[dats_i$value>0, ]
+
 		if (type=="dens") {
-			dat$value2abs <- dat$value * dat$value2
-			value <- NULL; rm(value)
-			value2abs <- NULL; rm(value2abs)
-			sortInd <- NULL; rm(sortInd)
-			dats_i <- ddply(dat, indexList, colwise(sum, .(value, value2abs, sortInd)))
-			
-			dats_i$value2 <- dats_i$value2abs / dats_i$value
-			dats_i$value2abs <- NULL
-			dats_i$value2abs <- NULL
-		} else {
-			value <- NULL; rm(value)
-			value2 <- NULL; rm(value2)
-			sortInd <- NULL; rm(sortInd)
-			dats_i <- ddply(dat, indexList, colwise(sum, .(value, value2, sortInd)))
+			dats_i$value2 <- dats_i$value2 / dats_i$value
+			dats_i$value2[is.nan] <- 0
 		}
-		dats_i <- unique(merge(dats_i, dat[c(indexList, "dlevel")], by=indexList))
+		
 		dats_i$clevel <- i
 		dats_i <- dats_i[order(dats_i$sortInd),]
 		
@@ -129,7 +122,7 @@ function(dat,
 		}
 	}
 	
-	
+	browser()
 	if (type == "comp") {
 		datV$color <- comp2col(datV, legenda, palette)
 	} else if (type == "perc") {
@@ -164,30 +157,42 @@ function(dat,
 	dataRec <- list(X0=0,Y0=0,
 		W=convertWidth(unit(1, "grobwidth", "TMrect"),"inches",valueOnly=TRUE),
 		H=convertHeight(unit(1, "grobheight", "TMrect"),"inches",valueOnly=TRUE))
-	
-	
-	findRecs <- function(dat2, level, rec, dats) {
-		recDat <- pivotSize(dat2, rec)
-		#recDat$level <- level
-		tempDat <- dat2[c(1,(ncol(dat2)-2):ncol(dat2))]
-		names(tempDat) <- c("ind" , "dlevel", "clevel", "color")
-		recDat <- merge(tempDat, recDat, by="ind")
-		
-		recSel <- recDat[recDat$dlevel > recDat$clevel,]
-	
-		n <- nrow(recSel)
-		if (n!=0) {for (i in 1:n) {
-			smallRec <- recSel[i, c("x0", "y0", "w", "h")]
-			datSel <- dats[[level+1]][dats[[level+1]][
-				paste("index", level, sep="")]==as.character(recSel[i,"ind"]),
-									  c(paste("index", level+1, sep=""),
-									    "value", "value2", "dlevel", "clevel", "color")]
-			recDat <- rbind(recDat, findRecs(datSel, level+1, smallRec, dats))
-		}}
-		return(recDat)
-	}
 
-	recList <- findRecs(dats[[1]], 1, dataRec, dats)
+	recList <- data.frame(ind=character(0), 
+						  clevel=numeric(0),
+						  color=character(0),
+						  x0=numeric(0),
+						  y0=numeric(0),
+						  w=numeric(0),
+						   h=numeric(0))
+
+	dats[[1]] <- cbind(dats[[1]], dataRec)	
+	for (i in 1:depth) {
+		dats_i <- dats[[i]]
+		if (i==1) {
+			rec <- dats_i[1, c("X0", "Y0", "W", "H")]
+			recDat <- pivotSize(dats_i, rec)
+			dats_i <- merge(dats_i, recDat, by.x="index1", by.y="ind")
+		} else {
+			indexList <- paste("index", 1:(i-1), sep="")
+			indexList2 <- paste("index", 1:i, sep="")
+			dats_i <- merge(dats_i, dats[[i-1]][
+				c(indexList, "x0", "y0", "w", "h")], by=indexList, all.x=TRUE)
+			names(dats_i)[(-3:-0)+ncol(dats_i)] <- c("X0", "Y0", "W", "H")
+			res <- ddply(dats_i, indexList, function(x){
+				rec <- x[1, c("X0", "Y0", "W", "H")]
+				x$index <- x[[paste("index", i, sep="")]]
+				pivotSize(x, rec)
+			})
+			names(res)[names(res)=="ind"] <- paste("index", i, sep="")
+			dats_i <- merge(dats_i, res, by=indexList2)
+		}
+		
+		dats[[i]] <- dats_i
+		names(dats_i)[names(dats_i)==paste("index", i, sep="")] <- "ind"
+		recList <- rbind(recList, dats_i[
+			c("ind", "clevel", "color", "x0", "y0", "w", "h")])
+	}
 	
 
 	# convert to npc (0 to 1)
@@ -216,7 +221,7 @@ function(dat,
 	} else {
 		whichBold <- recList$clevel==1
 		lwds <- depth - recList$clevel + 1
-		whichFill <- recList$clevel==recList$dlevel
+		whichFill <- recList$clevel==depth
 		
 		recs_fill_bold <- createRec(recList[whichFill & whichBold,], 
 									filled=TRUE, 

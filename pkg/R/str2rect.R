@@ -32,7 +32,6 @@ function(grb, fontcol, fill, bold, inflate.labels) {
 
 	# calculate heights and widths of text
 	gp <- get.gpar()
-	
 	results <- mapply(txtWraps, inchesW, inchesH, FUN=function(wrap, inchesW, inchesH) {
 		txtH <- convertHeight(unit(1,"lines"), "inches", valueOnly=TRUE) * (wrap$lines-0.25) * gp$lineheight
 		txtW <- convertWidth(stringWidth(wrap$txt), "inches", valueOnly=TRUE)
@@ -58,9 +57,6 @@ function(grb, fontcol, fill, bold, inflate.labels) {
 	
 	fontface <- ifelse(bold, "bold", "plain")
 	txtGrb <- textGrob(txt, x=grb$x+0.5*grb$width, y=grb$y+0.5*grb$height, gp=gpar(cex=cex, fontface=fontface, col=fontcol))
-	# justify
-	# txtGrb$just <- grb$just
-	
 	
 		
 	
@@ -76,21 +72,15 @@ function(grb, fontcol, fill, bold, inflate.labels) {
 
 	
 	# background rect, height slightly extended
-#	if (!is.na(fill[1])) {
-		bckH <- mapply(txt, txtGrb$gp$cex, nlines, FUN=function(x,y,z, fontface){
-			convertHeight(grobHeight(textGrob(x, gp=gpar(cex=y, fontface=fontface))),"npc", valueOnly=TRUE) * z/(z-0.25)}, fontface, USE.NAMES=FALSE)
-		bckW <- mapply(txt, txtGrb$gp$cex, FUN=function(x,y, fontface){
-			convertWidth(grobWidth(textGrob(x, gp=gpar(cex=y, fontface=fontface))),"npc", valueOnly=TRUE)}, fontface, USE.NAMES=FALSE)
 
-		bckGrb <- rectGrob(x=txtGrb$x, y=txtGrb$y, width=bckW, height=bckH, gp=gpar(fill=fill, col=NA))
+	bckH <- mapply(txt, txtGrb$gp$cex, nlines, FUN=function(x,y,z, fontface){
+		convertHeight(grobHeight(textGrob(x, gp=gpar(cex=y, fontface=fontface))),"npc", valueOnly=TRUE) * z/(z-0.25)}, fontface, USE.NAMES=FALSE)
+	bckW <- mapply(txt, txtGrb$gp$cex, FUN=function(x,y, fontface){
+		convertWidth(grobWidth(textGrob(x, gp=gpar(cex=y, fontface=fontface))),"npc", valueOnly=TRUE)}, fontface, USE.NAMES=FALSE)
 
-#	} else {
-#		bckGrb <- NA
-#	}
+	bckGrb <- rectGrob(x=txtGrb$x, y=txtGrb$y, width=bckW, height=bckH, gp=gpar(fill=fill, col=NA))
 
-	#grid.draw(grb)
-	#grid.draw(bckGrb)
-	#grid.draw(txtGrb)
+
 	
 	return(list(txt=txtGrb, bg=bckGrb))
 }

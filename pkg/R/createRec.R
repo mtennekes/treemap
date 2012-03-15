@@ -35,8 +35,12 @@ function(recList, filled, label, labelbg=TRUE, labellb, lwd, inflate.labels, for
 		} else {
 			tCol <- c(rep("black",length(recs$x)))
 		}
+		noText <- recs$name == ""
+		recs$name[noText] <- " "
 		txt <- str2rect(recs, fontcol=tCol, fill=txtfill, bold=( label=="bold"), inflate.labels=inflate.labels)
 		
+		txt$txt$gp$col[noText] <- NA
+		txt$bg$gp$fill[noText] <- NA
 		
 		tooSmall <- txt$txt$gp$cex < labellb
 		if (force.print.labels) {

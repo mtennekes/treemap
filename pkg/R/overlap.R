@@ -16,8 +16,10 @@ function(rec1, rec2) {
 	ymax2 <- ymin2 + heights2
 
 	results <- mapply(FUN=function(x1, y1, xmin2, xmax2, ymin2, ymax2){
-		((y1 > ymin2) & (y1 < ymax2)) & ((x1 > xmin2) & (x1 < xmax2))
-	}, x1, y1, MoreArgs=list(xmin2, xmax2, ymin2, ymax2))
+		((y1 > ymin2) & (y1 < ymax2)) & ((x1 > xmin2) & (x1 < xmax2))},
+					  x1, y1, MoreArgs=list(xmin2, xmax2, ymin2, ymax2))
+	
+	if (is.vector(results)) results <- matrix(results, nrow=1)
 	
 	return(apply(results, MARGIN=2, FUN=any))
 }

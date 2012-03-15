@@ -18,5 +18,10 @@
 #' @docType package
 #' @author Martijn Tennekes \email{mtennekes@@gmail.com}
 #' @keywords treemap
+#' @references 
+#' \href{http://www.cs.umd.edu/hcil/treemap-history}{Shneiderman, B, Plaisant, C (2009) 
+#' Treemaps for space-constrained visualization of hierarchies. Website}
+#'  
+#' \href{http://www.von-tijn.nl/tijn/research/publications/Top-down_data_analysis_with_Treemaps.pdf"}{Tennekes, M., Jonge, E. de (2011) Top-down data analysis with treemaps. Proceedings of the International Conference on Information Visualization Theory and Applications, IVAPP 2011, Algarve, Portugal.}
 #' @example ../examples/pkg.R
 {}
