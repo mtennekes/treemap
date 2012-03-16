@@ -82,7 +82,7 @@ function(dat,
 
 		if (type=="dens") {
 			dats_i$value2 <- dats_i$value2 / dats_i$value
-			dats_i$value2[is.nan] <- 0
+			dats_i$value2[is.nan(dats_i$value2)] <- 0
 		}
 		
 		dats_i$clevel <- i
@@ -122,7 +122,6 @@ function(dat,
 		}
 	}
 	
-	browser()
 	if (type == "comp") {
 		datV$color <- comp2col(datV, legenda, palette)
 	} else if (type == "perc") {

@@ -9,7 +9,7 @@ tmPlot(sbsData,
 	   vColor="employees08",
 	   fontsize.labels=9)
 
-load("ps07final_SBI3test.Rdata")
+load("ps0607_final.Rdata")
 
 
 tmPlot(ps07final, index=c("sector", "subsector"), vSize="value_added", vColor="")
@@ -17,7 +17,7 @@ tmPlot(ps07final, index=c("sector", "subsector"), vSize="value_added", vColor=""
 tmPlot(ps07final, index=c("sector", "subsector"), vSize="employees", vColor="turnover/employees")
 
 
-tmPlot(ps07final, index=c("sector", "subsector", "subsubsector"), vSize=c("employees", "value_added"), vColor=c("turnover", "purchases"), na.rm=TRUE)
+tmPlot(ps07final, index=c("sector", "subsector", "subsubsector"), vSize=c("employees", "value_added"), vColor=c("turnover", "purchases"), type="dens", na.rm=TRUE)
 
 tmPlot(ps07final, index=c("sector", "subsector"), 
 	   vSize=c("employees", "turnover"), 
