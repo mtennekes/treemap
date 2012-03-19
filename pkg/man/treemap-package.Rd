@@ -29,13 +29,15 @@ data(sbsData)
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
-	   vColor="employees08")
+	   vColor="employees08",
+	   type="comp")
 
 # density treemap: colors indicate density (like a population density map)
 tmPlot(sbsData,
 	   index=c("section", "subsection"),
 	   vSize="turnover09",
-	   vColor="employees09/1000*turnover09")
+	   vColor="0.001*employees09",
+	   type="dens")
 
 # value treemap (aka Map of the Market)
 sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08

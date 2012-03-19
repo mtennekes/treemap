@@ -2,38 +2,38 @@
 \alias{tmPlot}
 \title{User-friendly treemap function}
 \usage{
-  tmPlot(dtf, index, vSize, vColor = "", sortID = "-size",
-    type = "auto", titles = NA, subtitles = NA,
-    palette = NA, vColorRange = NA, fontsize.title = 14,
-    fontsize.labels = 11, fontsize.legend = 12,
-    lowerbound.cex.labels = 0.4, inflate.labels = FALSE,
-    force.print.labels = FALSE)
+  tmPlot(dtf, index, vSize, vColor = NULL,
+    sortID = "-size", type = "value", titles = NA,
+    subtitles = NA, palette = NA, vColorRange = NA,
+    fontsize.title = 14, fontsize.labels = 11,
+    fontsize.legend = 12, lowerbound.cex.labels = 0.4,
+    inflate.labels = FALSE, force.print.labels = FALSE,
+    na.rm = FALSE)
 }
 \arguments{
   \item{dtf}{a data.frame (required).}
 
-  \item{index}{a character vector containing the column
-  names in \code{dtf} that contain the indices (required).}
+  \item{index}{character vector containing the column names
+  in \code{dtf} that contain the aggregation indices
+  (required).}
 
-  \item{vSize}{character containing the formula of the
-  variables that determine the sizes (required). For
-  details about the syntax see below.}
+  \item{vSize}{character vector of variable names (one for
+  each treemap) that determine the sizes (required).}
 
-  \item{vColor}{a character containing the formula of the
-  variables that determine the colors. Not applicable when
-  \code{type=="value"}. For details about the syntax see
-  below.}
+  \item{vColor}{character vector of variable names (one for
+  each treemap) that determine the colors. For details
+  about the syntax see below.}
 
-  \item{sortID}{name of the column in \code{dtf} on which
-  the rectangles should be sorted (from top left to bottom
-  right). To inverse the sorting order, use "-" in the
-  prefix. By default, large rectangles are placed top
-  left.}
+  \item{sortID}{character vector of variable names (one for
+  each treemap) that determine the sorting order of the
+  rectangles (from top left to bottom right). Also the
+  values "size" and "color" can be used. To inverse the
+  sorting order, use "-" in the prefix. By default, large
+  rectangles are placed top left.}
 
   \item{type}{the type of the treemap: \describe{
-  \item{\code{auto}:}{automatic determination of type
-  (default setting)} \item{\code{comp}:}{colors indicate
-  change of the \code{vSize}-variable with respect to the
+  \item{\code{comp}:}{colors indicate change of the
+  \code{vSize}-variable with respect to the
   \code{vColor}-variable (in percentages)}
   \item{\code{dens}:}{colors indicate density (like a
   population density map): \code{vColor} should be defined
@@ -72,12 +72,15 @@
   means draw all data labels, and 1 means only draw data
   labels if they fit at font size \code{fontsize.data}}
 
-  \item{inflate.labels}{boolean that determines whether
+  \item{inflate.labels}{logical that determines whether
   data labels are inflated inside the rectangles}
 
-  \item{force.print.labels}{boolean that determines whether
+  \item{force.print.labels}{logical that determines whether
   data labels are being forced to be printed (also when
   they don't fit)}
+
+  \item{na.rm}{logical that determines whether missing
+  values are omitted during aggregation}
 }
 \value{
   A list is silently returned: \item{tm}{List with for each
@@ -91,13 +94,13 @@
   User-friendly treemap function
 }
 \details{
-  For the arguments \code{vSize} and \code{vColor}, use the
-  following formula syntax: \itemize{ \item one treemap
-  \itemize{ \item \code{vSize = <variable name>} \item
-  \code{vColor = <variable name>/<scale>*<variable name>}
-  The second part (starting with /) is optional. This part
-  is useful for density treemaps.} \item multiple treemaps:
-  formulas are seperated with +}
+  For the argument \code{vColor}, use the following formula
+  syntax: \itemize{ \item one treemap \itemize{ \item
+  \code{vSize = <variable name>} \item \code{vColor =
+  <scale>*<variable name>} The second part (starting with
+  /) is optional. This part is useful for density
+  treemaps.} \item multiple treemaps: formulas are
+  seperated with +}
 }
 \examples{
 
@@ -111,35 +114,41 @@ data(sbsData)
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
-	   vColor="employees08")
+	   vColor="employees08",
+	   type="comp")
 
 tmPlot(sbsData, 
 	   index=c("section"), 
 	   vSize="employees09", 
-	   vColor="employees08")
+	   vColor="employees08",
+	   type="comp")
 
 # four comparisson treemaps
 tmPlot(sbsData, 
 	   index="section", 
-	   vSize="employees09+value added09+turnover09+salaries09", 
-	   vColor="employees08+value added08+turnover08+salaries08")
+	   vSize=c("employees09", "value added09", "urnover09", "salaries09", 
+	   vColor=c("employees08", "value added08", "turnover08", "salaries08",
+	   type="comp")
 
 # density treemaps: colors indicate density (like a population density map)
 tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="turnover09",
-	   vColor="employees09/1000*turnover09")
+	   vColor="0.001*employees09",
+	   type="dens")
 
 tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09",
-	   vColor="turnover09/employees09")
+	   vColor="turnover09",
+	   type="dens")
 
 # linked treemaps: objects are linked by color over different treemaps
 tmPlot(sbsData[sbsData$section=="Manufacturing",],
 	   index="subsection",
-	   vSize="income09+employees09+expenditures09+salaries09",
-	   vColor="")
+	   vSize="income09", "employees09", "expenditures09", "salaries09",
+	   vColor="",
+	   type="linked")
 
 # value treemap (aka Map of the Market)
 sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
@@ -156,7 +165,8 @@ tmPlot(sbsData,
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
-	   vColor="employees08", 
+	   vColor="employees08",
+	   type="comp",
 	   fontsize.labels=12, 
 	   lowerbound.cex.labels=1)
 
@@ -165,6 +175,7 @@ tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="employees08", 
+	   type="comp",
 	   fontsize.labels=12, 
 	   lowerbound.cex.labels=.6)
 
@@ -173,6 +184,7 @@ tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="employees08", 
+	   type="comp",
 	   fontsize.labels=10, 
 	   lowerbound.cex.labels=1, 
 	   inflate.labels = TRUE)
@@ -182,6 +194,7 @@ tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="employees08", 
+	   type="comp",
 	   fontsize.labels=10, 
 	   lowerbound.cex.labels=1, 
 	   force.print.labels=TRUE)

@@ -9,35 +9,41 @@ data(sbsData)
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
-	   vColor="employees08")
+	   vColor="employees08",
+	   type="comp")
 
 tmPlot(sbsData, 
 	   index=c("section"), 
 	   vSize="employees09", 
-	   vColor="employees08")
+	   vColor="employees08",
+	   type="comp")
 
 # four comparisson treemaps
 tmPlot(sbsData, 
-	   index="section", 
-	   vSize="employees09+value added09+turnover09+salaries09", 
-	   vColor="employees08+value added08+turnover08+salaries08")
+	   index=c("section", "subsection"), 
+	   vSize=c("employees09", "value added09", "turnover09", "salaries09"), 
+	   vColor=c("employees08", "value added08", "turnover08", "salaries08"),
+	   type="comp")
 
 # density treemaps: colors indicate density (like a population density map)
 tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="turnover09",
-	   vColor="employees09/1000*turnover09")
+	   vColor="employees09*0.001",
+	   type="dens")
 
 tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09",
-	   vColor="turnover09/employees09")
+	   vColor="turnover09",
+	   type="dens")
 
 # linked treemaps: objects are linked by color over different treemaps
 tmPlot(sbsData[sbsData$section=="Manufacturing",],
 	   index="subsection",
-	   vSize="income09+employees09+expenditures09+salaries09",
-	   vColor="")
+	   vSize=c("income09", "employees09", "expenditures09", "salaries09"),
+	   vColor="",
+	   type="linked")
 
 # value treemap (aka Map of the Market)
 sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
@@ -54,7 +60,8 @@ tmPlot(sbsData,
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
-	   vColor="employees08", 
+	   vColor="employees08",
+	   type="comp",
 	   fontsize.labels=12, 
 	   lowerbound.cex.labels=1)
 
@@ -63,6 +70,7 @@ tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="employees08", 
+	   type="comp",
 	   fontsize.labels=12, 
 	   lowerbound.cex.labels=.6)
 
@@ -71,6 +79,7 @@ tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="employees08", 
+	   type="comp",
 	   fontsize.labels=10, 
 	   lowerbound.cex.labels=1, 
 	   inflate.labels = TRUE)
@@ -80,6 +89,7 @@ tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="employees08", 
+	   type="comp",
 	   fontsize.labels=10, 
 	   lowerbound.cex.labels=1, 
 	   force.print.labels=TRUE)

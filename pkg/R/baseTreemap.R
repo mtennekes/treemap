@@ -66,16 +66,19 @@ function(dat,
 	
 	#determine depth
 	depth <- sum(substr(colnames(dat),1,5)=="index")
-
+#browser()
 	dats <- list()
 
-	datV <- data.frame(value=numeric(0), value2=numeric(0))
+	datV <- data.table(value=numeric(0), value2=numeric(0))
 	for (i in 1:depth) {
 		indexList <- paste("index", 1:i, sep="")
 		value <- NULL; rm(value)
 		value2 <- NULL; rm(value2)
 		sortInd <- NULL; rm(sortInd)
-		dats_i <- ddply(dat, indexList, colwise(sum, .(value, value2, sortInd)))
+		#dats_i <- ddply(dat, indexList, colwise(sum, .(value, value2, sortInd)))
+
+		dats_i <- dat[, lapply(.SD[, list(value, value2, sortInd)], sum), by=indexList]
+		#setkeyv(dats_i, indexList)
 		
 		## remove rectangles of size 0
 		dats_i <- dats_i[dats_i$value>0, ]
@@ -88,11 +91,9 @@ function(dat,
 		dats_i$clevel <- i
 		dats_i <- dats_i[order(dats_i$sortInd),]
 		
-		datV <- rbind(datV, dats_i[c("value", "value2", "index1")])
+		datV <- rbind(datV, dats_i[, list(value, value2)])
 		dats[[i]] <- dats_i
 	}
-	
-
 	
 	
 	# Show legenda and determine colors
@@ -142,7 +143,7 @@ function(dat,
 	datL1 <- cumsum(c(1, datL[-depth]))
 	datL2 <- (datL1 + datL) - 1
 	for (i in 1:depth) {
-		dats[[i]]$color <- datV[datL1[i]:datL2[i],"color"]
+		dats[[i]]$color <- datV[datL1[i]:datL2[i], color]
 	}
 	
 	
@@ -153,11 +154,11 @@ function(dat,
 	grid.rect(name="TMrect")
 		
 	# Determine window size
-	dataRec <- list(X0=0,Y0=0,
+	dataRec <- data.table(X0=0,Y0=0,
 		W=convertWidth(unit(1, "grobwidth", "TMrect"),"inches",valueOnly=TRUE),
 		H=convertHeight(unit(1, "grobheight", "TMrect"),"inches",valueOnly=TRUE))
 
-	recList <- data.frame(ind=character(0), 
+	recList <- data.table(ind=character(0), 
 						  clevel=numeric(0),
 						  color=character(0),
 						  x0=numeric(0),
@@ -165,32 +166,43 @@ function(dat,
 						  w=numeric(0),
 						   h=numeric(0))
 
-	dats[[1]] <- cbind(dats[[1]], dataRec)	
+	
+	dats[[1]] <- cbind(dats[[1]], dataRec[rep(1,nrow(dats[[1]]))])	
 	for (i in 1:depth) {
 		dats_i <- dats[[i]]
 		if (i==1) {
-			rec <- dats_i[1, c("X0", "Y0", "W", "H")]
+			rec <- unclass(dats_i[1, list(X0, Y0, W, H)])
 			recDat <- pivotSize(dats_i, rec)
-			dats_i <- merge(dats_i, recDat, by.x="index1", by.y="ind")
+			recDat$ind <- factor(recDat$ind, labels=levels(dats_i$index1))
+			setkeyv(dats_i, "index1")
+			setkeyv(recDat, "ind")
+			dats_i <- cbind(dats_i, recDat[, list(x0, y0, w, h)])
 		} else {
 			indexList <- paste("index", 1:(i-1), sep="")
 			indexList2 <- paste("index", 1:i, sep="")
-			dats_i <- merge(dats_i, dats[[i-1]][
-				c(indexList, "x0", "y0", "w", "h")], by=indexList, all.x=TRUE)
-			names(dats_i)[(-3:-0)+ncol(dats_i)] <- c("X0", "Y0", "W", "H")
-			res <- ddply(dats_i, indexList, function(x){
-				rec <- x[1, c("X0", "Y0", "W", "H")]
+
+			setkeyv(dats_i, indexList2)
+			
+			dats_i <- dats_i[dats[[i-1]][,
+				c(indexList, "x0", "y0", "w", "h"), with=FALSE]]
+			
+			setnames(dats_i, c("x0", "y0", "w", "h"), c("X0", "Y0", "W", "H"))
+			res <- as.data.table(ddply(dats_i, indexList, function(x){
+				rec <- unclass(x[1, list(X0, Y0, W, H)])
 				x$index <- x[[paste("index", i, sep="")]]
-				pivotSize(x, rec)
-			})
-			names(res)[names(res)=="ind"] <- paste("index", i, sep="")
-			dats_i <- merge(dats_i, res, by=indexList2)
+				recDat <- pivotSize(x, rec)
+				recDat$ind <- factor(recDat$ind, levels=1:nlevels(x$index), labels=levels(x$index))
+				setkeyv(recDat, "ind")			
+			}))
+			setnames(res, "ind", paste("index", i, sep=""))
+			setkeyv(res, indexList2)
+			dats_i <- cbind(dats_i, res[, list(x0, y0, w, h)])
 		}
 		
 		dats[[i]] <- dats_i
-		names(dats_i)[names(dats_i)==paste("index", i, sep="")] <- "ind"
-		recList <- rbind(recList, dats_i[
-			c("ind", "clevel", "color", "x0", "y0", "w", "h")])
+		setnames(dats_i, names(dats_i)[names(dats_i)==paste("index", i, sep="")], "ind")
+		recList <- rbind(recList, dats_i[,
+			list(ind, clevel, color, x0, y0, w, h)])
 	}
 	
 

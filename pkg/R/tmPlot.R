@@ -31,8 +31,9 @@
 #' @param fontsize.labels font size of the data labeling
 #' @param fontsize.legend (maximum) font size of the legend
 #' @param lowerbound.cex.labels number between 0 and 1 that indicates the minimum fontsize of the data labels: 0 means draw all data labels, and 1 means only draw data labels if they fit at font size \code{fontsize.data}
-#' @param inflate.labels boolean that determines whether data labels are inflated inside the rectangles
-#' @param force.print.labels boolean that determines whether data labels are being forced to be printed (also when they don't fit)
+#' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles
+#' @param force.print.labels logical that determines whether data labels are being forced to be printed (also when they don't fit)
+#' @param na.rm logical that determines whether missing values are omitted during aggregation
 #' @return A list is silently returned:
 #'	\item{tm}{List with for each treemap a \code{data.frame} containing information about the rectangles}
 #'	\item{nRow}{Number of rows in the treemap grid}
@@ -65,8 +66,8 @@ function(dtf,
 	if (!exists("dtf")) stop("Dataframe <dtf> not defined")
 	if (!exists("index")) stop("Attribute <index> not defined")
 	if (!exists("vSize")) stop("Attribute <vSize> not defined")
-	if (class(dtf)!="data.frame") stop("Object <dtf> is not a data.frame")
-	if (any(!index %in% names(dtf))) stop("<index> is not a column name of <dtf>")
+	if (!inherits(dtf, "data.frame")) stop("Object <dtf> is not a data.frame")
+	if (any(!index %in% names(dtf))) stop("<index> contains invalid column names")
 
 
 	#############
@@ -114,7 +115,7 @@ function(dtf,
 	n <- length(vSize)
 	
 	## Checks if all vSizes are valid
-	if (!all(vSize %in% names(dtf))) stop(paste(vSize," contains invalid column names", sep=""))
+	if (!all(vSize %in% names(dtf))) stop("vSize contains invalid column names")
 	classes <- sapply(dtf[, vSize, drop=FALSE],
 					  FUN=function(x)class(x)[1])
 	if (!all(classes %in% c("numeric", "integer")))
@@ -234,12 +235,20 @@ function(dtf,
 	## Aggregate
 	###########
 	vars <- unique(c(vSize, vColor))
-	dat <- ddply(dtf, index, colwise(sum, vars), na.rm=na.rm)
+	
+	dtfDT <- as.data.table(dtf)
+	setkeyv(dtfDT, index)
+	
+	dat <- dtfDT[ , lapply(.SD[, vars, with=FALSE], sum, na.rm=na.rm), by=index]
+	
+	#dat <- ddply(dtf, index, colwise(sum, vars), na.rm=na.rm)
+	
 	depth <- length(index)
 	indexList <- paste("index", 1:depth, sep="")
-	names(dat)[1:depth] <- indexList
+	
+	setnames(dat, 1:depth, indexList)
 
-	minima <- sapply(dat[, -(1:depth), drop=FALSE], min)
+	minima <- sapply(dat[, -(1:depth), with=FALSE], min)
 	if (any(is.na(minima)))
 		stop(paste("Column(s) ",
 				   paste(names(minima)[is.na(minima)],
@@ -263,9 +272,10 @@ collapse=", "), " contain missing values.", sep=""))
 	iRow<-1
 	tm<-list()
 	for (i in 1:n) {
-		  
-		dat_i <- subset(dat, select=c(vSize[i], vColor[i], sortID[i], indexList))
-		names(dat_i) <- c("value", "value2", "sortInd", indexList)
+		
+		dat_i <- subset(dat, select=c(vSize[i], vColor[i], indexList))
+		dat_i$sortInd <- dat[[sortID[i]]]
+		setnames(dat_i, 1:2, c("value", "value2"))
 
 		if (!ascending[i]) {
 			dat_i[["sortInd"]] <- -dat_i[["sortInd"]]

@@ -12,12 +12,11 @@ tmPlot(sbsData,
 load("ps0607_final.Rdata")
 
 
-tmPlot(ps07final, index=c("sector", "subsector"), vSize="value_added", vColor="")
+tmPlot(ps07final, index=c("sector", "subsector"), vSize="value_added", vColor="", type="fixed")
 
-tmPlot(ps07final, index=c("sector", "subsector"), vSize="employees", vColor="turnover/employees")
+tmPlot(ps07final, index=c("sector", "subsector"), vSize="employees", vColor="turnover")
 
-
-tmPlot(ps07final, index=c("sector", "subsector", "subsubsector"), vSize=c("employees", "value_added"), vColor=c("turnover", "purchases"), type="dens", na.rm=TRUE)
+tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), vSize=c("employees", "turnover"), vColor=c("turnover", "employees"), type="dens", na.rm=TRUE)
 
 tmPlot(ps07final, index=c("sector", "subsector"), 
 	   vSize=c("employees", "turnover"), 

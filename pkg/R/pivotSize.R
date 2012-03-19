@@ -1,7 +1,7 @@
 pivotSize <-
 function(dat, rec){
-	names(rec)=c("X0","Y0", "W", "H")
 	# determine whether layout is horizontal or vertical
+#browser()
 	if (rec$W<rec$H) {
 		flip <- TRUE
 		tmp <- rec$H
@@ -16,7 +16,7 @@ function(dat, rec){
 	maxI <- which(dat$value==maxV)[1]
 
 	if (maxI==1) {
-		list1 <- data.frame(index=integer(0),value=numeric(0))
+		list1 <- data.table(index=integer(0),value=numeric(0))
 	} else {
 		list1 <- dat[1:(maxI-1),]  	
 	}
@@ -27,16 +27,16 @@ function(dat, rec){
 		bestRatio <- 1000
 		bestwT <- 0
 		besthT <- 0
-		bestL2 <- data.frame(index=integer(0),value=numeric(0))
-		bestL3 <- data.frame(index=integer(0),value=numeric(0))
+		bestL2 <- data.table(index=integer(0),value=numeric(0))
+		bestL3 <- data.table(index=integer(0),value=numeric(0))
 		for (i in 1:(nrow(list23)+1)) {
 			if (i==1) {
-				list2T <- data.frame(index=integer(0),value=numeric(0))
+				list2T <- data.table(index=integer(0),value=numeric(0))
 			} else {
 				list2T <- list23[1:(i-1),]  	
 			}
 			if (i>nrow(list23)) {
-				list3T <- data.frame(index=integer(0),value=numeric(0))
+				list3T <- data.table(index=integer(0),value=numeric(0))
 			} else {
 				list3T <- list23[i:nrow(list23),]
 			}
@@ -58,49 +58,70 @@ function(dat, rec){
 	} else {
 		w <- rec$W-x0+rec$X0
 		h <- rec$H
-		list2 <- data.frame(index=integer(0),value=numeric(0))
-		list3 <- data.frame(index=integer(0),value=numeric(0))
+		list2 <- data.table(index=integer(0),value=numeric(0))
+		list3 <- data.table(index=integer(0),value=numeric(0))
 	}
 	y0 <- rec$Y0+rec$H-h
 	
-	recList <- data.frame(ind=integer(0), x0=numeric(0), y0=numeric(0), w=numeric(0), h=numeric(0))
+	recList <- data.table(ind=integer(0), x0=numeric(0), y0=numeric(0), w=numeric(0), h=numeric(0))
 	
 	if (flip) {
-		recList <- rbind(recList,data.frame(ind=dat[maxI,]$index,x0=rec$X0,y0=rec$Y0+rec$W-x0+rec$X0-w,w=h,h=w))
+		recList <- rbind(recList,data.table(ind=dat[maxI,]$index,x0=rec$X0,y0=rec$Y0+rec$W-x0+rec$X0-w,w=h,h=w))
 	} else {
-		recList <- rbind(recList,data.frame(ind=dat[maxI,]$index,x0=x0,y0=y0,w=w,h=h))
+		recList <- rbind(recList,data.table(ind=dat[maxI,]$index,x0=x0,y0=y0,w=w,h=h))
 	}
 	
 	if (nrow(list1)>0) {
 		if (flip) {
-			recList1 <- pivotSize(list1, list(rec$X0,rec$Y0+rec$W-x0+rec$X0,rec$H,x0-rec$X0))
+			recList1 <- pivotSize(list1,
+								  list(X0=rec$X0,
+								  	 Y0=rec$Y0+rec$W-x0+rec$X0,
+								  	 W=rec$H,
+								  	 H=x0-rec$X0))
 		} else {
-			recList1 <- pivotSize(list1, list(rec$X0,rec$Y0,x0-rec$X0,rec$H))
+			recList1 <- pivotSize(list1,
+								  list(X0=rec$X0,
+								  	 Y0=rec$Y0,
+								  	 W=x0-rec$X0,
+								  	 H=rec$H))
 		}
 	} else {
-		recList1 <- data.frame(ind=integer(0), x0=numeric(0), y0=numeric(0), w=numeric(0), h=numeric(0))
+		recList1 <- data.table(ind=integer(0), x0=numeric(0), y0=numeric(0), w=numeric(0), h=numeric(0))
 	}
 	recList <- rbind(recList,recList1)
 
 	if (nrow(list2)>0) {
 		if (flip) {
-			recList2 <- pivotSize(list2, list(rec$X0+h, rec$Y0+rec$W-x0+rec$X0-w,rec$H-h,w)) 	
+			recList2 <- pivotSize(list2, 
+								  list(X0=rec$X0+h,
+								  	 Y0=rec$Y0+rec$W-
+								  	 	x0+rec$X0-w,
+								  	 W=rec$H-h,
+								  	 H=w)) 	
 		} else {
-			recList2 <- pivotSize(list2, list(x0,rec$Y0,w,rec$H-h)) 	
+			recList2 <- pivotSize(list2, list(X0=x0,Y0=rec$Y0,W=w,H=rec$H-h)) 	
 		}
 	} else {
-		recList2 <- data.frame(ind=integer(0), x0=numeric(0), y0=numeric(0), w=numeric(0), h=numeric(0))
+		recList2 <- data.table(ind=integer(0), x0=numeric(0), y0=numeric(0), w=numeric(0), h=numeric(0))
 	}
 	recList <- rbind(recList,recList2)
 
 	if (nrow(list3)>0) {
 		if (flip) {
-			recList3 <- pivotSize(list3, list(rec$X0,rec$Y0,rec$H,rec$W-(x0-rec$X0)-w)) 	
+			recList3 <- pivotSize(list3,
+								  list(X0=rec$X0,
+								  	 Y0=rec$Y0,
+								  	 W=rec$H,
+								  	 H=rec$W-(x0-rec$X0)-w)) 	
 		} else {
-			recList3 <- pivotSize(list3, list(x0+w,rec$Y0,rec$W-(x0-rec$X0)-w,rec$H)) 	
+			recList3 <- pivotSize(list3,
+								  list(X0=x0+w,
+								  	 Y0=rec$Y0,
+								  	 W=rec$W-(x0-rec$X0)-w,
+								  	 H=rec$H)) 	
 		}
 	} else {
-		recList3 <- data.frame(ind=integer(0), x0=numeric(0), y0=numeric(0), w=numeric(0), h=numeric(0))
+		recList3 <- data.table(ind=integer(0), x0=numeric(0), y0=numeric(0), w=numeric(0), h=numeric(0))
 	}
 	recList <- rbind(recList,recList3)
 	
