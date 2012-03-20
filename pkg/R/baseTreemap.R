@@ -175,9 +175,26 @@ function(dat,
 
 	
 	dats[[1]] <- cbind(dats[[1]], dataRec[rep(1,nrow(dats[[1]]))])	
+	x0 <- NULL; rm(X0); #trick R CMD check
+	y0 <- NULL; rm(Y0); #trick R CMD check
+	w <- NULL; rm(W); #trick R CMD check
+	h <- NULL; rm(H); #trick R CMD check
+
+	X0 <- NULL; rm(X0); #trick R CMD check
+	Y0 <- NULL; rm(Y0); #trick R CMD check
+	W <- NULL; rm(W); #trick R CMD check
+	H <- NULL; rm(H); #trick R CMD check
+	
+	.SD <- NULL; rm(X0); #trick R CMD check
+	level <- NULL; rm(level); #trick R CMD check
+	color <- NULL; rm(color); #trick R CMD check
+	ind <- NULL; rm(ind); #trick R CMD check
+	clevel <- NULL; rm(clevel); #trick R CMD check
+	
 	for (i in 1:depth) {
 		dats_i <- dats[[i]]
 		if (i==1) {
+			
 			rec <- unlist(dats_i[1, list(X0, Y0, W, H)])
 			value<-dats_i$value
 			names(value) <- dats_i$index1

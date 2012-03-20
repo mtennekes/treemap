@@ -30,13 +30,20 @@ tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09",
 	   vColor="turnover09",
-	   type="index")
+	   type="dens")
 
 # linked treemaps: objects are linked by color over different treemaps
 tmPlot(sbsData[sbsData$section=="Manufacturing",],
 	   index="subsection",
 	   vSize=c("income09", "employees09", "expenditures09", "salaries09"),
 	   type="linked")
+
+# index treemap: each aggregation index has distinct color
+tmPlot(sbsData,
+	   index=c("section", "subsection"), 
+	   vSize="employees09",
+	   type="index")
+
 
 # value treemap (aka Map of the Market)
 sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08

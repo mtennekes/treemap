@@ -1,30 +1,22 @@
-#' User-friendly treemap function
+#' Create treemap
 #'
-#' User-friendly treemap function
+#' Create treemap
 #'
-#' For the argument \code{vColor}, use the following formula syntax:
-#'		\itemize{
-#'		\item one treemap
-#'			\itemize{
-#'			\item \code{vSize = <variable name>}
-#'			\item \code{vColor = <scale>*<variable name>} 
-#'          The second part (starting with /) is optional. This part is useful for density treemaps.}
-#'		\item multiple treemaps: formulas are seperated with +}
-#' 
-#' @param dtf a data.frame (required).
-#' @param index	character vector containing the column names in \code{dtf} that contain the aggregation indices (required). 
-#' @param vSize character vector of variable names (one for each treemap) that determine the sizes (required).
-#' @param vColor character vector of variable names (one for each treemap) that determine the colors. For details about the syntax see below.
-#' @param sortID character vector of variable names (one for each treemap) that determine the sorting order of the rectangles (from top left to bottom right). Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left.
+#' @param dtf a data.frame. Required.
+#' @param index	vector containing the column names in \code{dtf} that contain the aggregation indices. Required.
+#' @param vSize name of the variable that determines the sizes of the rectangles. For small multiples, a vector of variable names (one for each treemap) should be given.  Required.
+#' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. For small multiples, a vector of variable names (one for each treemap) should be given.
+#' @param sortID name of the variable that determines the sorting order of the rectangles (from top left to bottom right). Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left. For small multiples, a vector of variable names (one for each treemap) should be given. See details below. For the placements of rectangles, the ordered treemap algorithm from Bederson, B., Shneiderman, B., Wattenberg, M. (2002) is used.
 #' @param type the type of the treemap:
 #' \describe{
 #'		\item{\code{comp}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable (in percentages)}
-#'		\item{\code{dens}:}{colors indicate density (like a population density map): \code{vColor} should be defined as something (e.g.\ population) per unit of \code{vSize} (e.g.\ area size)}
+#'		\item{\code{dens}:}{colors indicate density (E.g. a population density map: \code{vSize} is area size, \code{vColor} is population, and the colors are computed as densities (population per squared km's)). \code{vColor} can specified as "colName*scale factor" (see example below).}
 #'		\item{\code{perc}:}{the \code{vColor} variable should consist of percentages between 0 and 100.}
 #'		\item{\code{linked}:}{objects are linked by color over different treemaps}
+#'		\item{\code{index}:}{each aggregation index has distinct color}
 #'		\item{\code{value}:}{the \code{vColor}-variable is directly mapped to a color palette (by default Brewer's diverging color palette "RdYlGn").}}
-#' @param titles A character vector containing the title(s) of the treemap(s). Use this for describing the sizes of the rectangles.
-#' @param subtitles A character vector containing the subtitle(s) of the treemap(s). Use this for describing the colors of the rectangles.
+#' @param title Title of the treemap. For small multiples, a vector of titles should be given. Titles are used to describe the sizes of the rectangles.
+#' @param subtitle Subtitle of the treemap. For small multiples, a vector of subtitles should be given. Subtitles are used to describe the colors of the rectangles.
 #' @param palette Either a color palette or a name of a Brewer palette (see \code{display.brewer.all()}).
 #' @param vColorRange Range of the color variable values that is mapped to \code{palette}. Only applicable for \code{type=="value"}.
 #' @param fontsize.title (maximum) font size of the title
@@ -39,6 +31,10 @@
 #'	\item{nRow}{Number of rows in the treemap grid}
 #'	\item{nCol}{Number of rows in the treemap grid}
 #'	This list can be used to locate a mouse click (see \code{\link{tmLocate}}).
+#' @references
+#' Bederson, B., Shneiderman, B., Wattenberg, M. (2002)
+#' Ordered and Quantum Treemaps: Making Effective Use of 2D Space to Display 
+#' Hierarchies. ACM Transactions on Graphics, 21(4): 833-854.
 #' @example ../examples/tmPlot.R
 #' @export
 tmPlot <-
@@ -48,8 +44,8 @@ function(dtf,
 	vColor=NULL, 
 	sortID="-size",
 	type="value",
-	titles=NA,
-	subtitles=NA,
+	title=NA,
+	subtitle=NA,
 	palette=NA,
 	vColorRange=NA,
 	fontsize.title=14, 
@@ -123,22 +119,22 @@ function(dtf,
 	
 	
 	## Checks if titles and subtitles have length n
-	if (!is.na(titles[1]) && length(titles) != n) {
+	if (!is.na(title[1]) && length(title) != n) {
 		warning(paste("Number of titles should be ", n, 
 					  ". Titles will be ignored.", sep=""))
-		titles <- NA}
-	if (!is.na(subtitles[1]) && length(subtitles) != n) {
+		title <- NA}
+	if (!is.na(subtitle[1]) && length(subtitle) != n) {
 		warning(paste("Number of subtitles should be ", n, 
 					  ". Subtitles will be ignored.", sep=""))
-		titles <- NA}
+		title <- NA}
 		
 	## Determine titles
-	if (is.na(titles[1])) {	
+	if (is.na(title[1])) {	
 		options(warn=-1) 
 		vSizeNames <- mapply(FUN="formatTitle", vSize)
 		options(warn=0) 
 	} else {
-		vSizeNames <- as.character(titles)
+		vSizeNames <- as.character(title)
 	}
 	
 	vColorMplySplit <- function(vColor) {
@@ -219,7 +215,7 @@ function(dtf,
 	legenda <- (type!="linked" && type!="index")
 	
 	## Determine subtitles
-	if (is.na(subtitles)) {	
+	if (is.na(subtitle)) {	
 		options(warn=-1) 
 		if (!is.null(vColor)) {
 			if (type=="dens") 
@@ -229,7 +225,7 @@ function(dtf,
 		} else vColorNames <- rep("",n)
 		options(warn=0) 
 	} else {
-		vColorNames <- as.character(subtitles)
+		vColorNames <- as.character(subtitle)
 	}
 	
 	
@@ -241,6 +237,7 @@ function(dtf,
 	dtfDT <- as.data.table(dtf)
 	setkeyv(dtfDT, index)
 	
+	.SD <- NULL; rm(.SD); #trick R CMD check
 	dat <- dtfDT[ , lapply(.SD[, vars, with=FALSE], sum, na.rm=na.rm), by=index]
 	
 	#dat <- ddply(dtf, index, colwise(sum, vars), na.rm=na.rm)
@@ -255,9 +252,10 @@ function(dtf,
 		stop(paste("Column(s) ",
 				   paste(names(minima)[is.na(minima)],
 collapse=", "), " contain missing values.", sep=""))
-	if (min(minima) < 0)
+	
+	if (min(minima[vSize]) < 0)
 		stop(paste("Column(s) ",
-				   paste(names(minima)[minima<0], collapse=", "),
+				   paste(names(minima[vSize])[minima[vSize]<0], collapse=", "),
 				   " contain negative values.", 
 				   sep=""))
 

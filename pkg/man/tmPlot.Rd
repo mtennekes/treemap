@@ -1,58 +1,69 @@
 \name{tmPlot}
 \alias{tmPlot}
-\title{User-friendly treemap function}
+\title{Create treemap}
 \usage{
   tmPlot(dtf, index, vSize, vColor = NULL,
-    sortID = "-size", type = "value", titles = NA,
-    subtitles = NA, palette = NA, vColorRange = NA,
+    sortID = "-size", type = "value", title = NA,
+    subtitle = NA, palette = NA, vColorRange = NA,
     fontsize.title = 14, fontsize.labels = 11,
     fontsize.legend = 12, lowerbound.cex.labels = 0.4,
     inflate.labels = FALSE, force.print.labels = FALSE,
     na.rm = FALSE)
 }
 \arguments{
-  \item{dtf}{a data.frame (required).}
+  \item{dtf}{a data.frame. Required.}
 
-  \item{index}{character vector containing the column names
-  in \code{dtf} that contain the aggregation indices
-  (required).}
+  \item{index}{vector containing the column names in
+  \code{dtf} that contain the aggregation indices.
+  Required.}
 
-  \item{vSize}{character vector of variable names (one for
-  each treemap) that determine the sizes (required).}
+  \item{vSize}{name of the variable that determines the
+  sizes of the rectangles. For small multiples, a vector of
+  variable names (one for each treemap) should be given.
+  Required.}
 
-  \item{vColor}{character vector of variable names (one for
-  each treemap) that determine the colors. For details
-  about the syntax see below.}
+  \item{vColor}{name of the variable that, in combination
+  with \code{type}, determines the colors of the
+  rectangles. For small multiples, a vector of variable
+  names (one for each treemap) should be given.}
 
-  \item{sortID}{character vector of variable names (one for
-  each treemap) that determine the sorting order of the
-  rectangles (from top left to bottom right). Also the
-  values "size" and "color" can be used. To inverse the
-  sorting order, use "-" in the prefix. By default, large
-  rectangles are placed top left.}
+  \item{sortID}{name of the variable that determines the
+  sorting order of the rectangles (from top left to bottom
+  right). Also the values "size" and "color" can be used.
+  To inverse the sorting order, use "-" in the prefix. By
+  default, large rectangles are placed top left. For small
+  multiples, a vector of variable names (one for each
+  treemap) should be given. See details below. For the
+  placements of rectangles, the ordered treemap algorithm
+  from Bederson, B., Shneiderman, B., Wattenberg, M. (2002)
+  is used.}
 
   \item{type}{the type of the treemap: \describe{
   \item{\code{comp}:}{colors indicate change of the
   \code{vSize}-variable with respect to the
   \code{vColor}-variable (in percentages)}
-  \item{\code{dens}:}{colors indicate density (like a
-  population density map): \code{vColor} should be defined
-  as something (e.g.\ population) per unit of \code{vSize}
-  (e.g.\ area size)} \item{\code{perc}:}{the \code{vColor}
-  variable should consist of percentages between 0 and
-  100.} \item{\code{linked}:}{objects are linked by color
-  over different treemaps} \item{\code{value}:}{the
-  \code{vColor}-variable is directly mapped to a color
-  palette (by default Brewer's diverging color palette
-  "RdYlGn").}}}
+  \item{\code{dens}:}{colors indicate density (E.g. a
+  population density map: \code{vSize} is area size,
+  \code{vColor} is population, and the colors are computed
+  as densities (population per squared km's)).
+  \code{vColor} can specified as "colName*scale factor"
+  (see example below).} \item{\code{perc}:}{the
+  \code{vColor} variable should consist of percentages
+  between 0 and 100.} \item{\code{linked}:}{objects are
+  linked by color over different treemaps}
+  \item{\code{index}:}{each aggregation index has distinct
+  color} \item{\code{value}:}{the \code{vColor}-variable is
+  directly mapped to a color palette (by default Brewer's
+  diverging color palette "RdYlGn").}}}
 
-  \item{titles}{A character vector containing the title(s)
-  of the treemap(s). Use this for describing the sizes of
-  the rectangles.}
+  \item{title}{Title of the treemap. For small multiples, a
+  vector of titles should be given. Titles are used to
+  describe the sizes of the rectangles.}
 
-  \item{subtitles}{A character vector containing the
-  subtitle(s) of the treemap(s). Use this for describing
-  the colors of the rectangles.}
+  \item{subtitle}{Subtitle of the treemap. For small
+  multiples, a vector of subtitles should be given.
+  Subtitles are used to describe the colors of the
+  rectangles.}
 
   \item{palette}{Either a color palette or a name of a
   Brewer palette (see \code{display.brewer.all()}).}
@@ -91,16 +102,7 @@
   \code{\link{tmLocate}}).
 }
 \description{
-  User-friendly treemap function
-}
-\details{
-  For the argument \code{vColor}, use the following formula
-  syntax: \itemize{ \item one treemap \itemize{ \item
-  \code{vSize = <variable name>} \item \code{vColor =
-  <scale>*<variable name>} The second part (starting with
-  /) is optional. This part is useful for density
-  treemaps.} \item multiple treemaps: formulas are
-  seperated with +}
+  Create treemap
 }
 \examples{
 
@@ -117,24 +119,18 @@ tmPlot(sbsData,
 	   vColor="employees08",
 	   type="comp")
 
-tmPlot(sbsData, 
-	   index=c("section"), 
-	   vSize="employees09", 
-	   vColor="employees08",
-	   type="comp")
-
 # four comparisson treemaps
 tmPlot(sbsData, 
-	   index="section", 
-	   vSize=c("employees09", "value added09", "urnover09", "salaries09", 
-	   vColor=c("employees08", "value added08", "turnover08", "salaries08",
+	   index=c("section", "subsection"), 
+	   vSize=c("employees09", "value added09", "turnover09", "salaries09"), 
+	   vColor=c("employees08", "value added08", "turnover08", "salaries08"),
 	   type="comp")
 
 # density treemaps: colors indicate density (like a population density map)
 tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="turnover09",
-	   vColor="0.001*employees09",
+	   vColor="employees09*0.001",
 	   type="dens")
 
 tmPlot(sbsData,
@@ -146,9 +142,15 @@ tmPlot(sbsData,
 # linked treemaps: objects are linked by color over different treemaps
 tmPlot(sbsData[sbsData$section=="Manufacturing",],
 	   index="subsection",
-	   vSize="income09", "employees09", "expenditures09", "salaries09",
-	   vColor="",
+	   vSize=c("income09", "employees09", "expenditures09", "salaries09"),
 	   type="linked")
+
+# index treemap: each aggregation index has distinct color
+tmPlot(sbsData,
+	   index=c("section", "subsection"), 
+	   vSize="employees09",
+	   type="index")
+
 
 # value treemap (aka Map of the Market)
 sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
@@ -218,5 +220,11 @@ tmPlot(sbsData,
 	   type="value", 
 	   palette="RdBu", 
 	   vColorRange=c(-20000,20000))
+}
+\references{
+  Bederson, B., Shneiderman, B., Wattenberg, M. (2002)
+  Ordered and Quantum Treemaps: Making Effective Use of 2D
+  Space to Display Hierarchies. ACM Transactions on
+  Graphics, 21(4): 833-854.
 }
 

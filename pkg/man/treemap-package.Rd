@@ -5,9 +5,8 @@
 \title{Treemap visualization}
 \description{
   \tabular{ll}{ Package: \tab treemap\cr Type: \tab
-  Package\cr Version: \tab 0.11-1\cr Date: \tab
-  2012-03-01\cr License: \tab GPL-3\cr LazyLoad: \tab
-  yes\cr }
+  Package\cr Version: \tab 1.0\cr Date: \tab 2012-03-20\cr
+  License: \tab GPL-3\cr LazyLoad: \tab yes\cr }
 }
 \details{
   Different kind of treemaps can be generated, such as
@@ -36,7 +35,7 @@ tmPlot(sbsData,
 tmPlot(sbsData,
 	   index=c("section", "subsection"),
 	   vSize="turnover09",
-	   vColor="0.001*employees09",
+	   vColor="employees09*0.001",
 	   type="dens")
 
 # value treemap (aka Map of the Market)

@@ -1,8 +1,8 @@
 Package: treemap
 Type: Package
 Title: Treemap visualization
-Version: 0.11-2
-Date: 2012-03-09
+Version: 1.0
+Date: 2012-03-20
 Author: Martijn Tennekes
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
 Description: Different kind of treemaps can be generated, such as comparison
@@ -11,7 +11,9 @@ Description: Different kind of treemaps can be generated, such as comparison
 License: GPL version 3
 LazyLoad: yes
 Depends:
-    grid, RColorBrewer, data.table
+    grid,
+    RColorBrewer,
+    data.table
 Collate:
     'baseTreemap.R'
     'comp2col.R'
