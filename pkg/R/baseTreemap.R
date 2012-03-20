@@ -69,16 +69,13 @@ function(dat,
 #browser()
 	dats <- list()
 
-	datV <- data.table(value=numeric(0), value2=numeric(0))
+	datV <- data.table(value=numeric(0), value2=numeric(0), index=character(0), level=integer(0))
 	for (i in 1:depth) {
 		indexList <- paste("index", 1:i, sep="")
 		value <- NULL; rm(value)
 		value2 <- NULL; rm(value2)
 		sortInd <- NULL; rm(sortInd)
-		#dats_i <- ddply(dat, indexList, colwise(sum, .(value, value2, sortInd)))
-
 		dats_i <- dat[, lapply(.SD[, list(value, value2, sortInd)], sum), by=indexList]
-		#setkeyv(dats_i, indexList)
 		
 		## remove rectangles of size 0
 		dats_i <- dats_i[dats_i$value>0, ]
@@ -89,12 +86,18 @@ function(dat,
 		}
 		
 		dats_i$clevel <- i
+		dats_i$level <- ifelse(is.na(dats_i[[paste("index", i, sep="")]]),
+							   dats[[i-1]][["level"]][match(
+							   	dats_i[[paste("index", i-1, sep="")]],
+							   	dats[[i-1]][[paste("index", i-1, sep="")]]
+							   	)], i)
 		dats_i <- dats_i[order(dats_i$sortInd),]
-		
-		datV <- rbind(datV, dats_i[, list(value, value2)])
+		datV <- rbind(datV, 
+					  dats_i[, list(value, value2,
+					  			  index=dats_i[[paste("index", i, sep="")]], 
+					  			  level)])
 		dats[[i]] <- dats_i
 	}
-	
 	
 	# Show legenda and determine colors
 	if (legenda) {	
@@ -114,6 +117,8 @@ function(dat,
 			palette <- c(brewer.pal(12,"Set3"),
 			brewer.pal(8,"Set2")[c(1:4,7,8)],
 			brewer.pal(9,"Pastel1")[c(1,2,4,5)])
+		} else if (type == "index") {
+			palette <- brewer.pal(8,"Set2")
 		} else if (type == "value") {
 			palette <- brewer.pal(11,"RdYlGn")
 		}
@@ -122,7 +127,7 @@ function(dat,
 			palette <- brewer.pal(brewer.pal.info[palette, "maxcolors"], palette)
 		}
 	}
-	
+
 	if (type == "comp") {
 		datV$color <- comp2col(datV, legenda, palette)
 	} else if (type == "perc") {
@@ -131,6 +136,8 @@ function(dat,
 		datV$color <- dens2col(datV, legenda, palette) 
 	} else if (type == "linked") {
 		datV$color <- fixed2col(datV, palette)
+	} else if (type == "index") {
+		datV$color <- index2col(datV, palette)
 	} else if (type == "value") {
 		datV$color <- value2col(datV, legenda, palette, vColorRange)
 	}
@@ -171,9 +178,14 @@ function(dat,
 	for (i in 1:depth) {
 		dats_i <- dats[[i]]
 		if (i==1) {
-			rec <- unclass(dats_i[1, list(X0, Y0, W, H)])
-			recDat <- pivotSize(dats_i, rec)
-			recDat$ind <- factor(recDat$ind, labels=levels(dats_i$index1))
+			rec <- unlist(dats_i[1, list(X0, Y0, W, H)])
+			value<-dats_i$value
+			names(value) <- dats_i$index1
+			
+			recDat <- pivotSize(value, rec)
+			recNames <- row.names(recDat)
+			recDat <- as.data.table(recDat)
+			recDat$ind <- factor(recNames, levels=levels(dats_i$index1))
 			setkeyv(dats_i, "index1")
 			setkeyv(recDat, "ind")
 			dats_i <- cbind(dats_i, recDat[, list(x0, y0, w, h)])
@@ -182,25 +194,32 @@ function(dat,
 			indexList2 <- paste("index", 1:i, sep="")
 
 			setkeyv(dats_i, indexList2)
-			
+
 			dats_i <- dats_i[dats[[i-1]][,
 				c(indexList, "x0", "y0", "w", "h"), with=FALSE]]
 			
 			setnames(dats_i, c("x0", "y0", "w", "h"), c("X0", "Y0", "W", "H"))
-			res <- as.data.table(ddply(dats_i, indexList, function(x){
-				rec <- unclass(x[1, list(X0, Y0, W, H)])
+			subTM <- function(x) {
+				rec <- unlist((x[1, list(X0, Y0, W, H)]))
 				x$index <- x[[paste("index", i, sep="")]]
-				recDat <- pivotSize(x, rec)
-				recDat$ind <- factor(recDat$ind, levels=1:nlevels(x$index), labels=levels(x$index))
+				
+				value <- x$value
+				names(value) <- x[[paste("index", i, sep="")]]
+				recDat <- pivotSize(value, rec)
+				recNames <- row.names(recDat)
+				recDat <- as.data.table(recDat)
+				recDat$ind <- factor(recNames, levels=levels(x$index))
 				setkeyv(recDat, "ind")			
-			}))
+			}
+			
+			res <- dats_i[, subTM(.SD), by=indexList]
 			setnames(res, "ind", paste("index", i, sep=""))
 			setkeyv(res, indexList2)
 			dats_i <- cbind(dats_i, res[, list(x0, y0, w, h)])
 		}
 		
 		dats[[i]] <- dats_i
-		setnames(dats_i, names(dats_i)[names(dats_i)==paste("index", i, sep="")], "ind")
+		setnames(dats_i, paste("index", i, sep=""), "ind")
 		recList <- rbind(recList, dats_i[,
 			list(ind, clevel, color, x0, y0, w, h)])
 	}

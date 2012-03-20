@@ -12,12 +12,6 @@ tmPlot(sbsData,
 	   vColor="employees08",
 	   type="comp")
 
-tmPlot(sbsData, 
-	   index=c("section"), 
-	   vSize="employees09", 
-	   vColor="employees08",
-	   type="comp")
-
 # four comparisson treemaps
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
@@ -36,13 +30,12 @@ tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09",
 	   vColor="turnover09",
-	   type="dens")
+	   type="index")
 
 # linked treemaps: objects are linked by color over different treemaps
 tmPlot(sbsData[sbsData$section=="Manufacturing",],
 	   index="subsection",
 	   vSize=c("income09", "employees09", "expenditures09", "salaries09"),
-	   vColor="",
 	   type="linked")
 
 # value treemap (aka Map of the Market)

@@ -164,6 +164,8 @@ function(dtf,
 		## Check is column names in vColor are valid
 		if (!all(vColor %in% names(dtf)))
 					stop("Invalid column name(s) found in vColor.")
+	} else {
+		vColor <- vSize #for convenience
 	}
 	
 	##########
@@ -214,7 +216,7 @@ function(dtf,
 	############
 	## Determine legend
 	############
-	legenda <- (type!="linked")
+	legenda <- (type!="linked" && type!="index")
 	
 	## Determine subtitles
 	if (is.na(subtitles)) {	
@@ -272,10 +274,11 @@ collapse=", "), " contain missing values.", sep=""))
 	iRow<-1
 	tm<-list()
 	for (i in 1:n) {
-		
-		dat_i <- subset(dat, select=c(vSize[i], vColor[i], indexList))
-		dat_i$sortInd <- dat[[sortID[i]]]
-		setnames(dat_i, 1:2, c("value", "value2"))
+		#browser()
+		dat_i <- data.table(value=dat[[vSize[i]]],
+							value2=dat[[vColor[i]]],
+							sortInd=dat[[sortID[i]]])
+		dat_i <- cbind(dat_i, dat[, indexList, with=FALSE])
 
 		if (!ascending[i]) {
 			dat_i[["sortInd"]] <- -dat_i[["sortInd"]]

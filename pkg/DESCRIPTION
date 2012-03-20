@@ -11,7 +11,7 @@ Description: Different kind of treemaps can be generated, such as comparison
 License: GPL version 3
 LazyLoad: yes
 Depends:
-    grid,RColorBrewer,plyr, data.table
+    grid, RColorBrewer, data.table
 Collate:
     'baseTreemap.R'
     'comp2col.R'
@@ -19,6 +19,7 @@ Collate:
     'dens2col.R'
     'fill2col.R'
     'fixed2col.R'
+    'index2col.R'
     'overlap.R'
     'pivotSize.R'
     'pkg.R'
