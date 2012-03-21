@@ -2,9 +2,9 @@
 \alias{tmPlot}
 \title{Create treemap}
 \usage{
-  tmPlot(dtf, index, vSize, vColor = NULL,
-    sortID = "-size", type = "value", title = NA,
-    subtitle = NA, palette = NA, vColorRange = NA,
+  tmPlot(dtf, index, vSize, vColor = NULL, type = "value",
+    title = NA, subtitle = NA, algorithm = "pivotSize",
+    sortID = "-size", palette = NA, vColorRange = NA,
     fontsize.title = 14, fontsize.labels = 11,
     fontsize.legend = 12, lowerbound.cex.labels = 0.4,
     inflate.labels = FALSE, force.print.labels = FALSE,
@@ -24,19 +24,9 @@
 
   \item{vColor}{name of the variable that, in combination
   with \code{type}, determines the colors of the
-  rectangles. For small multiples, a vector of variable
-  names (one for each treemap) should be given.}
-
-  \item{sortID}{name of the variable that determines the
-  sorting order of the rectangles (from top left to bottom
-  right). Also the values "size" and "color" can be used.
-  To inverse the sorting order, use "-" in the prefix. By
-  default, large rectangles are placed top left. For small
-  multiples, a vector of variable names (one for each
-  treemap) should be given. See details below. For the
-  placements of rectangles, the ordered treemap algorithm
-  from Bederson, B., Shneiderman, B., Wattenberg, M. (2002)
-  is used.}
+  rectangles. See \code{type} for more information. For
+  small multiples, a vector of variable names (one for each
+  treemap) should be given.}
 
   \item{type}{the type of the treemap: \describe{
   \item{\code{comp}:}{colors indicate change of the
@@ -46,15 +36,16 @@
   population density map: \code{vSize} is area size,
   \code{vColor} is population, and the colors are computed
   as densities (population per squared km's)).
-  \code{vColor} can specified as "colName*scale factor"
-  (see example below).} \item{\code{perc}:}{the
-  \code{vColor} variable should consist of percentages
-  between 0 and 100.} \item{\code{linked}:}{objects are
-  linked by color over different treemaps}
-  \item{\code{index}:}{each aggregation index has distinct
-  color} \item{\code{value}:}{the \code{vColor}-variable is
-  directly mapped to a color palette (by default Brewer's
-  diverging color palette "RdYlGn").}}}
+  \code{vColor} can specified as "colName*scale factor" or
+  "colName/scale factor" (see example below).}
+  \item{\code{perc}:}{the \code{vColor} variable should
+  consist of percentages between 0 and 100.}
+  \item{\code{linked}:}{objects are linked by color over
+  different treemaps} \item{\code{index}:}{each aggregation
+  index has distinct color} \item{\code{value}:}{the
+  \code{vColor}-variable is directly mapped to a color
+  palette (by default Brewer's diverging color palette
+  "RdYlGn").}}}
 
   \item{title}{Title of the treemap. For small multiples, a
   vector of titles should be given. Titles are used to
@@ -65,8 +56,27 @@
   Subtitles are used to describe the colors of the
   rectangles.}
 
+  \item{algorithm}{name of the used algorithm: "squarified"
+  or "pivotSize". The squarified treemap algorithm (Bruls
+  et al., 2000) produces good aspect ratios, but ignores
+  the sorting order of the rectangles (\code{sortID}). The
+  ordered treemap algorithm, pivot-by-size (Bederson et
+  al., 2002) takes the sroting order (\code{sortID}) into
+  account while aspect ratios are acceptable.}
+
+  \item{sortID}{name of the variable that determines the
+  sorting order of the rectangles (from top left to bottom
+  right). Also the values "size" and "color" can be used.
+  To inverse the sorting order, use "-" in the prefix. By
+  default, large rectangles are placed top left. For small
+  multiples, a vector of variable names (one for each
+  treemap) should be given. Only applicable when
+  \code{algortihm=="pivotSize"}.}
+
   \item{palette}{Either a color palette or a name of a
-  Brewer palette (see \code{display.brewer.all()}).}
+  Brewer palette (see \code{display.brewer.all()}). A
+  Brewer palette can be reversed by prefixing its name with
+  a "-".}
 
   \item{vColorRange}{Range of the color variable values
   that is mapped to \code{palette}. Only applicable for
@@ -225,6 +235,10 @@ tmPlot(sbsData,
   Bederson, B., Shneiderman, B., Wattenberg, M. (2002)
   Ordered and Quantum Treemaps: Making Effective Use of 2D
   Space to Display Hierarchies. ACM Transactions on
-  Graphics, 21(4): 833-854.
+  Graphics, 21(4): 833-854. Bruls, D.M., C. Huizing, J.J.
+  van Wijk. Squarified Treemaps. In: W. de Leeuw, R. van
+  Liere (eds.), Data Visualization 2000, Proceedings of the
+  joint Eurographics and IEEE TCVG Symposium on
+  Visualization, 2000, Springer, Vienna, p. 33-42.
 }
 

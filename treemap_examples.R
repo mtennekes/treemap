@@ -28,11 +28,22 @@ tmPlot(ps07final, index=c("sector", "subsector"), vSize="employees", vColor="tur
 tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), vSize=c("employees", "turnover"), vColor=c("turnover", "employees"), type="dens", na.rm=TRUE, algorithm="squarified")
 
 tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), 
-	   vSize=c("employees", "turnover"), 
-	   vColor=c("turnover", "employees*1000"), type="dens", palette="-BuPu", na.rm=TRUE)
+	   vSize=c("turnover", "turnover"), 
+	   vColor=c("employees", "employees/1000"), type="dens", palette="-RdYlBu", na.rm=TRUE)
 
 
 
 levels(ps07final$subsector)[1] <- "X"
 
 tmPlot(ps07final[ps07final$sector=="Manufacturing", ], index=c("subsector", "subsubsector"), vSize="employees", vColor="turnover/employees")
+
+
+library(portfolio)
+data(dow.jan.2005)
+tmPlot(dow.jan.2005, 
+	   index=c("sector", "symbol"), 
+	   vSize="price", 
+	   vColor="month.ret",
+	   algorithm="squarified",
+	   palette="RdYlBu")
+

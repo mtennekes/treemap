@@ -70,41 +70,24 @@ function(dtf,
 	#############
 	## Internal functions
 	#############
-	formatTitle <- function(x) {
 
-			isnumeric <- function(s) !is.na(as.numeric(s))
-			
-			s <- strsplit(x, " ")[[1]]
-			string <- paste(toupper(substring(s, 1,1)), substring(s, 2),
-			  sep="", collapse=" ")
-
-			if (isnumeric(substring(string,nchar(string)-1,nchar(string)))
-				&&	!isnumeric(
-					substring(string,nchar(string)-2,nchar(string)))) {
-				string <- paste(substring(string,1,nchar(string)-2),
-								" '",substring(string,nchar(string)-1,
-											   nchar(string)),sep="")
-		} else if (isnumeric(substring(string,nchar(string)-3,
-									   nchar(string)))
-				   && !isnumeric(substring(string, nchar(string)-4,
-								 nchar(string)))) {
-			string <- paste(substring(string,1,nchar(string)-4),
-							substring(string,nchar(string)-3,
-									  nchar(string)),sep=" ")
-		}
-		string	
-	}
 	
-	formatColorTitle <- function(x, div=NA, sdiv=NA) {
-		string <- formatTitle(x)
-		if (!is.na(div)) {
-			stringDiv <- formatTitle(div)
-			if (sdiv!=1) {
-				stringDiv<-paste(1/sdiv,stringDiv,sep=" ")
+	formatColorTitle <- function(var, varX=NA, var2=NA, var2X=NA) {
+		if (!is.na(varX)) {
+			if (varX!=1) {
+				var <-paste(varX,var,sep=" * ")
 			}
-			string<-paste(string,"per",stringDiv,sep=" ")
 		}
-		string
+		
+		if (!is.na(var2)) {
+			if (var2X<1) {
+				var2 <-paste(1/var2X,var2,sep=" * ")
+			} else if (var2X>1) {
+				var <-paste(var2X,var,sep=" * ")
+			}
+			var<-paste(var,"per",var2,sep=" ")
+		}
+		var
 	}
 	
 	
@@ -132,7 +115,7 @@ function(dtf,
 	## Determine titles
 	if (is.na(title[1])) {	
 		options(warn=-1) 
-		vSizeNames <- mapply(FUN="formatTitle", vSize)
+		vSizeNames <- vSize
 		options(warn=0) 
 	} else {
 		vSizeNames <- as.character(title)
@@ -153,7 +136,7 @@ function(dtf,
 	
 	## Process formula for color variables
 	if (!is.null(vColor)) {
-		vColor2 <- lapply(FUN="vColorMplySplit", vColor)
+		vColor2 <- lapply(vColor, FUN="vColorMplySplit")
 		vColorX <- as.numeric(sapply(vColor2, function(x)x[2]))
 		if (any(is.na(vColorX))) stop("Invalid vColor.")
 		vColor <- sapply(vColor2, function(x)x[1])
@@ -256,9 +239,9 @@ function(dtf,
 		options(warn=-1) 
 		if (!is.null(vColor)) {
 			if (type=="dens") 
-				vColorNames <- mapply(FUN="formatColorTitle", vColor, vSize, vColorX)
+				vColorNames <- mapply(FUN="formatColorTitle", var=vColor, var2=vSize, var2X=vColorX)
 			else
-				vColorNames <- mapply(FUN="formatColorTitle", vColor)
+				vColorNames <- mapply(FUN="formatColorTitle", var=vColor, varX=vColorX)
 		} else vColorNames <- rep("",n)
 		options(warn=0) 
 	} else {
@@ -297,7 +280,12 @@ collapse=", "), " contain missing values.", sep=""))
 				   " contain negative values.", 
 				   sep=""))
 
-	
+	scaledInd <- which(vColorX!=1)
+	for (i in scaledInd) {
+		colName <- paste(vColor[i], vColorX[i], sep="__")
+		dat[[colName]] <- dat[[vColor[i]]] / vColorX[i]
+		vColor[i] <- colName
+	}
 	
 	############
 	## Plot treemap(s)

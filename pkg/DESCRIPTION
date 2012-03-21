@@ -27,7 +27,7 @@ Collate:
     'pkg.R'
     'sbsData.R'
     'str2rect.R'
-	'squarified.R'
+    'squarified.R'
     'tmClick.R'
     'tmLocate.R'
     'tmPlot.R'
