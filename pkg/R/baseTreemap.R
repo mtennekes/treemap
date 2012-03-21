@@ -1,6 +1,7 @@
 baseTreemap <-
 function(dat,
 	type,
+	algorithm,
 	legenda,
 	sizeTitle, 
 	colorTitle,
@@ -106,28 +107,6 @@ function(dat,
 		pushViewport(vpLeg2)
 	}
 	
-	if (is.na(palette[1])) {
-		if (type == "comp") {
-			palette <- brewer.pal(11,"RdBu")
-		} else if (type == "perc") {
-			palette <- brewer.pal(9,"Blues")
-		} else if (type == "dens") {
-			palette <- brewer.pal(9,"OrRd")
-		} else if (type == "linked") {
-			palette <- c(brewer.pal(12,"Set3"),
-			brewer.pal(8,"Set2")[c(1:4,7,8)],
-			brewer.pal(9,"Pastel1")[c(1,2,4,5)])
-		} else if (type == "index") {
-			palette <- brewer.pal(8,"Set2")
-		} else if (type == "value") {
-			palette <- brewer.pal(11,"RdYlGn")
-		}
-	} else {
-		if ((length(palette)==1) && (palette[1] %in%row.names(brewer.pal.info))) {
-			palette <- brewer.pal(brewer.pal.info[palette, "maxcolors"], palette)
-		}
-	}
-
 	if (type == "comp") {
 		datV$color <- comp2col(datV, legenda, palette)
 	} else if (type == "perc") {
@@ -198,8 +177,8 @@ function(dat,
 			rec <- unlist(dats_i[1, list(X0, Y0, W, H)])
 			value<-dats_i$value
 			names(value) <- dats_i$index1
-			
-			recDat <- pivotSize(value, rec)
+			recDat <- do.call(algorithm, list(value, rec))
+			#recDat <- pivotSize(value, rec)
 			recNames <- row.names(recDat)
 			recDat <- as.data.table(recDat)
 			recDat$ind <- factor(recNames, levels=levels(dats_i$index1))
@@ -222,7 +201,9 @@ function(dat,
 				
 				value <- x$value
 				names(value) <- x[[paste("index", i, sep="")]]
-				recDat <- pivotSize(value, rec)
+				
+				recDat <- do.call(algorithm, list(value, rec))
+				#recDat <- pivotSize(value, rec)
 				recNames <- row.names(recDat)
 				recDat <- as.data.table(recDat)
 				recDat$ind <- factor(recNames, levels=levels(x$index))

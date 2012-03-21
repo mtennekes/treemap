@@ -12,15 +12,24 @@ tmPlot(sbsData,
 load("ps0607_final.Rdata")
 
 
-tmPlot(ps07final, index=c("sector", "subsector"), vSize="value_added", vColor="", type="fixed")
+
+value <- c(6,6,4,3,2,2,1)
+rec <- c(0,0, 6, 4)
+
+squarified(value, rec)
+
+
+
+
+tmPlot(ps07final, index=c("sector", "subsector"), vSize="value_added", type="linked")
 
 tmPlot(ps07final, index=c("sector", "subsector"), vSize="employees", vColor="turnover", na.rm=TRUE)
 
-tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), vSize=c("employees", "turnover"), vColor=c("turnover", "employees"), type="linked", na.rm=TRUE)
+tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), vSize=c("employees", "turnover"), vColor=c("turnover", "employees"), type="dens", na.rm=TRUE, algorithm="squarified")
 
 tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), 
 	   vSize=c("employees", "turnover"), 
-	   vColor=c("turnover", "employees/1000"), type="dens", na.rm=TRUE)
+	   vColor=c("turnover", "employees*1000"), type="dens", palette="-BuPu", na.rm=TRUE)
 
 
 

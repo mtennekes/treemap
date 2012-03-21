@@ -5,19 +5,20 @@
 #' @param dtf a data.frame. Required.
 #' @param index	vector containing the column names in \code{dtf} that contain the aggregation indices. Required.
 #' @param vSize name of the variable that determines the sizes of the rectangles. For small multiples, a vector of variable names (one for each treemap) should be given.  Required.
-#' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. For small multiples, a vector of variable names (one for each treemap) should be given.
-#' @param sortID name of the variable that determines the sorting order of the rectangles (from top left to bottom right). Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left. For small multiples, a vector of variable names (one for each treemap) should be given. See details below. For the placements of rectangles, the ordered treemap algorithm from Bederson, B., Shneiderman, B., Wattenberg, M. (2002) is used.
+#' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. See \code{type} for more information. For small multiples, a vector of variable names (one for each treemap) should be given.
 #' @param type the type of the treemap:
 #' \describe{
 #'		\item{\code{comp}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable (in percentages)}
-#'		\item{\code{dens}:}{colors indicate density (E.g. a population density map: \code{vSize} is area size, \code{vColor} is population, and the colors are computed as densities (population per squared km's)). \code{vColor} can specified as "colName*scale factor" (see example below).}
+#'		\item{\code{dens}:}{colors indicate density (E.g. a population density map: \code{vSize} is area size, \code{vColor} is population, and the colors are computed as densities (population per squared km's)). \code{vColor} can specified as "colName*scale factor" or "colName/scale factor" (see example below).}
 #'		\item{\code{perc}:}{the \code{vColor} variable should consist of percentages between 0 and 100.}
 #'		\item{\code{linked}:}{objects are linked by color over different treemaps}
 #'		\item{\code{index}:}{each aggregation index has distinct color}
 #'		\item{\code{value}:}{the \code{vColor}-variable is directly mapped to a color palette (by default Brewer's diverging color palette "RdYlGn").}}
 #' @param title Title of the treemap. For small multiples, a vector of titles should be given. Titles are used to describe the sizes of the rectangles.
 #' @param subtitle Subtitle of the treemap. For small multiples, a vector of subtitles should be given. Subtitles are used to describe the colors of the rectangles.
-#' @param palette Either a color palette or a name of a Brewer palette (see \code{display.brewer.all()}).
+#' @param algorithm name of the used algorithm: "squarified" or "pivotSize". The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap algorithm, pivot-by-size (Bederson et al., 2002) takes the sroting order (\code{sortID}) into account while aspect ratios are acceptable.
+#' @param sortID name of the variable that determines the sorting order of the rectangles (from top left to bottom right). Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left. For small multiples, a vector of variable names (one for each treemap) should be given. Only applicable when \code{algortihm=="pivotSize"}.
+#' @param palette Either a color palette or a name of a Brewer palette (see \code{display.brewer.all()}). A Brewer palette can be reversed by prefixing its name with a "-".
 #' @param vColorRange Range of the color variable values that is mapped to \code{palette}. Only applicable for \code{type=="value"}.
 #' @param fontsize.title (maximum) font size of the title
 #' @param fontsize.labels font size of the data labeling
@@ -32,9 +33,8 @@
 #'	\item{nCol}{Number of rows in the treemap grid}
 #'	This list can be used to locate a mouse click (see \code{\link{tmLocate}}).
 #' @references
-#' Bederson, B., Shneiderman, B., Wattenberg, M. (2002)
-#' Ordered and Quantum Treemaps: Making Effective Use of 2D Space to Display 
-#' Hierarchies. ACM Transactions on Graphics, 21(4): 833-854.
+#' Bederson, B., Shneiderman, B., Wattenberg, M. (2002) Ordered and Quantum Treemaps: Making Effective Use of 2D Space to Display Hierarchies. ACM Transactions on Graphics, 21(4): 833-854.
+#' Bruls, D.M., C. Huizing, J.J. van Wijk. Squarified Treemaps. In: W. de Leeuw, R. van Liere (eds.), Data Visualization 2000, Proceedings of the joint Eurographics and IEEE TCVG Symposium on Visualization, 2000, Springer, Vienna, p. 33-42.
 #' @example ../examples/tmPlot.R
 #' @export
 tmPlot <-
@@ -42,10 +42,11 @@ function(dtf,
 	index, 
 	vSize, 
 	vColor=NULL, 
-	sortID="-size",
 	type="value",
 	title=NA,
 	subtitle=NA,
+	algorithm="pivotSize",
+	sortID="-size",
 	palette=NA,
 	vColorRange=NA,
 	fontsize.title=14, 
@@ -210,6 +211,42 @@ function(dtf,
 	
 	
 	############
+	## Determine color palette
+	############
+	
+	
+	if (is.na(palette[1])) {
+		if (type == "comp") {
+			palette <- brewer.pal(11,"RdBu")
+		} else if (type == "perc") {
+			palette <- brewer.pal(9,"Blues")
+		} else if (type == "dens") {
+			palette <- brewer.pal(9,"OrRd")
+		} else if (type == "linked") {
+			palette <- c(brewer.pal(12,"Set3"),
+						 brewer.pal(8,"Set2")[c(1:4,7,8)],
+						 brewer.pal(9,"Pastel1")[c(1,2,4,5)])
+		} else if (type == "index") {
+			palette <- brewer.pal(8,"Set2")
+		} else if (type == "value") {
+			palette <- brewer.pal(11,"RdYlGn")
+		}
+	} else {
+		reverse <- (substr(palette[1], 1, 1)=="-")
+		if (reverse) palette[1] <- substr(palette[1], 2, nchar(palette[1]))
+		if ((length(palette)==1) && (palette[1] %in%row.names(brewer.pal.info))) {
+			# brewer palettes
+			palette <- brewer.pal(brewer.pal.info[palette, "maxcolors"], palette)
+			if (reverse) palette <- rev(palette)
+		} else {
+			if (class(try(col2rgb(palette), silent=TRUE))=="try-error") 
+				stop("color palette is not correct")
+		}
+	}
+	
+	
+	
+	############
 	## Determine legend
 	############
 	legenda <- (type!="linked" && type!="index")
@@ -227,6 +264,7 @@ function(dtf,
 	} else {
 		vColorNames <- as.character(subtitle)
 	}
+	
 	
 	
 	###########
@@ -286,6 +324,7 @@ collapse=", "), " contain missing values.", sep=""))
 		tm[[i]] <- baseTreemap(
 			dat=dat_i,
 			type=type,
+			algorithm=algorithm,
 			legenda=legenda,
 			sizeTitle=vSizeNames[i],
 			colorTitle=vColorNames[i],
