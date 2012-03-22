@@ -6,9 +6,9 @@
 # @param fontcol vector defining the colors of the text
 # @param fill vector defining the backgroud colors of the text
 # @param bold logical defining whe the text is bold
-# @param enlargable logical defining whether the textsize may exceed \code{cex=1}
+# @param inflate.labels logical defining whether the textsize may exceed \code{cex=1}
 str2rect <-
-function(grb, fontcol, fill, bold, inflate.labels) {
+function(grb, fontcol, fill, bold, inflate.labels, cex_index) {
 	# wrap text to 1-5 sentences
 	txtWraps <- lapply(grb$name, FUN=function(txt) {
 		txtWrap <- list(txt)
@@ -50,9 +50,8 @@ function(grb, fontcol, fill, bold, inflate.labels) {
 		}
 		return(list(txt=wrap$txt[winningStr], cex=incr[winningStr], lines=wrap$lines[winningStr]))
 	})
-	
 	txt <- unlist(results[1,])
-	cex <- unlist(results[2,])
+	cex <- unlist(results[2,]) * cex_index
 	nlines <- unlist(results[3,])
 	
 	fontface <- ifelse(bold, "bold", "plain")

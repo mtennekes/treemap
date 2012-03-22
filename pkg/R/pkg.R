@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #' Package: \tab treemap\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.0\cr
-#' Date: \tab 2012-03-20\cr
+#' Version: \tab 1.0-1\cr
+#' Date: \tab 2012-03-23\cr
 #' License: \tab GPL-3\cr
 #' LazyLoad: \tab yes\cr
 #' }

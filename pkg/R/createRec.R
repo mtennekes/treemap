@@ -1,6 +1,6 @@
 # Creates graphical rectangle objects out of coordinates
 createRec <-
-function(recList, filled, label, labelbg=TRUE, labellb, lwd, inflate.labels, force.print.labels) {
+function(recList, filled, label, labelbg=TRUE, labellb, lwd, inflate.labels, force.print.labels, cex_index) {
 #browser()
 	if (nrow(recList)==0) {
 		return(list(recs=NA, txt=NA, txtbg=NA))
@@ -37,7 +37,7 @@ function(recList, filled, label, labelbg=TRUE, labellb, lwd, inflate.labels, for
 		}
 		noText <- recs$name == ""
 		recs$name[noText] <- " "
-		txt <- str2rect(recs, fontcol=tCol, fill=txtfill, bold=( label=="bold"), inflate.labels=inflate.labels)
+		txt <- str2rect(recs, fontcol=tCol, fill=txtfill, bold=( label=="bold"), inflate.labels=inflate.labels, cex_index=cex_index)
 		
 		txt$txt$gp$col[noText] <- NA
 		txt$bg$gp$fill[noText] <- NA

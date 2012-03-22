@@ -19,6 +19,43 @@ rec <- c(0,0, 6, 4)
 squarified(value, rec)
 
 
+# data editing workshop
+
+ps06final[,8:22] <- lapply(ps06final[,8:22], FUN="*", ps06final$weight)
+ps06final$weight <- NULL
+
+ps07final[,11:25] <- lapply(ps07final[,11:25], FUN="*", ps07final$weight)
+ps07final$weight <- NULL
+
+
+ps6f <- aggregate(ps06final[,7:21], by=list(sector=ps06final$sector, subsector=ps06final$subsector, SBI3d=ps06final$SBI3d), FUN=function(x)sum(as.numeric(x), na.rm=TRUE))
+
+ps7f <- aggregate(ps07final[,10:24], by=list(sector=ps07final$sector, subsector=ps07final$subsector, SBI3d=ps07final$SBI3d), FUN=function(x)sum(as.numeric(x), na.rm=TRUE))
+
+psfinal <- merge(ps6f, ps7f, by=c("sector", "subsector", "SBI3d"),suffixes = c(".2006",".2007"))
+
+tmPlot(psfinal, vSize="value_added.2007", vColor="value_added.2006", index=c("sector", "subsector", "SBI3d"), type="comp", 
+	   fontsize.labels=8)
+
+
+tmPlot(psfinal, vSize="turnover.2007", vColor="employees.2007/1000", index=c("sector", "subsector", "SBI3d"), type="dens", 
+	   fontsize.labels=8)
+
+#zoom in
+tmPlot(psfinal[psfinal$sector=="Manufacturing",], vSize="turnover.2007", vColor="employees.2007/1000", index=c("subsector", "SBI3d"), type="dens", 
+	   fontsize.labels=8)
+
+
+tmPlot(psfinal, vSize="employees.2007", vColor="turnover.2007*1000", index=c("sector", "subsector", "SBI3d"), type="dens", 
+	   fontsize.labels=c(12,10,8))
+
+
+
+
+
+
+tmPlot(ps07final, index=c(""))
+
 
 
 tmPlot(ps07final, index=c("sector", "subsector"), vSize="value_added", type="linked")
@@ -29,7 +66,7 @@ tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), vSize=c("employees", 
 
 tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), 
 	   vSize=c("turnover", "turnover"), 
-	   vColor=c("employees", "employees/1000"), type="dens", palette="-RdYlBu", na.rm=TRUE)
+	   vColor=c("employees", "employees/100"), type="value", palette="-RdYlBu", na.rm=TRUE)
 
 
 

@@ -5,11 +5,11 @@
 #' @param dtf a data.frame. Required.
 #' @param index	vector containing the column names in \code{dtf} that contain the aggregation indices. Required.
 #' @param vSize name of the variable that determines the sizes of the rectangles. For small multiples, a vector of variable names (one for each treemap) should be given.  Required.
-#' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. See \code{type} for more information. For small multiples, a vector of variable names (one for each treemap) should be given.
+#' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". For small multiples, a vector of variable names (one for each treemap) should be given.
 #' @param type the type of the treemap:
 #' \describe{
 #'		\item{\code{comp}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable (in percentages)}
-#'		\item{\code{dens}:}{colors indicate density (E.g. a population density map: \code{vSize} is area size, \code{vColor} is population, and the colors are computed as densities (population per squared km's)). \code{vColor} can specified as "colName*scale factor" or "colName/scale factor" (see example below).}
+#'		\item{\code{dens}:}{colors indicate density (E.g. a population density map: \code{vSize} is area size, \code{vColor} is population, and the colors are computed as densities (population per squared km's)).}
 #'		\item{\code{perc}:}{the \code{vColor} variable should consist of percentages between 0 and 100.}
 #'		\item{\code{linked}:}{objects are linked by color over different treemaps}
 #'		\item{\code{index}:}{each aggregation index has distinct color}
@@ -21,7 +21,7 @@
 #' @param palette Either a color palette or a name of a Brewer palette (see \code{display.brewer.all()}). A Brewer palette can be reversed by prefixing its name with a "-".
 #' @param vColorRange Range of the color variable values that is mapped to \code{palette}. Only applicable for \code{type=="value"}.
 #' @param fontsize.title (maximum) font size of the title
-#' @param fontsize.labels font size of the data labeling
+#' @param fontsize.labels font size of the data labeling. Either one number or a vector of numbers that specifiy the fontsizes for the highest, in-between (optional), and lowest aggregation index.
 #' @param fontsize.legend (maximum) font size of the legend
 #' @param lowerbound.cex.labels number between 0 and 1 that indicates the minimum fontsize of the data labels: 0 means draw all data labels, and 1 means only draw data labels if they fit at font size \code{fontsize.data}
 #' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles
@@ -34,6 +34,7 @@
 #'	This list can be used to locate a mouse click (see \code{\link{tmLocate}}).
 #' @references
 #' Bederson, B., Shneiderman, B., Wattenberg, M. (2002) Ordered and Quantum Treemaps: Making Effective Use of 2D Space to Display Hierarchies. ACM Transactions on Graphics, 21(4): 833-854.
+#'
 #' Bruls, D.M., C. Huizing, J.J. van Wijk. Squarified Treemaps. In: W. de Leeuw, R. van Liere (eds.), Data Visualization 2000, Proceedings of the joint Eurographics and IEEE TCVG Symposium on Visualization, 2000, Springer, Vienna, p. 33-42.
 #' @example ../examples/tmPlot.R
 #' @export
@@ -65,32 +66,15 @@ function(dtf,
 	if (!exists("vSize")) stop("Attribute <vSize> not defined")
 	if (!inherits(dtf, "data.frame")) stop("Object <dtf> is not a data.frame")
 	if (any(!index %in% names(dtf))) stop("<index> contains invalid column names")
-
-
-	#############
-	## Internal functions
-	#############
-
-	
-	formatColorTitle <- function(var, varX=NA, var2=NA, var2X=NA) {
-		if (!is.na(varX)) {
-			if (varX!=1) {
-				var <-paste(varX,var,sep=" * ")
-			}
-		}
-		
-		if (!is.na(var2)) {
-			if (var2X<1) {
-				var2 <-paste(1/var2X,var2,sep=" * ")
-			} else if (var2X>1) {
-				var <-paste(var2X,var,sep=" * ")
-			}
-			var<-paste(var,"per",var2,sep=" ")
-		}
-		var
-	}
 	
 	
+	# multiple fontsizes for labels
+	cex_indices <- rep(fontsize.labels / fontsize.labels[1])
+	if (length(cex_indices)==1) cex_indices <- rep(cex_indices, 3)
+	if (length(cex_indices)==2) cex_indices <- c(cex_indices, cex_indices[2])
+	fontsize.labels <- fontsize.labels[1]
+
+
 	## Get size variable(s)
 	n <- length(vSize)
 	
@@ -120,8 +104,11 @@ function(dtf,
 	} else {
 		vSizeNames <- as.character(title)
 	}
+
 	
 	vColorMplySplit <- function(vColor) {
+		vColor <- gsub(" ", "", vColor, fixed=TRUE)
+		divided <- 0
 		vColorMply <- unlist(strsplit(vColor, split="*", fixed=TRUE))
 		if (length(vColorMply)==1) {
 			vColorMply <- unlist(strsplit(vColor, split="/", fixed=TRUE))
@@ -129,9 +116,10 @@ function(dtf,
 				vColorMply <- c(vColorMply, 1)
 			} else {
 				vColorMply[2] <- (1/as.numeric(vColorMply[2]))
+				divided <- 1
 			}
 		}
-		return (vColorMply)
+		return (c(vColorMply, divided))
 	}
 	
 	## Process formula for color variables
@@ -140,10 +128,10 @@ function(dtf,
 		vColorX <- as.numeric(sapply(vColor2, function(x)x[2]))
 		if (any(is.na(vColorX))) stop("Invalid vColor.")
 		vColor <- sapply(vColor2, function(x)x[1])
-	
 		## Check is column names in vColor are valid
 		if (!all(vColor %in% names(dtf)))
 					stop("Invalid column name(s) found in vColor.")
+		vColorDiv <- as.logical(as.numeric(sapply(vColor2, function(x)x[3])))
 	} else {
 		vColor <- vSize #for convenience
 	}
@@ -233,15 +221,37 @@ function(dtf,
 	## Determine legend
 	############
 	legenda <- (type!="linked" && type!="index")
-	
+
 	## Determine subtitles
+	formatColorTitle <- function(var, varX=NA, var2=NA, var2X=NA, div) {
+		if (!is.na(var2)) {
+			# density treemap
+			if (var2X!=1) {
+				if (div)
+					var2 <-paste(1/var2X, var2, sep="*")
+				else
+					var <- paste(var2X, var, sep="*")
+			}
+			var <- paste(var,"per",var2,sep=" ")
+		} else {
+			# other treemap types
+			if (varX!=1) {
+				if (div)
+					var <-paste(var, 1/varX, sep="/")
+				else 
+					var <-paste(varX, var, sep="*")
+			}
+		}
+		var
+	}
+	
 	if (is.na(subtitle)) {	
 		options(warn=-1) 
 		if (!is.null(vColor)) {
 			if (type=="dens") 
-				vColorNames <- mapply(FUN="formatColorTitle", var=vColor, var2=vSize, var2X=vColorX)
+				vColorNames <- mapply(FUN="formatColorTitle", var=vColor, var2=vSize, var2X=vColorX, div=vColorDiv)
 			else
-				vColorNames <- mapply(FUN="formatColorTitle", var=vColor, varX=vColorX)
+				vColorNames <- mapply(FUN="formatColorTitle", var=vColor, varX=vColorX, div=vColorDiv)
 		} else vColorNames <- rep("",n)
 		options(warn=0) 
 	} else {
@@ -323,7 +333,8 @@ collapse=", "), " contain missing values.", sep=""))
 			fontsize.legend=fontsize.legend,
 			lowerbound.cex.labels=lowerbound.cex.labels,
 			inflate.labels=inflate.labels,
-			force.print.labels=force.print.labels)
+			force.print.labels=force.print.labels,
+			cex_indices=cex_indices)
 			
 		upViewport()
 		iRow<-iRow+1

@@ -12,7 +12,8 @@ function(dat,
 	fontsize.legend, 
 	lowerbound.cex.labels,
 	inflate.labels,
-	force.print.labels) {
+	force.print.labels,
+	cex_indices) {
 
 	# determine available plot width and height
 	width <- convertWidth(unit(1,"npc"),"inches",valueOnly = TRUE)
@@ -251,21 +252,24 @@ function(dat,
 		lwds <- depth - recList$clevel + 1
 		whichFill <- recList$clevel==depth
 		
-		recs_fill_bold <- createRec(recList[whichFill & whichBold,], 
-									filled=TRUE, 
-									label="bold", 
-									labellb=lowerbound.cex.labels, 
-									lwd = lwds[whichFill & whichBold],
-									inflate.labels=inflate.labels,
-									force.print.labels=force.print.labels)
 		recs_fill_norm <- createRec(recList[whichFill & !whichBold,], 
 									filled=TRUE, 
 									label="normal", 
 									labellb=lowerbound.cex.labels, 
 									lwd = lwds[whichFill & !whichBold], 
 									inflate.labels=inflate.labels,
-									force.print.labels=force.print.labels)
+									force.print.labels=force.print.labels, 
+									cex_index=cex_indices[3])
 		
+		recs_trans_norm <- createRec(recList[!whichFill & !whichBold,], 
+									 filled=FALSE, 
+									 label="normal",
+									 labellb=lowerbound.cex.labels, 
+									 lwd = lwds[!whichFill & !whichBold],
+									 inflate.labels=inflate.labels,
+									 force.print.labels=force.print.labels, 
+									 cex_index=cex_indices[2]) 
+
 		recs_trans_bold <- createRec(recList[!whichFill & whichBold,], 
 									 filled=FALSE, 
 									 label="bold", 
@@ -273,14 +277,8 @@ function(dat,
 									 labelbg = TRUE, 
 									 lwd = lwds[!whichFill & whichBold], 
 									 inflate.labels=inflate.labels,
-									 force.print.labels=force.print.labels) 
-		recs_trans_norm <- createRec(recList[!whichFill & !whichBold,], 
-									 filled=FALSE, 
-									 label="normal",
-									 labellb=lowerbound.cex.labels, 
-									 lwd = lwds[!whichFill & !whichBold],
-									 inflate.labels=inflate.labels,
-									 force.print.labels=force.print.labels) 
+									 force.print.labels=force.print.labels, 
+									 cex_index=cex_indices[1]) 
 		
 		cover <- overlap(recs_fill_norm$txtbg, recs_trans_norm$txtbg)
 		if (!is.na(cover[1])) {
@@ -292,14 +290,8 @@ function(dat,
 			recs_fill_norm$txt$gp$col[cover] <- NA
 			recs_fill_norm$bg$gp$fill[cover] <- NA
 		}
-		cover <- overlap(recs_fill_bold$txtbg, recs_trans_bold$txtbg)
-		if (!is.na(cover[1])) {
-			recs_fill_bold$txt$gp$col[cover] <- NA
-			recs_fill_bold$bg$gp$fill[cover] <- NA
-		}
 	
 		drawRecs(recs_fill_norm)
-		drawRecs(recs_fill_bold)
 		drawRecs(recs_trans_norm)
 		drawRecs(recs_trans_bold)
 		
