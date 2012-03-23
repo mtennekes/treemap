@@ -36,26 +36,53 @@ psfinal <- merge(ps6f, ps7f, by=c("sector", "subsector", "SBI3d", "SBI"),suffixe
 
 ## data editing workshop
 
-tmPlot(psfinal, vSize="value_added.2007", vColor="value_added.2006", index=c("sector", "subsector"), type="comp", 
-	   fontsize.labels=c(12,8))
 
-tmPlot(subset(psfinal,subset=sector=="Manufacturing"), vSize="value_added.2007", vColor="value_added.2006", index=c("subsector", "SBI3d"), type="comp", 
-	   fontsize.labels=c(12,10))
-
-
-tmPlot(subset(psfinal,subset=subsector=="Electrical and optical equipment"), vSize="value_added.2007", vColor="value_added.2006", index=c("SBI3d", "SBI"), type="comp", 
-	   fontsize.labels=c(12,10))
-
-
-tmPlot(psfinal, vSize="value_added.2007", vColor="value_added.2006", index=c("sector", "subsector", "SBI3d", "SBI"), type="comp", 
-	   fontsize.labels=c(12,10))
+pdf(file="tm_comp1.pdf", width=7, height=6)
+tm1 <- tmPlot(psfinal, 
+	   vSize="value_added.2007", 
+	   vColor="value_added.2006", 
+	   index=c("sector", "subsector"), 
+	   type="comp", 
+	   title="Total value added",
+	   subtitle="Growth w.r.t. last year",
+	   fontsize.labels=c(10,8))
+dev.off()
 
 
+pdf(file="tm_comp2.pdf", width=7, height=6) #7,6
+tm2 <- tmPlot(subset(psfinal,subset=sector=="Manufacturing"), 
+	   vSize="value_added.2007", 
+	   vColor="value_added.2006", 
+	   index=c("subsector", "SBI3d"), 
+	   type="comp", 
+	   title="Total value added in the sector Manufacturing",
+	   subtitle="Growth w.r.t. last year",
+	   fontsize.labels=c(10,8))
+dev.off()
+
+# pdf(file="tm_comp3.pdf", width=7, height=6)
+# tmPlot(subset(psfinal,subset=subsector=="Machinery and equipment n.e.c."), 
+# 	   vSize="value_added.2007", 
+# 	   vColor="value_added.2006", 
+# 	   index=c("SBI3d", "SBI"), 
+# 	   type="comp", 
+# 	   title="Total value added in the subsector Machinery and equipment n.e.c.",
+# 	   subtitle="Growth w.r.t. last year",
+# 	   fontsize.labels=c(10,8))
+# dev.off()
 
 
 
-tmPlot(psfinal, vSize="turnover.2007", vColor="employees.2007/1000", index=c("sector", "subsector", "SBI3d"), type="dens", 
-	   fontsize.labels=8)
+pdf(file="tm_dens.pdf", width=7, height=6) #7,6
+	tmPlot(subset(psfinal,subset=sector=="Manufacturing"), 
+		   vSize="employees.2007", 
+		   vColor="turnover.2007*1000", 
+		   index=c("subsector", "SBI3d"), 
+		   type="dens",
+		   title="Number of persons employed in the sector Manufacturing",
+		   subtitle="Turnover (in millions) per person employed",
+		   fontsize.labels=c(10,8), lowerbound.cex.labels=0.3)
+dev.off()
 
 #zoom in
 tmPlot(psfinal[psfinal$sector=="Manufacturing",], vSize="turnover.2007", vColor="employees.2007/1000", index=c("subsector", "SBI3d"), type="dens", 

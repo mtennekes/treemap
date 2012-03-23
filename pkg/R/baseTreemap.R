@@ -297,7 +297,7 @@ function(dat,
 		
 	}
 		
-		resultDat <- recList[whichFill, c("ind", "clevel", "x0", "y0", "w", "h")]
+	resultDat <- recList[whichFill, list(ind, clevel, x0, y0, w, h)]
 
 	upViewport()
 	upViewport()
