@@ -155,17 +155,17 @@ function(dat,
 
 	
 	dats[[1]] <- cbind(dats[[1]], dataRec[rep(1,nrow(dats[[1]]))])	
-	x0 <- NULL; rm(X0); #trick R CMD check
-	y0 <- NULL; rm(Y0); #trick R CMD check
-	w <- NULL; rm(W); #trick R CMD check
-	h <- NULL; rm(H); #trick R CMD check
+	x0 <- NULL; rm(x0); #trick R CMD check
+	y0 <- NULL; rm(y0); #trick R CMD check
+	w <- NULL; rm(w); #trick R CMD check
+	h <- NULL; rm(h); #trick R CMD check
 
 	X0 <- NULL; rm(X0); #trick R CMD check
 	Y0 <- NULL; rm(Y0); #trick R CMD check
 	W <- NULL; rm(W); #trick R CMD check
 	H <- NULL; rm(H); #trick R CMD check
 	
-	.SD <- NULL; rm(X0); #trick R CMD check
+	.SD <- NULL; rm(.SD); #trick R CMD check
 	level <- NULL; rm(level); #trick R CMD check
 	color <- NULL; rm(color); #trick R CMD check
 	ind <- NULL; rm(ind); #trick R CMD check
@@ -244,7 +244,8 @@ function(dat,
 							   labellb=lowerbound.cex.labels, 
 							   lwd = 1,
 							   inflate.labels=inflate.labels,
-							   force.print.labels=force.print.labels)
+							   force.print.labels=force.print.labels,
+							   cex_index=cex_indices[1])
 		grid.draw(recs_fill$recs)
 		grid.draw(recs_fill$txt)
 	} else {

@@ -120,10 +120,18 @@ tmPlot(ps07final[ps07final$sector=="Manufacturing", ], index=c("subsector", "sub
 
 library(portfolio)
 data(dow.jan.2005)
+map.market(id    = dow.jan.2005$symbol,
+		   area  = dow.jan.2005$price,
+		   group = dow.jan.2005$sector,
+		   color = 100 * dow.jan.2005$month.ret)
+
 tmPlot(dow.jan.2005, 
 	   index=c("sector", "symbol"), 
 	   vSize="price", 
-	   vColor="month.ret",
+	   vColor="month.ret/100",
 	   algorithm="squarified",
-	   palette="RdYlBu")
+	   palette="RdYlBu",
+	   subtitle = "month.ret (in percentages)",
+	   vColorRange=c(-13,13))
+
 

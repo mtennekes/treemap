@@ -53,6 +53,14 @@ tmPlot(sbsData,
 	   vColor="employees.growth",
 	   type="value")
 
+### layout algorithm: squarified
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="employees.growth",
+	   type="value",
+	   algorithm="squarified")
+
 
 ### graphical options: fontsize
 
@@ -105,11 +113,11 @@ tmPlot(sbsData,
 	   type="value", 
 	   palette=terrain.colors(10))
 
-# Brewer's Red-White-Blue palette with predefined range
+# Brewer's Red-White-Grey palette reversed with predefined range
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="employees.growth", 
 	   type="value", 
-	   palette="RdBu", 
+	   palette="-RdGy", 
 	   vColorRange=c(-20000,20000))

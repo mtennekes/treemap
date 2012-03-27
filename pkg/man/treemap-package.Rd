@@ -5,8 +5,9 @@
 \title{Treemap visualization}
 \description{
   \tabular{ll}{ Package: \tab treemap\cr Type: \tab
-  Package\cr Version: \tab 1.0\cr Date: \tab 2012-03-20\cr
-  License: \tab GPL-3\cr LazyLoad: \tab yes\cr }
+  Package\cr Version: \tab 1.0-2\cr Date: \tab
+  2012-03-27\cr License: \tab GPL-3\cr LazyLoad: \tab
+  yes\cr }
 }
 \details{
   Different kind of treemaps can be generated, such as

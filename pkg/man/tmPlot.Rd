@@ -24,8 +24,9 @@
 
   \item{vColor}{name of the variable that, in combination
   with \code{type}, determines the colors of the
-  rectangles. See \code{type} for more information. For
-  small multiples, a vector of variable names (one for each
+  rectangles. The variable can be scaled by the addition of
+  "*<scale factor>" or "/<scale factor>". For small
+  multiples, a vector of variable names (one for each
   treemap) should be given.}
 
   \item{type}{the type of the treemap: \describe{
@@ -35,9 +36,7 @@
   \item{\code{dens}:}{colors indicate density (E.g. a
   population density map: \code{vSize} is area size,
   \code{vColor} is population, and the colors are computed
-  as densities (population per squared km's)).
-  \code{vColor} can specified as "colName*scale factor" or
-  "colName/scale factor" (see example below).}
+  as densities (population per squared km's)).}
   \item{\code{perc}:}{the \code{vColor} variable should
   consist of percentages between 0 and 100.}
   \item{\code{linked}:}{objects are linked by color over
@@ -45,7 +44,7 @@
   index has distinct color} \item{\code{value}:}{the
   \code{vColor}-variable is directly mapped to a color
   palette (by default Brewer's diverging color palette
-  "RdYlGn").}}}
+  "RdBu").}}}
 
   \item{title}{Title of the treemap. For small multiples, a
   vector of titles should be given. Titles are used to
@@ -70,7 +69,7 @@
   To inverse the sorting order, use "-" in the prefix. By
   default, large rectangles are placed top left. For small
   multiples, a vector of variable names (one for each
-  treemap) should be given. Only applicable when
+  treemap) can be given. Only applicable when
   \code{algortihm=="pivotSize"}.}
 
   \item{palette}{Either a color palette or a name of a
@@ -84,7 +83,10 @@
 
   \item{fontsize.title}{(maximum) font size of the title}
 
-  \item{fontsize.labels}{font size of the data labeling}
+  \item{fontsize.labels}{font size of the data labeling.
+  Either one number or a vector of numbers that specifiy
+  the fontsizes for the highest, in-between (optional), and
+  lowest aggregation index.}
 
   \item{fontsize.legend}{(maximum) font size of the legend}
 
@@ -170,6 +172,14 @@ tmPlot(sbsData,
 	   vColor="employees.growth",
 	   type="value")
 
+### layout algorithm: squarified
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="employees.growth",
+	   type="value",
+	   algorithm="squarified")
+
 
 ### graphical options: fontsize
 
@@ -222,23 +232,25 @@ tmPlot(sbsData,
 	   type="value", 
 	   palette=terrain.colors(10))
 
-# Brewer's Red-White-Blue palette with predefined range
+# Brewer's Red-White-Grey palette reversed with predefined range
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="employees.growth", 
 	   type="value", 
-	   palette="RdBu", 
+	   palette="-RdGy", 
 	   vColorRange=c(-20000,20000))
 }
 \references{
   Bederson, B., Shneiderman, B., Wattenberg, M. (2002)
   Ordered and Quantum Treemaps: Making Effective Use of 2D
   Space to Display Hierarchies. ACM Transactions on
-  Graphics, 21(4): 833-854. Bruls, D.M., C. Huizing, J.J.
-  van Wijk. Squarified Treemaps. In: W. de Leeuw, R. van
-  Liere (eds.), Data Visualization 2000, Proceedings of the
-  joint Eurographics and IEEE TCVG Symposium on
-  Visualization, 2000, Springer, Vienna, p. 33-42.
+  Graphics, 21(4): 833-854.
+
+  Bruls, D.M., C. Huizing, J.J. van Wijk. Squarified
+  Treemaps. In: W. de Leeuw, R. van Liere (eds.), Data
+  Visualization 2000, Proceedings of the joint Eurographics
+  and IEEE TCVG Symposium on Visualization, 2000, Springer,
+  Vienna, p. 33-42.
 }
 
