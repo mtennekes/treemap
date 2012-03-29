@@ -7,10 +7,10 @@
 #' @examples data(sbsData)
 #' \dontrun{
 #' tmSave <- tmPlot(sbsData, 
-#'				 index="section", 
-#'				 vSize="employees09+value added09+turnover09+salaries09",
-#'				 vColor="employees08+value added08+turnover08+salaries08",
-#'				 sortID="-size")
+#'				 index=c("section", "subsection"), 
+#'				 vSize=c("employees09", "value added09", "turnover09", "salaries09"),
+#'				 vColor=c("employees08", "value added08", "turnover08", "salaries08"),
+#'				 type="comp")
 #'	# capture mouseclick
 #'	npcClick <- tmClick()
 #'	
@@ -31,7 +31,9 @@ function(npcClick, tmSave) {
 			stop("no treemap selected")
 		}
 		
-		cat("row", click_row, ", col", click_col, ", treemap", index, "\n")
+		cat("row", click_row, ", col", click_col, ", treemap", index, "\n",
+			"size variable: ", tmSave$vSize[index], "\n",
+			"color variable: ", tmSave$vColor[index], "\n")
 
 		# convert click to inches
 		inchClick <- list()

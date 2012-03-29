@@ -1,6 +1,5 @@
 value2col <-
 function(dat, showScale, palette, vColorRange) {
-
 	if (any(is.na(vColorRange))) {
 		vColorRange <- range(dat$value2)
 		if (vColorRange[1] > 0) {

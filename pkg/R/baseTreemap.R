@@ -13,7 +13,8 @@ function(dat,
 	lowerbound.cex.labels,
 	inflate.labels,
 	force.print.labels,
-	cex_indices) {
+	cex_indices,
+	indexNames) {
 
 	# determine available plot width and height
 	width <- convertWidth(unit(1,"npc"),"inches",valueOnly = TRUE)
@@ -70,7 +71,6 @@ function(dat,
 	depth <- sum(substr(colnames(dat),1,5)=="index")
 #browser()
 	dats <- list()
-
 	datV <- data.table(value=numeric(0), value2=numeric(0), index=character(0), level=integer(0))
 	for (i in 1:depth) {
 		indexList <- paste("index", 1:i, sep="")
@@ -94,9 +94,13 @@ function(dat,
 							   	dats[[i-1]][[paste("index", i-1, sep="")]]
 							   	)], i)
 		dats_i <- dats_i[order(dats_i$sortInd),]
+		
+		
+		
 		datV <- rbind(datV, 
 					  dats_i[, list(value, value2,
-					  			  index=dats_i[[paste("index", i, sep="")]], 
+					  			  index=do.call(paste, 
+					  			  			  c(dats_i[, indexList, with=FALSE], sep="__")), 
 					  			  level)])
 		dats[[i]] <- dats_i
 	}
@@ -110,8 +114,6 @@ function(dat,
 	
 	if (type == "comp") {
 		datV$color <- comp2col(datV, legenda, palette)
-	} else if (type == "perc") {
-		datV$color <- fill2col(datV, legenda, palette)
 	} else if (type == "dens") {
 		datV$color <- dens2col(datV, legenda, palette) 
 	} else if (type == "linked") {
@@ -151,7 +153,8 @@ function(dat,
 						  x0=numeric(0),
 						  y0=numeric(0),
 						  w=numeric(0),
-						   h=numeric(0))
+						  h=numeric(0),
+						  fullname=character(0))
 
 	
 	dats[[1]] <- cbind(dats[[1]], dataRec[rep(1,nrow(dats[[1]]))])	
@@ -164,7 +167,8 @@ function(dat,
 	Y0 <- NULL; rm(Y0); #trick R CMD check
 	W <- NULL; rm(W); #trick R CMD check
 	H <- NULL; rm(H); #trick R CMD check
-	
+
+	fullname <- NULL; rm(fullname); #trick R CMD check
 	.SD <- NULL; rm(.SD); #trick R CMD check
 	level <- NULL; rm(level); #trick R CMD check
 	color <- NULL; rm(color); #trick R CMD check
@@ -216,11 +220,13 @@ function(dat,
 			setkeyv(res, indexList2)
 			dats_i <- cbind(dats_i, res[, list(x0, y0, w, h)])
 		}
-		
 		dats[[i]] <- dats_i
+		dats_i$fullname <- do.call(paste, 
+								   c(unclass(dats_i[, paste("index", 1:i, sep=""), 
+								   			   with=FALSE]), sep="__"))
 		setnames(dats_i, paste("index", i, sep=""), "ind")
 		recList <- rbind(recList, dats_i[,
-			list(ind, clevel, color, x0, y0, w, h)])
+			list(ind, clevel, color, x0, y0, w, h, fullname)])
 	}
 	
 
@@ -249,6 +255,7 @@ function(dat,
 		grid.draw(recs_fill$recs)
 		grid.draw(recs_fill$txt)
 	} else {
+
 		whichBold <- recList$clevel==1
 		lwds <- depth - recList$clevel + 1
 		whichFill <- recList$clevel==depth
@@ -298,8 +305,18 @@ function(dat,
 		
 	}
 		
-	resultDat <- recList[whichFill, list(ind, clevel, x0, y0, w, h)]
-
+	
+	## prepare output
+	mat <- matrix(unlist(strsplit(as.character(recList$fullname[whichFill]),
+						   split="__")), 
+		   ncol=depth,
+		   byrow=TRUE)
+	mat[mat=="NA"] <- NA
+	res <- as.data.frame(mat)
+	names(res) <- indexNames
+	resultDat <- cbind(res, as.data.frame(recList[whichFill, list(x0, y0, w, h)]))
+	
+	
 	upViewport()
 	upViewport()
 	return(resultDat)

@@ -12,7 +12,7 @@ tmPlot(sbsData,
 tmPlot(sbsData,
 	   index=c("section", "subsection"),
 	   vSize="turnover09",
-	   vColor="employees09*0.001",
+	   vColor="employees09*1000",
 	   type="dens")
 
 # value treemap (aka Map of the Market)

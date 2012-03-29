@@ -3,12 +3,20 @@ library(treemap)
 library(devtools)
 load_all("pkg")
 
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08",
-	   type="index")
 
+data(sbsData)
+tm <- tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize=c("employees09", "turnover09"), 
+	   vColor=c("turnover09", "employees09"),
+	   type="linked")
+
+tm
+
+npcClick <- tmClick()
+
+# locate clicked object
+print(tmLocate(npcClick, tm))
 
 
 
@@ -95,27 +103,13 @@ tmPlot(psfinal, vSize="employees.2007", vColor="turnover.2007*1000", index=c("se
 
 
 
+system.time({
+	tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), 
+	   vSize=c("employees", "turnover"), 
+	   vColor=c("turnover", "employees"), 
+	   type="dens", na.rm=TRUE, algorithm="squarified")
+})
 
-
-tmPlot(ps07final, index=c(""))
-
-
-
-tmPlot(ps07final, index=c("sector", "subsector"), vSize="value_added", type="linked")
-
-tmPlot(ps07final, index=c("sector", "subsector"), vSize="employees", vColor="turnover", na.rm=TRUE)
-
-tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), vSize=c("employees", "turnover"), vColor=c("turnover", "employees"), type="dens", na.rm=TRUE, algorithm="squarified")
-
-tmPlot(ps07final, index=c("sector", "subsector", "SBI3d"), 
-	   vSize=c("turnover", "turnover"), 
-	   vColor=c("employees", "employees/100"), type="value", palette="-RdYlBu", na.rm=TRUE)
-
-
-
-levels(ps07final$subsector)[1] <- "X"
-
-tmPlot(ps07final[ps07final$sector=="Manufacturing", ], index=c("subsector", "subsubsector"), vSize="employees", vColor="turnover/employees")
 
 
 library(portfolio)
@@ -128,7 +122,7 @@ map.market(id    = dow.jan.2005$symbol,
 tmPlot(dow.jan.2005, 
 	   index=c("sector", "symbol"), 
 	   vSize="price", 
-	   vColor="month.ret/100",
+	   vColor="month.ret*100",
 	   algorithm="squarified",
 	   palette="RdYlBu",
 	   subtitle = "month.ret (in percentages)",

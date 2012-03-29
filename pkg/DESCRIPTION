@@ -1,13 +1,14 @@
 Package: treemap
 Type: Package
 Title: Treemap visualization
-Version: 1.0-2
-Date: 2012-03-27
+Version: 1.0-3
+Date: 2012-03-30
 Author: Martijn Tennekes
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
-Description: Different kind of treemaps can be generated, such as comparison
-    treemaps, density treemaps, and 'Map of the Market' kind of treemaps. Small
-    multiples are also supported.
+Description: A treemap is a space-filling visualization of hierarchical
+    structures. With this package different kind of treemaps can be generated,
+    such as comparison treemaps and density treemaps. Small multiples are also
+    supported.
 License: GPL version 3
 LazyLoad: yes
 Depends:
@@ -19,7 +20,6 @@ Collate:
     'comp2col.R'
     'createRec.R'
     'dens2col.R'
-    'fill2col.R'
     'fixed2col.R'
     'index2col.R'
     'overlap.R'
