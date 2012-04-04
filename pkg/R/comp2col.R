@@ -1,7 +1,6 @@
 comp2col <-
 function(dat, showScale, palette) {
 	color <- colorRampPalette(palette,space="rgb")(99)
-	
 	# calculate percentages
 	# for legend
 	perc <-((dat$value - dat$value2)/dat$value2) * 100

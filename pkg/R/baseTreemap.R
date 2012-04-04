@@ -14,11 +14,12 @@ function(dat,
 	inflate.labels,
 	force.print.labels,
 	cex_indices,
-	indexNames) {
+	indexNames,
+	aspRatio) {
 
 	# determine available plot width and height
-	width <- convertWidth(unit(1,"npc"),"inches",valueOnly = TRUE)
-	height <- convertHeight(unit(1,"npc"),"inches",valueOnly = TRUE)
+	width <- convertWidth(unit(1,"npc"), "inches",valueOnly = TRUE)
+	height <- convertHeight(unit(1,"npc"), "inches",valueOnly = TRUE)
 	
 	plotMargin <- unit(0.5,"cm")
 	
@@ -58,14 +59,14 @@ function(dat,
 	  height = unit(1,"npc") - legHeight - plotMargin,
 	  gp=gpar(fontsize=fsTitle),
 	  just = c("left", "bottom"))
-	
+
 	vpDat2 <- viewport(name = "dataregion2", 
-	  x = 0,
-	  y = 0,
-	  width = unit(1, "npc"),
-	  height = unit(1,"npc") - unit(1.5,"lines"),
-	  gp=gpar(fontsize=fsData),
-	  just = c("left", "bottom"))
+					   x = 0,
+					   y = 0,
+					   width = unit(1, "npc"),
+					   height = unit(1, "npc") - unit(1.5, "lines"),
+					   gp=gpar(fontsize=fsData),
+					   just = c("left", "bottom"))
 	
 	#determine depth
 	depth <- sum(substr(colnames(dat),1,5)=="index")
@@ -135,11 +136,38 @@ function(dat,
 		dats[[i]]$color <- datV[datL1[i]:datL2[i], color]
 	}
 	
-	
+browser()	
 	pushViewport(vpDat)
-
 	grid.text(sizeTitle, y = unit(1, "npc") - unit(0.5, "lines"))
 	pushViewport(vpDat2)
+	
+	grid.rect()
+		
+	datWidth <- convertWidth(unit(1,"npc"), 
+							 "inches", valueOnly=TRUE)
+	datHeight <- convertHeight(unit(1,"npc"),
+							   "inches", valueOnly=TRUE)
+	aspWindow <- datWidth / datHeight
+	
+	if (!is.na(aspRatio)) {
+		if (aspRatio < aspWindow) {
+			datWidth <- datHeight * aspRatio
+		} else if (aspRatio > aspWindow) {
+			datHeight <- datWidth / aspRatio
+		}
+	}
+	
+	vpDat3 <- viewport(name = "dataregion2", 
+					   x = unit(0.5, "npc"),
+					   y = unit(0.5, "npc"),
+					   width = unit(datWidth, "inches"),
+					   height = unit(datHeight,"inches"),
+					   gp=gpar(fontsize=fsData),
+					   just = c("centre", "centre"))
+	
+	
+	
+	pushViewport(vpDat3)
 	grid.rect(name="TMrect")
 		
 	# Determine window size
@@ -147,7 +175,7 @@ function(dat,
 		W=convertWidth(unit(1, "grobwidth", "TMrect"),"inches",valueOnly=TRUE),
 		H=convertHeight(unit(1, "grobheight", "TMrect"),"inches",valueOnly=TRUE))
 
-	recList <- data.table(ind=character(0), 
+	recList <- data.table(ind=factor(NULL), 
 						  clevel=numeric(0),
 						  color=character(0),
 						  x0=numeric(0),
@@ -174,7 +202,9 @@ function(dat,
 	color <- NULL; rm(color); #trick R CMD check
 	ind <- NULL; rm(ind); #trick R CMD check
 	clevel <- NULL; rm(clevel); #trick R CMD check
-	
+
+	browser()
+
 	for (i in 1:depth) {
 		dats_i <- dats[[i]]
 		if (i==1) {
@@ -307,18 +337,18 @@ function(dat,
 		
 	
 	## prepare output
-	mat <- matrix(unlist(strsplit(as.character(recList$fullname[whichFill]),
-						   split="__")), 
-		   ncol=depth,
-		   byrow=TRUE)
+	res <- strsplit(recList$fullname[whichFill], split="__")
+	mat <- t(sapply(res, FUN=function(x){y <- rep("", depth)
+								y[1:length(x)] <- x
+								y}))
+	
 	mat[mat=="NA"] <- NA
 	res <- as.data.frame(mat)
 	names(res) <- indexNames
 	resultDat <- cbind(res, as.data.frame(recList[whichFill, list(x0, y0, w, h)]))
 	
-	
-	upViewport()
-	upViewport()
+	upViewport(3)
+	#upViewport()
 	return(resultDat)
 }
 

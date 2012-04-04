@@ -53,19 +53,26 @@ tm1 <- tmPlot(psfinal,
 	   type="comp", 
 	   title="Total value added",
 	   subtitle="Growth w.r.t. last year",
-	   fontsize.labels=c(10,8))
+	   fontsize.labels=c(10,8),
+	   aspRatio=1.3)
 dev.off()
+
+## determine aspRatio rectangle manufacturing
+asp <- (sum(tm1[[1]][[1]]$w[c(4, 8, 9)]) / 
+	sum(tm1[[1]][[1]]$h[c(4, 10, 12)])) * 1.3
+
 
 
 pdf(file="tm_comp2.pdf", width=7, height=6) #7,6
 tm2 <- tmPlot(subset(psfinal,subset=sector=="Manufacturing"), 
 	   vSize="value_added.2007", 
 	   vColor="value_added.2006", 
-	   index=c("subsector", "SBI3d"), 
+	   index=c("subsector"),#, "SBI3d"), 
 	   type="comp", 
-	   title="Total value added in the sector Manufacturing",
+	  title="Total value added in the sector Manufacturing",
 	   subtitle="Growth w.r.t. last year",
-	   fontsize.labels=c(10,8))
+	   fontsize.labels=c(10,8),
+	   aspRatio=asp)
 dev.off()
 
 # pdf(file="tm_comp3.pdf", width=7, height=6)

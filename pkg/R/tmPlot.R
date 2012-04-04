@@ -8,7 +8,7 @@
 #' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". For small multiples, a vector of variable names (one for each treemap) should be given.
 #' @param type the type of the treemap:
 #' \describe{
-#'		\item{\code{"comp"}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable (in percentages)}
+#'		\item{\code{"comp"}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable in percentages. Note: the negative scale may be different from the positive scale in order to compensate for the ratio distribution.}
 #'		\item{\code{"dens"}:}{colors indicate density. This is aanalogous to a population density map where \code{vSize}-values are area sizes, \code{vColor}-values are populations per area, and colors are computed as densities (i.e.\ population per squared km's).}
 #'		\item{\code{"linked"}:}{each object has a distinct color, which is useful for small multiples (objects are linked by color)}
 #'		\item{\code{"index"}:}{each aggregation level (defined by \code{index}) has a distinct color}
@@ -61,6 +61,7 @@ function(dtf,
 	lowerbound.cex.labels=0.4,
 	inflate.labels=FALSE,
 	force.print.labels=FALSE,
+	aspRatio=NA,
 	na.rm = FALSE) {
 	
 	#############
@@ -290,6 +291,7 @@ function(dtf,
 	###########
 	## Aggregate
 	###########
+	
 	vars <- unique(c(vSize, vColor))
 	
 	dtfDT <- as.data.table(dtf)
@@ -398,7 +400,8 @@ function(dtf,
 			inflate.labels=inflate.labels,
 			force.print.labels=force.print.labels,
 			cex_indices=cex_indices,
-			indexNames=index)
+			indexNames=index,
+			aspRatio)
 			
 		upViewport()
 		iRow<-iRow+1
