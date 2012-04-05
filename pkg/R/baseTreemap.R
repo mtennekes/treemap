@@ -136,13 +136,10 @@ function(dat,
 		dats[[i]]$color <- datV[datL1[i]:datL2[i], color]
 	}
 	
-browser()	
 	pushViewport(vpDat)
 	grid.text(sizeTitle, y = unit(1, "npc") - unit(0.5, "lines"))
 	pushViewport(vpDat2)
 	
-	grid.rect()
-		
 	datWidth <- convertWidth(unit(1,"npc"), 
 							 "inches", valueOnly=TRUE)
 	datHeight <- convertHeight(unit(1,"npc"),
@@ -157,7 +154,7 @@ browser()
 		}
 	}
 	
-	vpDat3 <- viewport(name = "dataregion2", 
+	vpDat3 <- viewport(name = "dataregion3", 
 					   x = unit(0.5, "npc"),
 					   y = unit(0.5, "npc"),
 					   width = unit(datWidth, "inches"),
@@ -165,16 +162,10 @@ browser()
 					   gp=gpar(fontsize=fsData),
 					   just = c("centre", "centre"))
 	
-	
-	
 	pushViewport(vpDat3)
-	grid.rect(name="TMrect")
-		
-	# Determine window size
-	dataRec <- data.table(X0=0,Y0=0,
-		W=convertWidth(unit(1, "grobwidth", "TMrect"),"inches",valueOnly=TRUE),
-		H=convertHeight(unit(1, "grobheight", "TMrect"),"inches",valueOnly=TRUE))
+	grid.rect()
 
+	dataRec <- data.table(X0=0, Y0=0, W=datWidth, H=datHeight)
 	recList <- data.table(ind=factor(NULL), 
 						  clevel=numeric(0),
 						  color=character(0),
@@ -202,8 +193,6 @@ browser()
 	color <- NULL; rm(color); #trick R CMD check
 	ind <- NULL; rm(ind); #trick R CMD check
 	clevel <- NULL; rm(clevel); #trick R CMD check
-
-	browser()
 
 	for (i in 1:depth) {
 		dats_i <- dats[[i]]
@@ -233,7 +222,7 @@ browser()
 			subTM <- function(x) {
 				rec <- unlist((x[1, list(X0, Y0, W, H)]))
 				x$index <- x[[paste("index", i, sep="")]]
-				
+				x <- x[order(x$sortInd),]
 				value <- x$value
 				names(value) <- x[[paste("index", i, sep="")]]
 				

@@ -1,15 +1,15 @@
 Package: treemap
 Type: Package
 Title: Treemap visualization
-Version: 1.0-3
-Date: 2012-03-30
+Version: 1.0-4
+Date: 2012-04-05
 Author: Martijn Tennekes
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
 Description: A treemap is a space-filling visualization of hierarchical
     structures. With this package different kind of treemaps can be generated,
     such as comparison treemaps and density treemaps. Small multiples are also
     supported.
-License: GPL version 3
+License: GPL-3
 LazyLoad: yes
 Depends:
     grid,

@@ -29,6 +29,7 @@
 #' @param lowerbound.cex.labels multiplier between 0 and 1 that sets the lowerbound for the data label font sizes: 0 means draw all data labels, and 1 means only draw data labels if they fit at \code{fontsize.data}
 #' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed (also when they don't fit)
+#' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
 #' @param na.rm logical that determines whether missing values are omitted during aggregation
 #' @return A list is silently returned:
 #'	\item{tm}{list with for each treemap a \code{data.frame} containing information about the rectangles}

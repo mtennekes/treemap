@@ -43,9 +43,17 @@ ps7f <- aggregate(ps07final[,10:24], by=list(sector=ps07final$sector, subsector=
 psfinal <- merge(ps6f, ps7f, by=c("sector", "subsector", "SBI3d", "SBI"),suffixes = c(".2006",".2007"))
 
 ## data editing workshop
+load_all("pkg")
 
 
-pdf(file="tm_comp1.pdf", width=7, height=6)
+## test
+r1[3]/r1[4]
+r2[3]/r2[4]
+v1
+v2
+
+
+#pdf(file="tm_comp1.pdf", width=7, height=6)
 tm1 <- tmPlot(psfinal, 
 	   vSize="value_added.2007", 
 	   vColor="value_added.2006", 
@@ -55,25 +63,25 @@ tm1 <- tmPlot(psfinal,
 	   subtitle="Growth w.r.t. last year",
 	   fontsize.labels=c(10,8),
 	   aspRatio=1.3)
-dev.off()
+#dev.off()
 
 ## determine aspRatio rectangle manufacturing
 asp <- (sum(tm1[[1]][[1]]$w[c(4, 8, 9)]) / 
 	sum(tm1[[1]][[1]]$h[c(4, 10, 12)])) * 1.3
 
+asp <- 0.9560403
 
-
-pdf(file="tm_comp2.pdf", width=7, height=6) #7,6
+#pdf(file="tm_comp2.pdf", width=7, height=6) #7,6
 tm2 <- tmPlot(subset(psfinal,subset=sector=="Manufacturing"), 
 	   vSize="value_added.2007", 
 	   vColor="value_added.2006", 
-	   index=c("subsector"),#, "SBI3d"), 
+	   index=c("subsector", "SBI3d"), 
 	   type="comp", 
 	  title="Total value added in the sector Manufacturing",
 	   subtitle="Growth w.r.t. last year",
 	   fontsize.labels=c(10,8),
 	   aspRatio=asp)
-dev.off()
+#dev.off()
 
 # pdf(file="tm_comp3.pdf", width=7, height=6)
 # tmPlot(subset(psfinal,subset=subsector=="Machinery and equipment n.e.c."), 

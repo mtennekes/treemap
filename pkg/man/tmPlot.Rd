@@ -8,7 +8,7 @@
     fontsize.title = 14, fontsize.labels = 11,
     fontsize.legend = 12, lowerbound.cex.labels = 0.4,
     inflate.labels = FALSE, force.print.labels = FALSE,
-    na.rm = FALSE)
+    aspRatio = NA, na.rm = FALSE)
 }
 \arguments{
   \item{dtf}{a data.frame. Required.}
@@ -32,7 +32,9 @@
   \item{type}{the type of the treemap: \describe{
   \item{\code{"comp"}:}{colors indicate change of the
   \code{vSize}-variable with respect to the
-  \code{vColor}-variable (in percentages)}
+  \code{vColor}-variable in percentages. Note: the negative
+  scale may be different from the positive scale in order
+  to compensate for the ratio distribution.}
   \item{\code{"dens"}:}{colors indicate density. This is
   aanalogous to a population density map where
   \code{vSize}-values are area sizes, \code{vColor}-values
@@ -105,6 +107,10 @@
   \item{force.print.labels}{logical that determines whether
   data labels are being forced to be printed (also when
   they don't fit)}
+
+  \item{aspRatio}{preferred aspect ratio of the main
+  rectangle, defined by width/height. When set to
+  \code{NA}, the available window size is used.}
 
   \item{na.rm}{logical that determines whether missing
   values are omitted during aggregation}

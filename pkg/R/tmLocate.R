@@ -45,7 +45,8 @@ function(npcClick, tmSave) {
 		downViewport(paste("tm",index,sep=""))
 		downViewport("dataregion")
 		downViewport("dataregion2")
-
+		downViewport("dataregion3")
+		
 		# determine treemap size in inches
 		sizeTm <- c(convertWidth(unit(1, "npc"), "inches", valueOnly=TRUE),
               convertHeight(unit(1, "npc"), "inches", valueOnly=TRUE))
@@ -54,7 +55,7 @@ function(npcClick, tmSave) {
 		trans <- current.transform()
 		
 		# go to root viewport
-		upViewport(n=4)
+		upViewport(n=5)
 
 		# calculate click (inches) relative to selected treemap
 		tempCoor <- c(unlist(inchClick), 1) %*% solve(trans)
