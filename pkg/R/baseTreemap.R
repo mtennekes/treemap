@@ -29,9 +29,10 @@ function(dat,
 	fsLegend <- min(fontsize.legend, (height*3.6), (width*3.6))
 	
 	# Determine legenda viewports
-	if (legenda) {
-		legWidth <- min(unit(5, "inches"), convertWidth(unit(0.9,
-															 "npc")-2*plotMargin,"inches"))
+	browser()
+	if (legenda && legend.position == "bottom") {
+		legWidth <- min(unit(5, "inches"), 
+						convertWidth(unit(0.9, "npc")-2*plotMargin,"inches"))
 		legHeight <- unit(fsLegend * 0.06, "inches")
 		
 		vpLeg <- viewport(name = "legenda",
@@ -49,17 +50,55 @@ function(dat,
 		  height = legHeight*0.7,
 		  gp=gpar(fontsize=fsLegend),
 		  just = c("left", "bottom"))
-	} else legHeight <- unit(0,"inches")
-
-	# Determine treemap viewports
-	vpDat <- viewport(name = "dataregion", 
-	  x = plotMargin,
-	  y = legHeight + 0.5*plotMargin,
-	  width = unit(1, "npc") - 2 * plotMargin,
-	  height = unit(1,"npc") - legHeight - plotMargin,
-	  gp=gpar(fontsize=fsTitle),
-	  just = c("left", "bottom"))
-
+		vpDat <- viewport(name = "dataregion", 
+						  x = plotMargin,
+						  y = legHeight + 0.5*plotMargin,
+						  width = unit(1, "npc") - 2 * plotMargin,
+						  height = unit(1,"npc") - legHeight - plotMargin,
+						  gp=gpar(fontsize=fsTitle),
+						  just = c("left", "bottom"))
+	} if (legenda && legend.position == "right") {
+		maxString <- ifelse(type=="categorical", 
+							names(which.max(sapply(as.character(
+								dat$value2), nchar))[1]),
+							"abc123")
+		
+		legWidth <- unit(convertWidth(stringWidth(maxString), 
+								 "inches", valueOnly=TRUE) + 2, "inches")
+		legHeight <- min(unit(5, "inches"), 
+						 convertWidth(unit(0.9, "npc")-plotMargin,"inches"))
+		
+		vpLeg <- viewport(name = "legenda",
+						  x = plotMargin,
+						  y = 0.5*plotMargin,
+						  width = unit(1, "npc") - 2 * plotMargin,
+						  height = legHeight,
+						  gp=gpar(fontsize=fsLegend),
+						  just = c("left", "bottom"))
+		
+		vpLeg2 <- viewport(name = "legenda2",
+						   x = (unit(1, "npc") - legWidth)*0.5,
+						   y = legHeight*0.3,
+						   width = legWidth,
+						   height = legHeight*0.7,
+						   gp=gpar(fontsize=fsLegend),
+						   just = c("left", "bottom"))
+		vpDat <- viewport(name = "dataregion", 
+						  x = 0.5 * plotMargin,
+						  y = 0.5 * plotMargin,
+						  width = unit(1, "npc") - plotMargin - legWidth,
+						  height = unit(1,"npc") - plotMargin,
+						  gp=gpar(fontsize=fsTitle),
+						  just = c("left", "bottom"))
+	} else {
+		vpDat <- viewport(name = "dataregion", 
+						  x = plotMargin,
+						  y = 0.5*plotMargin,
+						  width = unit(1, "npc") - 2 * plotMargin,
+						  height = unit(1,"npc") - plotMargin,
+						  gp=gpar(fontsize=fsTitle),
+						  just = c("left", "bottom"))
+	}
 	vpDat2 <- viewport(name = "dataregion2", 
 					   x = 0,
 					   y = 0,
@@ -73,12 +112,24 @@ function(dat,
 #browser()
 	dats <- list()
 	datV <- data.table(value=numeric(0), value2=numeric(0), index=character(0), level=integer(0))
+	getMode <- function(x) which.max(table(x))[1]
+	
 	for (i in 1:depth) {
 		indexList <- paste("index", 1:i, sep="")
 		value <- NULL; rm(value)
 		value2 <- NULL; rm(value2)
 		sortInd <- NULL; rm(sortInd)
-		dats_i <- dat[, lapply(.SD[, list(value, value2, sortInd)], sum), by=indexList]
+		if (type=="categorical") {
+			dats_i <- dat[, list(value=sum(value),
+								 value2=getMode(value2),
+								 sortInd=sum(sortInd)), 
+								 by=indexList]
+			dats_i$value2 <- factor(dats_i$value2,
+									labels=levels(dat$value2))
+		} else {
+			dats_i <- dat[, lapply(.SD[, list(value, value2, sortInd)],
+								   sum), by=indexList]
+		}
 		
 		## remove rectangles of size 0
 		dats_i <- dats_i[dats_i$value>0, ]
@@ -123,6 +174,9 @@ function(dat,
 		datV$color <- index2col(datV, palette)
 	} else if (type == "value") {
 		datV$color <- value2col(datV, legenda, palette, vColorRange)
+	} else if (type == "categorical") {
+		datV$color <- cat2col(datV, legenda, palette,
+							  levels(dat$value2))
 	}
 	if (legenda) {	
 		upViewport()
@@ -317,6 +371,13 @@ function(dat,
 			recs_fill_norm$txt$gp$col[cover] <- NA
 			recs_fill_norm$bg$gp$fill[cover] <- NA
 		}
+		#browser()
+		if (type=="linked") {
+			if (!is.na(recs_trans_norm$txtbg[1]))
+				recs_trans_norm$txtbg$gp$fill <- NA
+			if (!is.na(recs_trans_bold$txtbg[1]))
+				recs_trans_bold$txtbg$gp$fill <- "#4C4C4C4C"
+		}
 	
 		drawRecs(recs_fill_norm)
 		drawRecs(recs_trans_norm)
@@ -334,7 +395,8 @@ function(dat,
 	mat[mat=="NA"] <- NA
 	res <- as.data.frame(mat)
 	names(res) <- indexNames
-	resultDat <- cbind(res, as.data.frame(recList[whichFill, list(x0, y0, w, h)]))
+	resultDat <- cbind(res, as.data.frame(recList[whichFill, 
+												  list(x0, y0, w, h)]))
 	
 	upViewport(3)
 	#upViewport()

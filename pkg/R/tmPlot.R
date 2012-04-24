@@ -8,11 +8,12 @@
 #' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". For small multiples, a vector of variable names (one for each treemap) should be given.
 #' @param type the type of the treemap:
 #' \describe{
+#'		\item{\code{"value"}:}{the \code{vColor}-variable is directly mapped to a color palette (by default Brewer's diverging color palette "RdBu").}
+#'		\item{\code{"categorical"}:}{\code{vColor} is a categorical variable that determines the colors}
 #'		\item{\code{"comp"}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable in percentages. Note: the negative scale may be different from the positive scale in order to compensate for the ratio distribution.}
 #'		\item{\code{"dens"}:}{colors indicate density. This is aanalogous to a population density map where \code{vSize}-values are area sizes, \code{vColor}-values are populations per area, and colors are computed as densities (i.e.\ population per squared km's).}
-#'		\item{\code{"linked"}:}{each object has a distinct color, which is useful for small multiples (objects are linked by color)}
-#'		\item{\code{"index"}:}{each aggregation level (defined by \code{index}) has a distinct color}
-#'		\item{\code{"value"}:}{the \code{vColor}-variable is directly mapped to a color palette (by default Brewer's diverging color palette "RdBu").}}
+#'		\item{\code{"linked"}:}{each object has a distinct color, which can be useful for small multiples (objects are linked by color)}
+#'		\item{\code{"index"}:}{each aggregation level (defined by \code{index}) has a distinct color}}
 #' @param title title of the treemap. For small multiples, a vector of titles should be given. Titles are used to describe the sizes of the rectangles.
 #' @param subtitle subtitle of the treemap. For small multiples, a vector of subtitles should be given. Subtitles are used to describe the colors of the rectangles.
 #' @param algorithm name of the used algorithm: "squarified" or "pivotSize". The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
@@ -122,7 +123,7 @@ function(dtf,
 	}	
 	
 	# type
-	if (!type %in% c("comp", "dens", "linked", "index", "value")) 
+	if (!type %in% c("value", "categorical", "comp", "dens", "linked", "index")) 
 		stop("Invalid type")
 	legenda <- (type!="linked" && type!="index")
 	
@@ -219,6 +220,8 @@ function(dtf,
 			palette <- brewer.pal(8,"Set2")
 		} else if (type == "value") {
 			palette <- brewer.pal(11,"RdBu")
+		} else if (type == "categorical") {
+			palette <- brewer.pal(12,"Set3")
 		}
 	} else {
 		reverse <- (substr(palette[1], 1, 1)=="-")
@@ -299,14 +302,41 @@ function(dtf,
 	setkeyv(dtfDT, index)
 	
 	.SD <- NULL; rm(.SD); #trick R CMD check
-	dat <- dtfDT[ , lapply(.SD[, vars, with=FALSE], sum, na.rm=na.rm), by=index]
+	
+	## aggregate numeric variable
+	varsNum <- sapply(dtfDT, is.numeric)[vars]
+	dat <- dtfDT[ , lapply(.SD[, vars[varsNum], with=FALSE], sum, na.rm=na.rm), by=index]
+	
+	## aggregate categorical variables: for each aggregate, get the mode
+	for (i in index) {
+		if (any(vars==i)) {
+			i_new <- paste(i, "tmp", sep="__")
+			dtfDT[[i_new]] <- dtfDT[[i]]
+			vars[vars==i] <- i_new
+			vColor[vColor==i] <- i_new
+		}
+	}
+	varsCatIndex <- intersect(vars[!varsNum], index)
+	if (length(varsCatIndex)!=0) {
+		vars
+		
+		vars[vars %in% varsCatIndex] <- paste()
+	}
+	
+	datCat <- dtfDT[ , lapply(.SD[, vars[!varsNum], with=FALSE],
+							  function(x)which.max(table(x))), by=index]
+	dat <- data.table(dat, datCat[, vars[!varsNum], with=FALSE])
+	for (v in vars[!varsNum]) {
+		dat[[v]] <- factor(dat[[v]], labels=levels(dtfDT[[v]]))
+	}
+	
 	
 	depth <- length(index)
 	indexList <- paste("index", 1:depth, sep="")
 	
 	setnames(dat, 1:depth, indexList)
 	
-	minima <- sapply(dat[, -(1:depth), with=FALSE], min)
+	minima <- sapply(dat[, vars[varsNum], with=FALSE], min)
 	if (any(is.na(minima)))
 		stop(paste("Column(s) ",
 				   paste(names(minima)[is.na(minima)],
@@ -314,12 +344,13 @@ function(dtf,
 	
 	if (min(minima[vSize]) < 0)
 		stop(paste("Column(s) ",
-				   paste(names(minima[vSize])[minima[vSize]<0], collapse=", "),
+				   paste(names(minima[vSize])[minima[vSize]<0],
+				   	  collapse=", "),
 				   " contain negative values.", 
 				   sep=""))
 	
 	if (!is.null(vColor)) {
-		scaledInd <- which(vColorX!=1)
+		scaledInd <- which(vColorX!=1 & varsNum[match(vColor, vars)])
 		for (i in scaledInd) {
 			colName <- paste(vColor[i], vColorX[i], sep="__")
 			dat[[colName]] <- dat[[vColor[i]]] * vColorX[i]

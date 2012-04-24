@@ -53,7 +53,7 @@ v1
 v2
 
 
-#pdf(file="tm_comp1.pdf", width=7, height=6)
+pdf(file="tm_comp1.pdf", width=7, height=6)
 tm1 <- tmPlot(psfinal, 
 	   vSize="value_added.2007", 
 	   vColor="value_added.2006", 
@@ -63,15 +63,15 @@ tm1 <- tmPlot(psfinal,
 	   subtitle="Growth w.r.t. last year",
 	   fontsize.labels=c(10,8),
 	   aspRatio=1.3)
-#dev.off()
+dev.off()
 
 ## determine aspRatio rectangle manufacturing
-asp <- (sum(tm1[[1]][[1]]$w[c(4, 8, 9)]) / 
-	sum(tm1[[1]][[1]]$h[c(4, 10, 12)])) * 1.3
+asp <- (sum(tm1[[1]][[1]]$w[c(4, 10)]) / 
+	sum(tm1[[1]][[1]]$h[c(4, 9, 13)])) * 1.3
 
-asp <- 0.9560403
+#asp <- 0.9560403
 
-#pdf(file="tm_comp2.pdf", width=7, height=6) #7,6
+pdf(file="tm_comp2.pdf", width=7, height=6) #7,6
 tm2 <- tmPlot(subset(psfinal,subset=sector=="Manufacturing"), 
 	   vSize="value_added.2007", 
 	   vColor="value_added.2006", 
@@ -81,17 +81,18 @@ tm2 <- tmPlot(subset(psfinal,subset=sector=="Manufacturing"),
 	   subtitle="Growth w.r.t. last year",
 	   fontsize.labels=c(10,8),
 	   aspRatio=asp)
-#dev.off()
+dev.off()
 
 # pdf(file="tm_comp3.pdf", width=7, height=6)
-# tmPlot(subset(psfinal,subset=subsector=="Machinery and equipment n.e.c."), 
+# tmPlot(subset(psfinal,subset=subsector=="Electrical and optical equipment"), 
 # 	   vSize="value_added.2007", 
 # 	   vColor="value_added.2006", 
 # 	   index=c("SBI3d", "SBI"), 
 # 	   type="comp", 
 # 	   title="Total value added in the subsector Machinery and equipment n.e.c.",
 # 	   subtitle="Growth w.r.t. last year",
-# 	   fontsize.labels=c(10,8))
+# 	   fontsize.labels=c(10,8),
+# 	   aspRatio=1)
 # dev.off()
 
 
@@ -99,12 +100,13 @@ tm2 <- tmPlot(subset(psfinal,subset=sector=="Manufacturing"),
 pdf(file="tm_dens.pdf", width=7, height=6) #7,6
 	tmPlot(subset(psfinal,subset=sector=="Manufacturing"), 
 		   vSize="employees.2007", 
-		   vColor="turnover.2007*1000", 
+		   vColor="turnover.2007/1000", 
 		   index=c("subsector", "SBI3d"), 
 		   type="dens",
 		   title="Number of persons employed in the sector Manufacturing",
 		   subtitle="Turnover (in millions) per person employed",
-		   fontsize.labels=c(10,8), lowerbound.cex.labels=0.3)
+		   fontsize.labels=c(10,8), lowerbound.cex.labels=0.3,
+		   aspRatio=1.3)
 dev.off()
 
 #zoom in
@@ -127,6 +129,8 @@ system.time({
 
 
 
+
+
 library(portfolio)
 data(dow.jan.2005)
 map.market(id    = dow.jan.2005$symbol,
@@ -141,6 +145,54 @@ tmPlot(dow.jan.2005,
 	   algorithm="squarified",
 	   palette="RdYlBu",
 	   subtitle = "month.ret (in percentages)",
-	   vColorRange=c(-13,13))
+	   vColorRange=c(-13,13),
+	   algorithm="squarified")
+
+
+data(sbsData)
+
+
+### treemap examples
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="employees08",
+	   type="comp",
+	   algorithm="squarified",
+	   fontsize.labels=14
+	   )
+
+sbsData <- transform(sbsData, temp =
+	(employees09 - employees08) / employees08 * 100)
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="temp",
+	   type="value",
+	   algorithm="squarified",
+	   fontsize.labels=14,
+	   vColorRange=c(-80,80)
+	   )
+
+
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="temp",
+	   type="value",
+	   algorithm="squarified",
+	   fontsize.labels=14
+	   )
+
+### test type==categorical
+sbsData$cat <- factor(rep(1:4, length.out=25),labels=letters[1:4])
+
+load_all("pkg")
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="section",
+	   type="categorical")
+
 
 

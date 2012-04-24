@@ -17,6 +17,7 @@ Depends:
     data.table
 Collate:
     'baseTreemap.R'
+    'cat2col.R'
     'comp2col.R'
     'createRec.R'
     'dens2col.R'
