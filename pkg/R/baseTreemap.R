@@ -2,7 +2,7 @@ baseTreemap <-
 function(dat,
 	type,
 	algorithm,
-	legenda,
+	position.legend,
 	sizeTitle, 
 	colorTitle,
 	palette,
@@ -28,9 +28,8 @@ function(dat,
 	fsData <- min(fontsize.labels, (height*3.6), (width*3.6))
 	fsLegend <- min(fontsize.legend, (height*3.6), (width*3.6))
 	
-	# Determine legenda viewports
-	browser()
-	if (legenda && legend.position == "bottom") {
+	# Determine legend viewports
+	if (position.legend == "bottom") {
 		legWidth <- min(unit(5, "inches"), 
 						convertWidth(unit(0.9, "npc")-2*plotMargin,"inches"))
 		legHeight <- unit(fsLegend * 0.06, "inches")
@@ -57,30 +56,26 @@ function(dat,
 						  height = unit(1,"npc") - legHeight - plotMargin,
 						  gp=gpar(fontsize=fsTitle),
 						  just = c("left", "bottom"))
-	} if (legenda && legend.position == "right") {
+	} else if (position.legend == "right") {
 		maxString <- ifelse(type=="categorical", 
 							names(which.max(sapply(as.character(
 								dat$value2), nchar))[1]),
-							"abc123")
-		
+							"abcde12345")
 		legWidth <- unit(convertWidth(stringWidth(maxString), 
-								 "inches", valueOnly=TRUE) + 2, "inches")
-		legHeight <- min(unit(5, "inches"), 
-						 convertWidth(unit(0.9, "npc")-plotMargin,"inches"))
-		
+								 "inches", valueOnly=TRUE)+1, "inches")
 		vpLeg <- viewport(name = "legenda",
-						  x = plotMargin,
+						  x = unit(1, "npc") - 0.5*plotMargin - legWidth,
 						  y = 0.5*plotMargin,
-						  width = unit(1, "npc") - 2 * plotMargin,
-						  height = legHeight,
+						  width = legWidth,
+						  height = unit(1, "npc") - plotMargin,
 						  gp=gpar(fontsize=fsLegend),
 						  just = c("left", "bottom"))
 		
 		vpLeg2 <- viewport(name = "legenda2",
-						   x = (unit(1, "npc") - legWidth)*0.5,
-						   y = legHeight*0.3,
-						   width = legWidth,
-						   height = legHeight*0.7,
+						   x = 0,
+						   y = 0,
+						   width = unit(1,"npc"),
+						   height = unit(1,"npc") - unit(1.5, "lines"),
 						   gp=gpar(fontsize=fsLegend),
 						   just = c("left", "bottom"))
 		vpDat <- viewport(name = "dataregion", 
@@ -99,6 +94,7 @@ function(dat,
 						  gp=gpar(fontsize=fsTitle),
 						  just = c("left", "bottom"))
 	}
+	
 	vpDat2 <- viewport(name = "dataregion2", 
 					   x = 0,
 					   y = 0,
@@ -156,32 +152,32 @@ function(dat,
 					  			  level)])
 		dats[[i]] <- dats_i
 	}
-	
 	# Show legenda and determine colors
-	if (legenda) {	
+	if (position.legend!="none") {	
 		pushViewport(vpLeg)
-		grid.text(colorTitle, y = unit(0.5, "lines"))
+		if (position.legend=="bottom") {
+			grid.text(colorTitle, y = unit(0.5, "lines"))
+		} else grid.text(colorTitle, x = 0.5, y = unit(1, "npc") - unit(0.5, "lines"), just="center")
 		pushViewport(vpLeg2)
 	}
 	
 	if (type == "comp") {
-		datV$color <- comp2col(datV, legenda, palette)
+		datV$color <- comp2col(datV, position.legend, palette)
 	} else if (type == "dens") {
-		datV$color <- dens2col(datV, legenda, palette) 
+		datV$color <- dens2col(datV, position.legend, palette) 
 	} else if (type == "linked") {
-		datV$color <- fixed2col(datV, palette)
+		datV$color <- linked2col(datV, position.legend, palette)
 	} else if (type == "index") {
-		datV$color <- index2col(datV, palette)
+		datV$color <- index2col(datV, position.legend, palette,
+								indexNames)
 	} else if (type == "value") {
-		datV$color <- value2col(datV, legenda, palette, vColorRange)
+		datV$color <- value2col(datV, position.legend, palette, 
+								vColorRange)
 	} else if (type == "categorical") {
-		datV$color <- cat2col(datV, legenda, palette,
+		datV$color <- cat2col(datV, position.legend, palette,
 							  levels(dat$value2))
 	}
-	if (legenda) {	
-		upViewport()
-		upViewport()
-	}
+	if (position.legend!="none") upViewport(2)
 	
 	datL <- sapply(dats, FUN=nrow)
 	datL1 <- cumsum(c(1, datL[-depth]))

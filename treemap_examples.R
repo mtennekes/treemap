@@ -194,5 +194,10 @@ tmPlot(sbsData,
 	   vColor="section",
 	   type="categorical")
 
-
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="section",
+	   type="categorical",
+	   position.legend="bottom")
 

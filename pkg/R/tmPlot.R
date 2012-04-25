@@ -30,6 +30,7 @@
 #' @param lowerbound.cex.labels multiplier between 0 and 1 that sets the lowerbound for the data label font sizes: 0 means draw all data labels, and 1 means only draw data labels if they fit at \code{fontsize.data}
 #' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed (also when they don't fit)
+#' @param position.legend position of the legend: "bottom", "right", or "none"
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
 #' @param na.rm logical that determines whether missing values are omitted during aggregation
 #' @return A list is silently returned:
@@ -63,6 +64,7 @@ function(dtf,
 	lowerbound.cex.labels=0.4,
 	inflate.labels=FALSE,
 	force.print.labels=FALSE,
+	position.legend=ifelse(type %in% c("categorical", "index"), "right", ifelse(type=="linked", "none", "bottom")),
 	aspRatio=NA,
 	na.rm = FALSE) {
 	
@@ -125,7 +127,6 @@ function(dtf,
 	# type
 	if (!type %in% c("value", "categorical", "comp", "dens", "linked", "index")) 
 		stop("Invalid type")
-	legenda <- (type!="linked" && type!="index")
 	
 	# title	
 	if (!is.na(title[1]) && length(title) != n) {
@@ -286,11 +287,20 @@ function(dtf,
 		class(force.print.labels) !="logical")
 		stop("Invalid force.print.labels")
 
-	# force.print.labels
+	# position.legend
+	if (!position.legend %in% c("right", "bottom", "none")) 
+		stop("Invalid position.legend")	
+	
+	# aspRatio
+	if (length(aspRatio)!=1 || (!is.na(aspRatio[1]) && !is.numeric(aspRatio)))
+		stop("Invalid aspRatio")
+	
+	# na.rm
 	if (length(na.rm)!=1 ||
 		class(na.rm) !="logical")
 		stop("Invalid na.rm")
 
+	
 	
 	###########
 	## Aggregate
@@ -349,7 +359,7 @@ function(dtf,
 				   " contain negative values.", 
 				   sep=""))
 	
-	if (!is.null(vColor)) {
+	if (!is.null(vColor) && !(type %in% c("index", "linked"))) {
 		scaledInd <- which(vColorX!=1 & varsNum[match(vColor, vars)])
 		for (i in scaledInd) {
 			colName <- paste(vColor[i], vColorX[i], sep="__")
@@ -420,7 +430,7 @@ function(dtf,
 			dat=dat_i,
 			type=type,
 			algorithm=algorithm,
-			legenda=legenda,
+			position.legend=position.legend,
 			sizeTitle=vSizeNames[i],
 			colorTitle=vColorNames[i],
 			palette=palette,

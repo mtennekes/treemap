@@ -1,5 +1,6 @@
-fixed2col <-
-function(dat, palette) {
+linked2col <-
+function(dat, position.legend, palette) {
+	
 	color <- palette 
 
 	sortID <- sort(as.character(dat$index),decreasing=FALSE,index.return=TRUE)$ix
