@@ -194,10 +194,22 @@ tmPlot(sbsData,
 	   vColor="section",
 	   type="categorical")
 
+
+sbsData$employees08[2] <- 0
+sbsData$employees09[14] <- 0.0001
+load_all("pkg")
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="employees08",
+	   type="comp",
+	   position.legend="bottom")
+
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="section",
 	   type="categorical",
-	   position.legend="bottom")
+	   position.legend="right",
+	   fontsize.legend=18)
 

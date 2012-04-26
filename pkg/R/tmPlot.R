@@ -29,6 +29,7 @@
 #' @param fontsize.legend (maximum) font size of the legend
 #' @param lowerbound.cex.labels multiplier between 0 and 1 that sets the lowerbound for the data label font sizes: 0 means draw all data labels, and 1 means only draw data labels if they fit at \code{fontsize.data}
 #' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles
+#' @param bg.labels background color of labels of high aggregation levels
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed (also when they don't fit)
 #' @param position.legend position of the legend: "bottom", "right", or "none"
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
@@ -63,6 +64,7 @@ function(dtf,
 	fontsize.legend=12,
 	lowerbound.cex.labels=0.4,
 	inflate.labels=FALSE,
+	bg.labels=NA,
 	force.print.labels=FALSE,
 	position.legend=ifelse(type %in% c("categorical", "index"), "right", ifelse(type=="linked", "none", "bottom")),
 	aspRatio=NA,
@@ -282,6 +284,19 @@ function(dtf,
 		class(inflate.labels) !="logical")
 		stop("Invalid inflate.labels")
 	
+	# bg.labels
+	if (!is.na(bg.labels[1])) {
+		if ((length(bg.labels)!=1) || 
+			class(try(col2rgb(bg.labels), silent=TRUE))=="try-error") {
+			stop("Invalid bg.labels")
+		}
+	} else {
+		if (type=="linked")
+			bg.labels <- "#4C4C4C4C"
+	}
+		
+	
+	
 	# force.print.labels
 	if (length(force.print.labels)!=1 ||
 		class(force.print.labels) !="logical")
@@ -333,9 +348,11 @@ function(dtf,
 		vars[vars %in% varsCatIndex] <- paste()
 	}
 	
-	datCat <- dtfDT[ , lapply(.SD[, vars[!varsNum], with=FALSE],
+	if (!all(varsNum)) {
+		datCat <- dtfDT[ , lapply(.SD[, vars[!varsNum], with=FALSE],
 							  function(x)which.max(table(x))), by=index]
-	dat <- data.table(dat, datCat[, vars[!varsNum], with=FALSE])
+		dat <- data.table(dat, datCat[, vars[!varsNum], with=FALSE])
+	}
 	for (v in vars[!varsNum]) {
 		dat[[v]] <- factor(dat[[v]], labels=levels(dtfDT[[v]]))
 	}
@@ -440,6 +457,7 @@ function(dtf,
 			fontsize.legend=fontsize.legend,
 			lowerbound.cex.labels=lowerbound.cex.labels,
 			inflate.labels=inflate.labels,
+			bg.labels=bg.labels,
 			force.print.labels=force.print.labels,
 			cex_indices=cex_indices,
 			indexNames=index,
