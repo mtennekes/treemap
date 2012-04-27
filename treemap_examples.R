@@ -198,18 +198,23 @@ tmPlot(sbsData,
 sbsData$employees08[2] <- 0
 sbsData$employees09[14] <- 0.0001
 load_all("pkg")
-tmPlot(sbsData, 
+tm <- tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08",
-	   type="comp",
-	   position.legend="bottom")
+	   vSize=c("employees09","turnover09"), 
+	   vColor=c("employees08","turnover08"),
+	   type="value",
+	   position.legend="bottom",
+	   bg.labels="#CCCCCCAA")
 
-tmPlot(sbsData, 
+clc <- tmClick()
+tmLocate(clc, tm)
+
+tm <- tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="section",
+	   vSize=c("employees09", "turnover09", "purchases09"), 
+	   vColor=rep("section",3),
 	   type="categorical",
 	   position.legend="right",
-	   fontsize.legend=18)
+	   fontsize.legend=8,
+	   bg.labels="#CCCCCCAA")
 

@@ -214,7 +214,7 @@ function(dat,
 		}
 	}
 	
-	vpDat3 <- viewport(name = "dataregion3", 
+	vpDat3 <- viewport(name = "data_asp", 
 					   x = unit(0.5, "npc"),
 					   y = unit(0.5, "npc"),
 					   width = unit(datWidth, "inches"),
@@ -351,6 +351,7 @@ function(dat,
 									 filled=FALSE, 
 									 label="normal",
 									 labellb=lowerbound.cex.labels, 
+									 labelbg = bg.labels, 
 									 lwd = lwds[!whichFill & !whichBold],
 									 inflate.labels=inflate.labels,
 									 force.print.labels=force.print.labels, 
@@ -360,12 +361,11 @@ function(dat,
 									 filled=FALSE, 
 									 label="bold", 
 									 labellb=lowerbound.cex.labels, 
-									 labelbg = TRUE, 
+									 labelbg = bg.labels, 
 									 lwd = lwds[!whichFill & whichBold], 
 									 inflate.labels=inflate.labels,
 									 force.print.labels=force.print.labels, 
 									 cex_index=cex_indices[1]) 
-		
 		cover <- overlap(recs_fill_norm$txtbg, recs_trans_norm$txtbg)
 		if (!is.na(cover[1])) {
 			recs_fill_norm$txt$gp$col[cover] <- NA
@@ -377,12 +377,12 @@ function(dat,
 			recs_fill_norm$bg$gp$fill[cover] <- NA
 		}
 		#browser()
-		if (!is.na(bg.labels)) {
-			if (!is.na(recs_trans_norm$txtbg[1]))
-				recs_trans_norm$txtbg$gp$fill <- NA
-			if (!is.na(recs_trans_bold$txtbg[1]))
-				recs_trans_bold$txtbg$gp$fill <- bg.labels
-		}
+# 		if (!is.na(bg.labels)) {
+# 			if (!is.na(recs_trans_norm$txtbg[1]))
+# 				recs_trans_norm$txtbg$gp$fill <- NA
+# 			if (!is.na(recs_trans_bold$txtbg[1]))
+# 				recs_trans_bold$txtbg$gp$fill <- bg.labels
+# 		}
 	
 		drawRecs(recs_fill_norm)
 		drawRecs(recs_trans_norm)

@@ -7,7 +7,10 @@
     sortID = "-size", palette = NA, vColorRange = NA,
     fontsize.title = 14, fontsize.labels = 11,
     fontsize.legend = 12, lowerbound.cex.labels = 0.4,
-    inflate.labels = FALSE, force.print.labels = FALSE,
+    inflate.labels = FALSE,
+    bg.labels = ifelse(type \%in\% c("linked", "categorical"), "#CCCCCCAA", NA),
+    force.print.labels = FALSE,
+    position.legend = ifelse(type \%in\% c("categorical", "index"), "right", ifelse(type == "linked", "none", "bottom")),
     aspRatio = NA, na.rm = FALSE)
 }
 \arguments{
@@ -41,12 +44,14 @@
   are populations per area, and colors are computed as
   densities (i.e.\ population per squared km's).}
   \item{\code{"linked"}:}{each object has a distinct color,
-  which is useful for small multiples (objects are linked
-  by color)} \item{\code{"index"}:}{each aggregation level
-  (defined by \code{index}) has a distinct color}
+  which can be useful for small multiples (objects are
+  linked by color)} \item{\code{"index"}:}{each aggregation
+  level (defined by \code{index}) has a distinct color}
   \item{\code{"value"}:}{the \code{vColor}-variable is
   directly mapped to a color palette (by default Brewer's
-  diverging color palette "RdBu").}}}
+  diverging color palette "RdBu").}
+  \item{\code{"categorical"}:}{\code{vColor} is a
+  categorical variable that determines the color}}}
 
   \item{title}{title of the treemap. For small multiples, a
   vector of titles should be given. Titles are used to
@@ -57,13 +62,14 @@
   Subtitles are used to describe the colors of the
   rectangles.}
 
-  \item{algorithm}{name of the used algorithm: "squarified"
-  or "pivotSize". The squarified treemap algorithm (Bruls
-  et al., 2000) produces good aspect ratios, but ignores
-  the sorting order of the rectangles (\code{sortID}). The
-  ordered treemap, pivot-by-size, algorithm (Bederson et
-  al., 2002) takes the sorting order (\code{sortID}) into
-  account while aspect ratios are still acceptable.}
+  \item{algorithm}{name of the used algorithm:
+  \code{"squarified"} or \code{"pivotSize"}. The squarified
+  treemap algorithm (Bruls et al., 2000) produces good
+  aspect ratios, but ignores the sorting order of the
+  rectangles (\code{sortID}). The ordered treemap,
+  pivot-by-size, algorithm (Bederson et al., 2002) takes
+  the sorting order (\code{sortID}) into account while
+  aspect ratios are still acceptable.}
 
   \item{sortID}{name of the variable that determines the
   order in which the rectangles are placed from top left to
@@ -99,14 +105,27 @@
   \item{lowerbound.cex.labels}{multiplier between 0 and 1
   that sets the lowerbound for the data label font sizes: 0
   means draw all data labels, and 1 means only draw data
-  labels if they fit at \code{fontsize.data}}
+  labels if they fit at \code{fontsize.data}.}
 
   \item{inflate.labels}{logical that determines whether
-  data labels are inflated inside the rectangles}
+  data labels are inflated inside the rectangles.}
+
+  \item{bg.labels}{background color of labels of high
+  aggregation levels. If set to \code{NA}, the color is
+  determined by the color of the corresponding rectangle.
+  For categorical and linked treemaps, the default is
+  transparent grey (\code{"#CCCCCCAA"}), and for the other
+  types, \code{NA}.}
 
   \item{force.print.labels}{logical that determines whether
   data labels are being forced to be printed (also when
-  they don't fit)}
+  they don't fit).}
+
+  \item{position.legend}{position of the legend:
+  \code{"bottom"}, \code{"right"}, or \code{"none"}. For
+  categorical and index treemaps, \code{"right"} is the
+  default value, for linked treemap, \code{"none"}, and for
+  the other types, \code{"bottom"}.}
 
   \item{aspRatio}{preferred aspect ratio of the main
   rectangle, defined by width/height. When set to
@@ -133,7 +152,9 @@
 data(sbsData)
 
 
-### treemap examples
+########################
+### examples of treemap types
+########################
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
 tmPlot(sbsData, 
@@ -174,8 +195,7 @@ tmPlot(sbsData,
 	   vSize="employees09",
 	   type="index")
 
-
-# value treemap (aka Map of the Market)
+# value treemap: the color variable is directly mapped to the colors
 sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
@@ -183,7 +203,17 @@ tmPlot(sbsData,
 	   vColor="employees.growth",
 	   type="value")
 
-### layout algorithm: squarified
+# categorical treemap: colors are determined by a categorical variable
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="section",
+	   type="categorical")
+
+########################
+### layout algorithm
+########################
+
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
@@ -191,8 +221,9 @@ tmPlot(sbsData,
 	   type="value",
 	   algorithm="squarified")
 
-
+########################
 ### graphical options: fontsize
+########################
 
 # draw labels at fixed fontsize (fit only)
 tmPlot(sbsData, 
@@ -232,8 +263,9 @@ tmPlot(sbsData,
 	   lowerbound.cex.labels=1, 
 	   force.print.labels=TRUE)
 
-
+########################
 ### graphical options: color palette
+########################
 
 # terrain colors
 tmPlot(sbsData, 

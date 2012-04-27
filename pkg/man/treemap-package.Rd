@@ -5,9 +5,8 @@
 \title{Treemap visualization}
 \description{
   \tabular{ll}{ Package: \tab treemap\cr Type: \tab
-  Package\cr Version: \tab 1.0-4\cr Date: \tab
-  2012-04-05\cr License: \tab GPL-3\cr LazyLoad: \tab
-  yes\cr }
+  Package\cr Version: \tab 1.1\cr Date: \tab 2012-04-27\cr
+  License: \tab GPL-3\cr LazyLoad: \tab yes\cr }
 }
 \details{
   A treemap is a space-filling visualization of
@@ -39,13 +38,20 @@ tmPlot(sbsData,
 	   vColor="employees09*1000",
 	   type="dens")
 
-# value treemap (aka Map of the Market)
+# value treemap: the color variable is directly mapped to the colors
 sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="employees.growth", 
 	   type="value")
+
+# categorical treemap: colors are determined by a categorical variable
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="section",
+	   type="categorical")
 }
 \author{
   Martijn Tennekes \email{mtennekes@gmail.com}

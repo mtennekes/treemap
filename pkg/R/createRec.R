@@ -1,6 +1,6 @@
 # Creates graphical rectangle objects out of coordinates
 createRec <-
-function(recList, filled, label, labelbg=TRUE, labellb, lwd, inflate.labels, force.print.labels, cex_index) {
+function(recList, filled, label, labelbg=NA, labellb, lwd, inflate.labels, force.print.labels, cex_index) {
 #browser()
 	if (nrow(recList)==0) {
 		return(list(recs=NA, txt=NA, txtbg=NA))
@@ -11,10 +11,19 @@ function(recList, filled, label, labelbg=TRUE, labellb, lwd, inflate.labels, for
 
 	fill <- as.character(rgbcol2)
 	
-	if (labelbg) {
+	if (is.na(labelbg)) {
 		txtfill <- fill
+		txtRgb <- rgbcol
 	} else {
-		txtfill <- NA
+# 		labelbgRgb <- col2rgb(labelbg, alpha=TRUE)
+# 		
+# 		txtRgb <- apply(rgbcol, MARGIN=2, FUN=function(x, y, t){
+# 			x*(255-t)/255 + y*(t)/255}, labelbgRgb[1:3], labelbgRgb[4])
+# 		txtfill <- apply(txtRgb, MARGIN=2, FUN=function(x){rgb(x[1], x[2], x[3], maxColorValue=255)} )
+
+		txtfill <- rep(labelbg, nrow(recList))
+		txtRgb <- col2rgb(txtfill)
+		
 	}
 	
 	if (!filled) {
@@ -25,12 +34,9 @@ function(recList, filled, label, labelbg=TRUE, labellb, lwd, inflate.labels, for
 		height=unit(recList$h,"npc"), just=c("left","bottom"), name=recList$ind, gp = gpar(lwd=lwd, lex=1,fill = fill))
 	
 	if (label != "") {
-		if (filled || labelbg) {
-			light <- apply(rgbcol, MARGIN=2, mean) >= 128
-			tCol <- ifelse(light, "black", "white")
-		} else {
-			tCol <- c(rep("black",length(recs$x)))
-		}
+		light <- apply(txtRgb, MARGIN=2, mean) >= 128
+		tCol <- ifelse(light, "black", "white")
+
 		noText <- recs$name == ""
 		recs$name[noText] <- " "
 		txt <- str2rect(recs, fontcol=tCol, fill=txtfill, bold=( label=="bold"), inflate.labels=inflate.labels, cex_index=cex_index)

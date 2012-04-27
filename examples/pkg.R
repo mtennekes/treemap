@@ -15,10 +15,17 @@ tmPlot(sbsData,
 	   vColor="employees09*1000",
 	   type="dens")
 
-# value treemap (aka Map of the Market)
+# value treemap: the color variable is directly mapped to the colors
 sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
 	   vColor="employees.growth", 
 	   type="value")
+
+# categorical treemap: colors are determined by a categorical variable
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="section",
+	   type="categorical")

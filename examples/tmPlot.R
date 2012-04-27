@@ -3,7 +3,9 @@
 data(sbsData)
 
 
-### treemap examples
+########################
+### examples of treemap types
+########################
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
 tmPlot(sbsData, 
@@ -44,8 +46,7 @@ tmPlot(sbsData,
 	   vSize="employees09",
 	   type="index")
 
-
-# value treemap (aka Map of the Market)
+# value treemap: the color variable is directly mapped to the colors
 sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
@@ -53,7 +54,17 @@ tmPlot(sbsData,
 	   vColor="employees.growth",
 	   type="value")
 
-### layout algorithm: squarified
+# categorical treemap: colors are determined by a categorical variable
+tmPlot(sbsData, 
+	   index=c("section", "subsection"), 
+	   vSize="employees09", 
+	   vColor="section",
+	   type="categorical")
+
+########################
+### layout algorithm
+########################
+
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
@@ -61,8 +72,9 @@ tmPlot(sbsData,
 	   type="value",
 	   algorithm="squarified")
 
-
+########################
 ### graphical options: fontsize
+########################
 
 # draw labels at fixed fontsize (fit only)
 tmPlot(sbsData, 
@@ -102,8 +114,9 @@ tmPlot(sbsData,
 	   lowerbound.cex.labels=1, 
 	   force.print.labels=TRUE)
 
-
+########################
 ### graphical options: color palette
+########################
 
 # terrain colors
 tmPlot(sbsData, 
