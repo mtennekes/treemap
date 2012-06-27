@@ -256,7 +256,6 @@ function(dat,
 	for (i in 1:depth) {
 		dats_i <- dats[[i]]
 		if (i==1) {
-			
 			rec <- unlist(dats_i[1, list(X0, Y0, W, H)])
 			value<-dats_i$value
 			names(value) <- dats_i$index1

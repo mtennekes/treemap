@@ -315,10 +315,19 @@ function(dtf,
 	###########
 	## Aggregate
 	###########
-	
 	vars <- unique(c(vSize, vColor))
 	
 	dtfDT <- as.data.table(dtf)
+	
+	## cast non-factor index columns to factor
+	for (i in index) {
+		if (is.numeric(dtfDT[[1]])) { 
+			dtfDT[, i:=factor(dtfDT[[i]], levels=sort(unique(dtfDT[[i]]))), with=FALSE] 
+		} else if (!is.factor(dtfDT[[1]])) {
+			dtfDT[, i:=factor(dtfDT[[i]]), with=FALSE]
+		}
+	}
+	
 	setkeyv(dtfDT, index)
 	
 	.SD <- NULL; rm(.SD); #trick R CMD check
