@@ -1,3 +1,21 @@
+version 1.1-1
+- fixed bug with non-factor variables as categorical variable
+
+version 1.1
+- added categorical treemap type (each category has own color)
+- added position.legend argument, which determines whether legend is placed: "bottom", "right", or "none"
+
+version 1.0-4
+- two bugs fixed (category labels were not shown, and sorting order was sometimes neglected)
+- aspect ratio control added (argument aspRatio)
+
+version 1.0-3
+- faster aggregation (using data.table instead of plyr)
+- treemap types rearranged: also added type "index"
+- second layout algorithm implemented: squarified treemaps
+- more possibilities added to tweak font sizes
+- argument na.rm added in case there are missing values during aggregation
+
 version 0.11-1
 - updated examples of tmPlot
 
@@ -7,13 +25,3 @@ version 0.11
 - added parameters to tweak the font sizes
 - cleaned up the code
 
-version 1.0-3
-- faster aggregation (using data.table instead of plyr)
-- treemap types rearranged: also added type "index"
-- second layout algorithm implemented: squarified treemaps
-- more possibilities added to tweak font sizes
-- argument na.rm added in case there are missing values during aggregation
-
-version 1.0-4
-- two bugs fixed (category labels were not shown, and sorting order was sometimes neglected)
-- aspect ratio control added (argument aspRatio)
