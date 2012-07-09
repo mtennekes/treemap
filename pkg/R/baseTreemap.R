@@ -6,7 +6,7 @@ function(dat,
 	sizeTitle, 
 	colorTitle,
 	palette,
-	vColorRange,
+    range.legend,
 	fontsize.title, 
 	fontsize.labels, 
 	fontsize.legend, 
@@ -170,9 +170,9 @@ function(dat,
 	}
 	
 	if (type == "comp") {
-		datV$color <- comp2col(datV, position.legend, palette)
+		datV$color <- comp2col(datV, position.legend, palette, range.legend)
 	} else if (type == "dens") {
-		datV$color <- dens2col(datV, position.legend, palette) 
+		datV$color <- dens2col(datV, position.legend, palette, range.legend) 
 	} else if (type == "linked") {
 		datV$color <- linked2col(datV, position.legend, palette)
 	} else if (type == "index") {
@@ -180,7 +180,7 @@ function(dat,
 								indexNames)
 	} else if (type == "value") {
 		datV$color <- value2col(datV, position.legend, palette, 
-								vColorRange)
+								range.legend)
 	} else if (type == "categorical") {
 		datV$color <- cat2col(datV, position.legend, palette,
 							  levels(dat$value2))

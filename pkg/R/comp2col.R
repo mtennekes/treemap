@@ -1,5 +1,5 @@
 comp2col <-
-function(dat, position.legend, palette) {
+function(dat, position.legend, palette, range) {
 	color <- colorRampPalette(palette,space="rgb")(99)
 	
 	
@@ -19,7 +19,10 @@ function(dat, position.legend, palette) {
 	
 	range_lg <- range(log.growth)
 	
-	if (range_lg[1] >= 0 || range_lg[2] <= 0) {
+    if (!any(is.na(range))) {
+        if (range[1] < -100) range[1] <- -100
+        prettyP <-pretty(range, n=8)
+    } else if (range_lg[1] >= 0 || range_lg[2] <= 0) {
 		prettyP <-pretty(perc, n=8)
 	} else {
 		ratio <- abs(range_lg) / sum(abs(range_lg))
@@ -27,7 +30,9 @@ function(dat, position.legend, palette) {
 		prettyP_pos <- pretty(c(0, perc[perc>0]), n=9*ratio[2])
 		prettyP <- c(prettyP_neg, prettyP_pos[-1])
 	}
-	
+    
+    prettyP <- prettyP[prettyP > -100]
+    
 	n <- length(prettyP)	
 
 	max_lg <- max(abs(log.growth))

@@ -133,4 +133,4 @@ tmPlot(sbsData,
 	   vColor="employees.growth", 
 	   type="value", 
 	   palette="-RdGy", 
-	   vColorRange=c(-20000,20000))
+	   range=c(-20000,20000))

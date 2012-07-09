@@ -19,7 +19,8 @@
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
 #' @param sortID name of the variable that determines the order in which the rectangles are placed from top left to bottom right. Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left. For small multiples, a vector of variable names (one for each treemap) can be given. Only applicable when \code{algortihm=="pivotSize"}.
 #' @param palette either a color palette or a name of a Brewer palette (see \code{display.brewer.all()}). A Brewer palette can be reversed by prefixing its name with a "-".
-#' @param vColorRange range of the \code{vColor}-values that is mapped to \code{palette}. Only applicable for \code{type=="value"}.
+#' @param range range of values that determine the colors. When omitted, the range of actual values is used (where also the values of higher index levels are taken into account). This range is mapped to \code{palette}.
+#' @param vColorRange deprecated, use \code{range} instead.
 #' @param fontsize.title (maximum) font size of the title
 #' @param fontsize.labels font size(s) of the data labels, which can be:
 #' \itemize{
@@ -29,7 +30,7 @@
 #' @param fontsize.legend (maximum) font size of the legend
 #' @param lowerbound.cex.labels multiplier between 0 and 1 that sets the lowerbound for the data label font sizes: 0 means draw all data labels, and 1 means only draw data labels if they fit at \code{fontsize.data}.
 #' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles.
-#' @param bg.labels background color of labels of high aggregation levels. If set to \code{NA}, the color is determined by the color of the corresponding rectangle. For categorical and linked treemaps, the default is transparent grey (\code{"#CCCCCCAA"}), and for the other types, \code{NA}.
+#' @param bg.labels background color of labels of high aggregation levels. If set to \code{NA}, the color is determined by the color of the underlying rectangle. For categorical and linked treemaps, the default is transparent grey (\code{"#CCCCCCAA"}), and for the other types, \code{NA}.
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed (also when they don't fit).
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For categorical and index treemaps, \code{"right"} is the default value, for linked treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
@@ -58,7 +59,8 @@ function(dtf,
 	algorithm="pivotSize",
 	sortID="-size",
 	palette=NA,
-	vColorRange=NA,
+	range=NA,
+    vColorRange=NULL,
 	fontsize.title=14, 
 	fontsize.labels=11, 
 	fontsize.legend=12,
@@ -240,11 +242,17 @@ function(dtf,
 	}
 	
 	# vColorRange
-	if (!any(is.na(vColorRange))) {
-		if (length(vColorRange)!=2)
-			stop("length vColorRange is not 2")
-		if (!is.numeric(vColorRange))
-			stop("vColorRange is not numeric")
+    if (!missing(vColorRange)) {
+        warning("vColorRange is deprecated: use range instead.")
+        range <- vColorRange
+    }
+    
+	# range
+	if (!any(is.na(range))) {
+		if (length(range)!=2)
+			stop("length range is not 2")
+		if (!is.numeric(range))
+			stop("range is not numeric")
 	}
 
 	# fontsize.title
@@ -455,7 +463,7 @@ function(dtf,
 			sizeTitle=vSizeNames[i],
 			colorTitle=vColorNames[i],
 			palette=palette,
-			vColorRange=vColorRange,
+			range=range,
 			fontsize.title=fontsize.title, 
 			fontsize.labels=fontsize.labels, 
 			fontsize.legend=fontsize.legend,
