@@ -1,11 +1,42 @@
+#########################################
+### quick example
+###
+### data: Gross national income data
+#########################################
 
-### fictive structural business statistics (sbs) data of 2008 and 2009
+# load Gross national income data
+data(GNI2010)
+
+# create treemap
+tmPlot(GNI2010,
+       index=c("continent", "iso3"),
+       vSize="population",
+       vColor="GNI",
+       type="value")
+
+
+
+#########################################
+### extended examples
+###
+### data: fictive structural business statistics data
+#########################################
+
+### load fictive structural business statistics data
 data(sbsData)
+sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
 
 
-########################
-### examples of treemap types
-########################
+#########################################
+### types
+#########################################
+
+# value treemap: the color variable is directly mapped to the colors
+tmPlot(sbsData, 
+       index=c("section", "subsection"), 
+       vSize="employees09", 
+       vColor="employees.growth",
+       type="value")
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
 tmPlot(sbsData, 
@@ -46,14 +77,6 @@ tmPlot(sbsData,
 	   vSize="employees09",
 	   type="index")
 
-# value treemap: the color variable is directly mapped to the colors
-sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees.growth",
-	   type="value")
-
 # categorical treemap: colors are determined by a categorical variable
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
@@ -61,9 +84,9 @@ tmPlot(sbsData,
 	   vColor="section",
 	   type="categorical")
 
-########################
+#########################################
 ### layout algorithm
-########################
+#########################################
 
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
@@ -72,9 +95,9 @@ tmPlot(sbsData,
 	   type="value",
 	   algorithm="squarified")
 
-########################
+#########################################
 ### graphical options: fontsize
-########################
+#########################################
 
 # draw labels at fixed fontsize (fit only)
 tmPlot(sbsData, 
@@ -114,11 +137,12 @@ tmPlot(sbsData,
 	   lowerbound.cex.labels=1, 
 	   force.print.labels=TRUE)
 
-########################
+#########################################
 ### graphical options: color palette
-########################
+#########################################
 
 # terrain colors
+sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 

@@ -1,4 +1,7 @@
 version 1.1-1
+- improved value treemap (better color range)
+- added new example dataset: GNI2010
+- fixed bug with character variables as index variables
 - fixed bug with non-factor variables as categorical variable
 
 version 1.1

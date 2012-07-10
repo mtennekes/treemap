@@ -8,18 +8,18 @@
 #' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". For small multiples, a vector of variable names (one for each treemap) should be given.
 #' @param type the type of the treemap:
 #' \describe{
+#'    	\item{\code{"value"}:}{the \code{vColor}-variable is directly mapped to a color palette (by default Brewer's diverging color palette "RdBu").}
 #'		\item{\code{"comp"}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable in percentages. Note: the negative scale may be different from the positive scale in order to compensate for the ratio distribution.}
 #'		\item{\code{"dens"}:}{colors indicate density. This is aanalogous to a population density map where \code{vSize}-values are area sizes, \code{vColor}-values are populations per area, and colors are computed as densities (i.e.\ population per squared km's).}
 #'		\item{\code{"linked"}:}{each object has a distinct color, which can be useful for small multiples (objects are linked by color)}
 #'		\item{\code{"index"}:}{each aggregation level (defined by \code{index}) has a distinct color}
-#'		\item{\code{"value"}:}{the \code{vColor}-variable is directly mapped to a color palette (by default Brewer's diverging color palette "RdBu").}
 #'		\item{\code{"categorical"}:}{\code{vColor} is a categorical variable that determines the color}}
 #' @param title title of the treemap. For small multiples, a vector of titles should be given. Titles are used to describe the sizes of the rectangles.
 #' @param subtitle subtitle of the treemap. For small multiples, a vector of subtitles should be given. Subtitles are used to describe the colors of the rectangles.
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
 #' @param sortID name of the variable that determines the order in which the rectangles are placed from top left to bottom right. Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left. For small multiples, a vector of variable names (one for each treemap) can be given. Only applicable when \code{algortihm=="pivotSize"}.
 #' @param palette either a color palette or a name of a Brewer palette (see \code{display.brewer.all()}). A Brewer palette can be reversed by prefixing its name with a "-".
-#' @param range range of values that determine the colors. When omitted, the range of actual values is used (where also the values of higher index levels are taken into account). This range is mapped to \code{palette}.
+#' @param range range of values that determine the colors. When omitted, the range of actual values is used. This range is mapped to \code{palette}.
 #' @param vColorRange deprecated, use \code{range} instead.
 #' @param fontsize.title (maximum) font size of the title
 #' @param fontsize.labels font size(s) of the data labels, which can be:
@@ -30,7 +30,7 @@
 #' @param fontsize.legend (maximum) font size of the legend
 #' @param lowerbound.cex.labels multiplier between 0 and 1 that sets the lowerbound for the data label font sizes: 0 means draw all data labels, and 1 means only draw data labels if they fit at \code{fontsize.data}.
 #' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles.
-#' @param bg.labels background color of labels of high aggregation levels. If set to \code{NA}, the color is determined by the color of the underlying rectangle. For categorical and linked treemaps, the default is transparent grey (\code{"#CCCCCCAA"}), and for the other types, \code{NA}.
+#' @param bg.labels background color of labels of high aggregation levels. If set to \code{NA}, the color is determined by the color of the underlying rectangle. For value, categorical and linked treemaps, the default is transparent grey (\code{"#CCCCCCAA"}), and for the other types, \code{NA}.
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed (also when they don't fit).
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For categorical and index treemaps, \code{"right"} is the default value, for linked treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
@@ -66,7 +66,7 @@ function(dtf,
 	fontsize.legend=12,
 	lowerbound.cex.labels=0.4,
 	inflate.labels=FALSE,
-	bg.labels= ifelse(type %in% c("linked", "categorical"), "#CCCCCCAA", NA),
+	bg.labels= ifelse(type %in% c("value", "linked", "categorical"), "#CCCCCCAA", NA),
 	force.print.labels=FALSE,
 	position.legend=ifelse(type %in% c("categorical", "index"), "right", ifelse(type=="linked", "none", "bottom")),
 	aspRatio=NA,

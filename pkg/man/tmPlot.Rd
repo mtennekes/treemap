@@ -4,11 +4,11 @@
 \usage{
   tmPlot(dtf, index, vSize, vColor = NULL, type = "value",
     title = NA, subtitle = NA, algorithm = "pivotSize",
-    sortID = "-size", palette = NA, vColorRange = NA,
-    fontsize.title = 14, fontsize.labels = 11,
-    fontsize.legend = 12, lowerbound.cex.labels = 0.4,
-    inflate.labels = FALSE,
-    bg.labels = ifelse(type \%in\% c("linked", "categorical"), "#CCCCCCAA", NA),
+    sortID = "-size", palette = NA, range = NA,
+    vColorRange = NULL, fontsize.title = 14,
+    fontsize.labels = 11, fontsize.legend = 12,
+    lowerbound.cex.labels = 0.4, inflate.labels = FALSE,
+    bg.labels = ifelse(type \%in\% c("value", "linked", "categorical"), "#CCCCCCAA", NA),
     force.print.labels = FALSE,
     position.legend = ifelse(type \%in\% c("categorical", "index"), "right", ifelse(type == "linked", "none", "bottom")),
     aspRatio = NA, na.rm = FALSE)
@@ -33,6 +33,9 @@
   treemap) should be given.}
 
   \item{type}{the type of the treemap: \describe{
+  \item{\code{"value"}:}{the \code{vColor}-variable is
+  directly mapped to a color palette (by default Brewer's
+  diverging color palette "RdBu").}
   \item{\code{"comp"}:}{colors indicate change of the
   \code{vSize}-variable with respect to the
   \code{vColor}-variable in percentages. Note: the negative
@@ -47,9 +50,6 @@
   which can be useful for small multiples (objects are
   linked by color)} \item{\code{"index"}:}{each aggregation
   level (defined by \code{index}) has a distinct color}
-  \item{\code{"value"}:}{the \code{vColor}-variable is
-  directly mapped to a color palette (by default Brewer's
-  diverging color palette "RdBu").}
   \item{\code{"categorical"}:}{\code{vColor} is a
   categorical variable that determines the color}}}
 
@@ -85,9 +85,11 @@
   Brewer palette can be reversed by prefixing its name with
   a "-".}
 
-  \item{vColorRange}{range of the \code{vColor}-values that
-  is mapped to \code{palette}. Only applicable for
-  \code{type=="value"}.}
+  \item{range}{range of values that determine the colors.
+  When omitted, the range of actual values is used. This
+  range is mapped to \code{palette}.}
+
+  \item{vColorRange}{deprecated, use \code{range} instead.}
 
   \item{fontsize.title}{(maximum) font size of the title}
 
@@ -112,8 +114,8 @@
 
   \item{bg.labels}{background color of labels of high
   aggregation levels. If set to \code{NA}, the color is
-  determined by the color of the corresponding rectangle.
-  For categorical and linked treemaps, the default is
+  determined by the color of the underlying rectangle. For
+  value, categorical and linked treemaps, the default is
   transparent grey (\code{"#CCCCCCAA"}), and for the other
   types, \code{NA}.}
 
@@ -147,14 +149,45 @@
   Create treemap
 }
 \examples{
+#########################################
+### quick example
+###
+### data: Gross national income data
+#########################################
 
-### fictive structural business statistics (sbs) data of 2008 and 2009
+# load Gross national income data
+data(GNI2010)
+
+# create treemap
+tmPlot(GNI2010,
+       index=c("continent", "iso3"),
+       vSize="population",
+       vColor="GNI",
+       type="value")
+
+
+
+#########################################
+### extended examples
+###
+### data: fictive structural business statistics data
+#########################################
+
+### load fictive structural business statistics data
 data(sbsData)
+sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
 
 
-########################
-### examples of treemap types
-########################
+#########################################
+### types
+#########################################
+
+# value treemap: the color variable is directly mapped to the colors
+tmPlot(sbsData, 
+       index=c("section", "subsection"), 
+       vSize="employees09", 
+       vColor="employees.growth",
+       type="value")
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
 tmPlot(sbsData, 
@@ -195,14 +228,6 @@ tmPlot(sbsData,
 	   vSize="employees09",
 	   type="index")
 
-# value treemap: the color variable is directly mapped to the colors
-sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees.growth",
-	   type="value")
-
 # categorical treemap: colors are determined by a categorical variable
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
@@ -210,9 +235,9 @@ tmPlot(sbsData,
 	   vColor="section",
 	   type="categorical")
 
-########################
+#########################################
 ### layout algorithm
-########################
+#########################################
 
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
@@ -221,9 +246,9 @@ tmPlot(sbsData,
 	   type="value",
 	   algorithm="squarified")
 
-########################
+#########################################
 ### graphical options: fontsize
-########################
+#########################################
 
 # draw labels at fixed fontsize (fit only)
 tmPlot(sbsData, 
@@ -263,11 +288,12 @@ tmPlot(sbsData,
 	   lowerbound.cex.labels=1, 
 	   force.print.labels=TRUE)
 
-########################
+#########################################
 ### graphical options: color palette
-########################
+#########################################
 
 # terrain colors
+sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
 tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize="employees09", 
@@ -282,7 +308,7 @@ tmPlot(sbsData,
 	   vColor="employees.growth", 
 	   type="value", 
 	   palette="-RdGy", 
-	   vColorRange=c(-20000,20000))
+	   range=c(-20000,20000))
 }
 \references{
   Bederson, B., Shneiderman, B., Wattenberg, M. (2002)

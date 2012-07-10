@@ -6,7 +6,7 @@ function(dat,
 	sizeTitle, 
 	colorTitle,
 	palette,
-    range.legend,
+    range,
 	fontsize.title, 
 	fontsize.labels, 
 	fontsize.legend, 
@@ -115,7 +115,7 @@ function(dat,
 	depth <- sum(substr(colnames(dat),1,5)=="index")
 #browser()
 	dats <- list()
-	datV <- data.table(value=numeric(0), value2=numeric(0), index=character(0), level=integer(0))
+	datV <- data.table(value=numeric(0), value2=numeric(0), index=character(0), level=integer(0), clevel=integer(0))
 	getMode <- function(x) which.max(table(x))[1]
 	
 	for (i in 1:depth) {
@@ -157,7 +157,7 @@ function(dat,
 					  dats_i[, list(value, value2,
 					  			  index=do.call(paste, 
 					  			  			  c(dats_i[, indexList, with=FALSE], sep="__")), 
-					  			  level)])
+					  			  level, clevel)])
 		dats[[i]] <- dats_i
 	}
 	
@@ -170,9 +170,9 @@ function(dat,
 	}
 	
 	if (type == "comp") {
-		datV$color <- comp2col(datV, position.legend, palette, range.legend)
+		datV$color <- comp2col(datV, position.legend, palette, range)
 	} else if (type == "dens") {
-		datV$color <- dens2col(datV, position.legend, palette, range.legend) 
+		datV$color <- dens2col(datV, position.legend, palette, range) 
 	} else if (type == "linked") {
 		datV$color <- linked2col(datV, position.legend, palette)
 	} else if (type == "index") {
@@ -180,7 +180,7 @@ function(dat,
 								indexNames)
 	} else if (type == "value") {
 		datV$color <- value2col(datV, position.legend, palette, 
-								range.legend)
+								range)
 	} else if (type == "categorical") {
 		datV$color <- cat2col(datV, position.legend, palette,
 							  levels(dat$value2))

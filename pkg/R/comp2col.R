@@ -1,5 +1,6 @@
 comp2col <-
 function(dat, position.legend, palette, range) {
+    
 	color <- colorRampPalette(palette,space="rgb")(99)
 	
 	
