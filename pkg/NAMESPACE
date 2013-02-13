@@ -1,3 +1,6 @@
 export(tmClick)
 export(tmLocate)
 export(tmPlot)
+import(data.table)
+import(grid)
+import(RColorBrewer)

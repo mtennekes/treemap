@@ -47,6 +47,9 @@
 #'
 #' Bruls, D.M., C. Huizing, J.J. van Wijk. Squarified Treemaps. In: W. de Leeuw, R. van Liere (eds.), Data Visualization 2000, Proceedings of the joint Eurographics and IEEE TCVG Symposium on Visualization, 2000, Springer, Vienna, p. 33-42.
 #' @example ../examples/tmPlot.R
+#' @import data.table
+#' @import RColorBrewer
+#' @import grid
 #' @export
 tmPlot <-
 function(dtf, 
@@ -71,7 +74,8 @@ function(dtf,
 	position.legend=ifelse(type %in% c("categorical", "index"), "right", ifelse(type=="linked", "none", "bottom")),
 	aspRatio=NA,
 	na.rm = FALSE) {
-	
+
+    require(data.table)
 	#############
 	## Preprocess arguments
 	#############
@@ -488,6 +492,7 @@ function(dtf,
 
 	# save treemaps (indices, subindices, and coordinates), and number of rows and number of columns)
 	tmSave <- list(tm = tm,
+                   type = type,
 				   nRow = nRow,
 				   nCol = nCol,
 				   vSize = vSize,
