@@ -71,11 +71,17 @@ tmPlot(sbsData[sbsData$section=="Manufacturing",],
 	   vSize=c("income09", "employees09", "expenditures09", "salaries09"),
 	   type="linked")
 
-# index treemap: each aggregation index has distinct color
+# depth treemap: each aggregation depth has distinct color
 tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09",
-	   type="index")
+	   type="depth")
+
+# index treemap: colors are determined by index
+tmPlot(sbsData,
+       index=c("section", "subsection"), 
+       vSize="employees09",
+       type="index")
 
 # categorical treemap: colors are determined by a categorical variable
 tmPlot(sbsData, 

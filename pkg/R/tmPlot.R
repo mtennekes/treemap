@@ -12,8 +12,9 @@
 #'		\item{\code{"comp"}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable in percentages. Note: the negative scale may be different from the positive scale in order to compensate for the ratio distribution.}
 #'		\item{\code{"dens"}:}{colors indicate density. This is aanalogous to a population density map where \code{vSize}-values are area sizes, \code{vColor}-values are populations per area, and colors are computed as densities (i.e.\ population per squared km's).}
 #'		\item{\code{"linked"}:}{each object has a distinct color, which can be useful for small multiples (objects are linked by color)}
-#'		\item{\code{"index"}:}{each aggregation level (defined by \code{index}) has a distinct color}
-#'		\item{\code{"categorical"}:}{\code{vColor} is a categorical variable that determines the color}}
+#'		\item{\code{"depth"}:}{each aggregation level (defined by \code{index}) has a distinct color}
+#'		\item{\code{"index"}:}{colors are determined by the \code{index} variables. Each aggregation of the first index variable is assigned to a color of \code{palette}. Each aggregation of on of the other index variables is assigned to a similar color, that varies on hue or lightness.}
+#'    	\item{\code{"categorical"}:}{\code{vColor} is a categorical variable that determines the color}}
 #' @param title title of the treemap. For small multiples, a vector of titles should be given. Titles are used to describe the sizes of the rectangles.
 #' @param subtitle subtitle of the treemap. For small multiples, a vector of subtitles should be given. Subtitles are used to describe the colors of the rectangles.
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
@@ -71,7 +72,7 @@ function(dtf,
 	inflate.labels=FALSE,
 	bg.labels= ifelse(type %in% c("value", "linked", "categorical"), "#CCCCCCAA", NA),
 	force.print.labels=FALSE,
-	position.legend=ifelse(type %in% c("categorical", "index"), "right", ifelse(type=="linked", "none", "bottom")),
+	position.legend=ifelse(type %in% c("categorical", "index", "depth"), "right", ifelse(type=="linked", "none", "bottom")),
 	aspRatio=NA,
 	na.rm = FALSE) {
 
@@ -133,7 +134,7 @@ function(dtf,
 	}	
 	
 	# type
-	if (!type %in% c("value", "categorical", "comp", "dens", "linked", "index")) 
+	if (!type %in% c("value", "categorical", "comp", "dens", "linked", "index", "depth")) 
 		stop("Invalid type")
 	
 	# title	
@@ -225,8 +226,10 @@ function(dtf,
 			palette <- c(brewer.pal(12,"Set3"),
 						 brewer.pal(8,"Set2")[c(1:4,7,8)],
 						 brewer.pal(9,"Pastel1")[c(1,2,4,5)])
-		} else if (type == "index") {
+		} else if (type == "depth") {
 			palette <- brewer.pal(8,"Set2")
+		} else if (type == "index") {
+		    palette <- brewer.pal(8,"Set2")
 		} else if (type == "value") {
 			palette <- brewer.pal(11,"RdBu")
 		} else if (type == "categorical") {
@@ -357,12 +360,6 @@ function(dtf,
 			vColor[vColor==i] <- i_new
 		}
 	}
-	varsCatIndex <- intersect(vars[!varsNum], index)
-	if (length(varsCatIndex)!=0) {
-		vars
-		
-		vars[vars %in% varsCatIndex] <- paste()
-	}
 	
 	if (!all(varsNum)) {
 		datCat <- dtfDT[ , lapply(.SD[, vars[!varsNum], with=FALSE],
@@ -392,18 +389,20 @@ function(dtf,
 				   " contain negative values.", 
 				   sep=""))
 	
-	if (!is.null(vColor) && !(type %in% c("index", "linked"))) {
+	if (!is.null(vColor) && !(type %in% c("depth", "linked"))) {
 		scaledInd <- which(vColorX!=1 & varsNum[match(vColor, vars)])
 		for (i in scaledInd) {
 			colName <- paste(vColor[i], vColorX[i], sep="__")
 			dat[[colName]] <- dat[[vColor[i]]] * vColorX[i]
 			vColor[i] <- colName
 		}
+	} else if (type == "index") {
+	    dat$temp_index <- apply(sapply(dat[, indexList, with=FALSE], as.integer), function(x)paste(x, collapse="_"), MARGIN=1)
+	    vColor <- rep("temp_index", n)
 	} else {
-		dat$temp_ones <- 1
+	    dat$temp_ones <- 1
 		vColor <- rep("temp_ones", n)
 	}
-	
 	
 	##########
 	## Determine grid

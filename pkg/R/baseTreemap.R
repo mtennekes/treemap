@@ -118,18 +118,24 @@ function(dat,
 	datV <- data.table(value=numeric(0), value2=numeric(0), index=character(0), level=integer(0), clevel=integer(0))
 	getMode <- function(x) which.max(table(x))[1]
 	
-	for (i in 1:depth) {
+ 	for (i in 1:depth) {
 		indexList <- paste("index", 1:i, sep="")
 		value <- NULL; rm(value)
 		value2 <- NULL; rm(value2)
 		sortInd <- NULL; rm(sortInd)
-		if (type=="categorical") {
+		if (type == "categorical") {
 			dats_i <- dat[, list(value=sum(value),
 								 value2=getMode(value2),
 								 sortInd=sum(sortInd)), 
 								 by=indexList]
 			dats_i$value2 <- factor(dats_i$value2,
 									labels=levels(dat$value2))
+		} else if (type == "index") {
+		    dats_i <- dat[, list(value=sum(value),
+                                 value2=sapply(strsplit(value2, split="_"), 
+                                               function(x)paste(x[1:i], collapse="_")),
+		                         sortInd=sum(sortInd)), 
+		                  by=indexList]
 		} else {
 			dats_i <- dat[, lapply(.SD[, list(value, value2, sortInd)],
 								   sum), by=indexList]
@@ -175,9 +181,12 @@ function(dat,
 		datV$color <- dens2col(datV, position.legend, palette, range) 
 	} else if (type == "linked") {
 		datV$color <- linked2col(datV, position.legend, palette)
-	} else if (type == "index") {
-		datV$color <- index2col(datV, position.legend, palette,
+	} else if (type == "depth") {
+		datV$color <- depth2col(datV, position.legend, palette,
 								indexNames)
+	} else if (type == "index") {
+	    datV$color <- index2col(datV, position.legend, palette,
+	                            levels(dat$value2))
 	} else if (type == "value") {
 		datV$color <- value2col(datV, position.legend, palette, 
 								range)
