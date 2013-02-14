@@ -51,6 +51,7 @@
 #' @import data.table
 #' @import RColorBrewer
 #' @import grid
+#' @import colorspace
 #' @export
 tmPlot <-
 function(dtf, 
@@ -396,9 +397,6 @@ function(dtf,
 			dat[[colName]] <- dat[[vColor[i]]] * vColorX[i]
 			vColor[i] <- colName
 		}
-	} else if (type == "index") {
-	    dat$temp_index <- apply(sapply(dat[, indexList, with=FALSE], as.integer), function(x)paste(x, collapse="_"), MARGIN=1)
-	    vColor <- rep("temp_index", n)
 	} else {
 	    dat$temp_ones <- 1
 		vColor <- rep("temp_ones", n)

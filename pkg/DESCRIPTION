@@ -12,6 +12,7 @@ Description: A treemap is a space-filling visualization of hierarchical
 License: GPL-3
 LazyLoad: yes
 Imports:
+    colorspace,
     grid,
     RColorBrewer,
     data.table
@@ -34,3 +35,4 @@ Collate:
     'tmLocate.R'
     'tmPlot.R'
     'value2col.R'
+    'depth2col.R'

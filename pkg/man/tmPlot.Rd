@@ -10,7 +10,7 @@
     lowerbound.cex.labels = 0.4, inflate.labels = FALSE,
     bg.labels = ifelse(type \%in\% c("value", "linked", "categorical"), "#CCCCCCAA", NA),
     force.print.labels = FALSE,
-    position.legend = ifelse(type \%in\% c("categorical", "index"), "right", ifelse(type == "linked", "none", "bottom")),
+    position.legend = ifelse(type \%in\% c("categorical", "index", "depth"), "right", ifelse(type == "linked", "none", "bottom")),
     aspRatio = NA, na.rm = FALSE)
 }
 \arguments{
@@ -48,10 +48,15 @@
   densities (i.e.\ population per squared km's).}
   \item{\code{"linked"}:}{each object has a distinct color,
   which can be useful for small multiples (objects are
-  linked by color)} \item{\code{"index"}:}{each aggregation
+  linked by color)} \item{\code{"depth"}:}{each aggregation
   level (defined by \code{index}) has a distinct color}
-  \item{\code{"categorical"}:}{\code{vColor} is a
-  categorical variable that determines the color}}}
+  \item{\code{"index"}:}{colors are determined by the
+  \code{index} variables. Each aggregation of the first
+  index variable is assigned to a color of \code{palette}.
+  Each aggregation of on of the other index variables is
+  assigned to a similar color, that varies on hue or
+  lightness.} \item{\code{"categorical"}:}{\code{vColor} is
+  a categorical variable that determines the color}}}
 
   \item{title}{title of the treemap. For small multiples, a
   vector of titles should be given. Titles are used to
@@ -222,11 +227,17 @@ tmPlot(sbsData[sbsData$section=="Manufacturing",],
 	   vSize=c("income09", "employees09", "expenditures09", "salaries09"),
 	   type="linked")
 
-# index treemap: each aggregation index has distinct color
+# depth treemap: each aggregation depth has distinct color
 tmPlot(sbsData,
 	   index=c("section", "subsection"), 
 	   vSize="employees09",
-	   type="index")
+	   type="depth")
+
+# index treemap: colors are determined by index
+tmPlot(sbsData,
+       index=c("section", "subsection"), 
+       vSize="employees09",
+       type="index")
 
 # categorical treemap: colors are determined by a categorical variable
 tmPlot(sbsData, 
