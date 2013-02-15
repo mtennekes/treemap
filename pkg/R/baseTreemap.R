@@ -167,6 +167,8 @@ function(dat,
 		pushViewport(vpLeg)
 	}
 
+    
+    
     if (type == "comp") {
 		datV$color <- comp2col(datV, position.legend, palette, range)
 	} else if (type == "dens") {
@@ -174,17 +176,13 @@ function(dat,
 	} else if (type == "linked") {
 		datV$color <- linked2col(datV, position.legend, palette)
 	} else if (type == "depth") {
-		datV$color <- depth2col(datV, position.legend, palette,
-								indexNames)
+		datV$color <- depth2col(datV, position.legend, palette, indexNames)
 	} else if (type == "index") {
-	    datV$color <- index2col(datV, position.legend, palette,
-	                            levels(dat$index1))
+	    datV$color <- index2col(datV, position.legend, palette, levels(dat$index1))
 	} else if (type == "value") {
-		datV$color <- value2col(datV, position.legend, palette, 
-								range)
+		datV$color <- value2col(datV, position.legend, palette, range)
 	} else if (type == "categorical") {
-		datV$color <- cat2col(datV, position.legend, palette,
-							  levels(dat$value2))
+		datV$color <- cat2col(datV, position.legend, palette, levels(dat$value2))
 	}
 	if (position.legend!="none") upViewport()
 	

@@ -1,12 +1,10 @@
 depth2col <-
-function(dat, position.legend, palette) {
-	
-	color <- palette 
-
-	sortID <- sort(as.character(dat$index),decreasing=FALSE,index.return=TRUE)$ix
-	sortID2 <- sort(sortID, index.return=TRUE)$ix
-	
-	colorl <- rep(color, length.out=nrow(dat))
-	return (colorl[sortID2])
+function(dat, position.legend, palette, indexnames) {
+    color <- palette
+    colorl <- rep(color, length.out=max(dat$level))
+    
+    if (position.legend!="none") drawLegend(indexnames, colorl, position.legend=="bottom")
+    
+    return (colorl[dat$level])
 }
 
