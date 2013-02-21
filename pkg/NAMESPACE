@@ -1,7 +1,7 @@
 export(tmClick)
 export(tmLocate)
 export(tmPlot)
+import(RColorBrewer)
 import(colorspace)
 import(data.table)
 import(grid)
-import(RColorBrewer)

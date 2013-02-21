@@ -35,6 +35,7 @@
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed (also when they don't fit).
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For categorical and index treemaps, \code{"right"} is the default value, for linked treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
+#' @param vp \code{\link[grid:viewport]{viewport}} to draw in. By default it is not specified, which means that a new plot is created. Useful when drawing small multiples, or when placing a treemap in a custom grid based plot.
 #' @param na.rm logical that determines whether missing values are omitted during aggregation
 #' @return A list is silently returned:
 #'	\item{tm}{list with for each treemap a \code{data.frame} containing information about the rectangles}
@@ -75,6 +76,7 @@ function(dtf,
 	force.print.labels=FALSE,
 	position.legend=ifelse(type %in% c("categorical", "index", "depth"), "right", ifelse(type=="linked", "none", "bottom")),
 	aspRatio=NA,
+    vp=NULL,
 	na.rm = FALSE) {
 
     require(data.table)
@@ -437,8 +439,13 @@ function(dtf,
 	############
 	## Plot treemap(s)
 	############
-	grid.newpage()
-	
+    if (is.null(vp)) {
+        grid.newpage()
+    } else {
+        if (is.character(vp)) 
+            seekViewport(vp)
+        else pushViewport(vp)
+    }	
 	pushViewport(viewport(name="grid",layout=grid.layout(nRow, nCol)))
 
 	iCol<-1

@@ -11,7 +11,7 @@
     bg.labels = ifelse(type \%in\% c("value", "linked", "categorical"), "#CCCCCCAA", NA),
     force.print.labels = FALSE,
     position.legend = ifelse(type \%in\% c("categorical", "index", "depth"), "right", ifelse(type == "linked", "none", "bottom")),
-    aspRatio = NA, na.rm = FALSE)
+    aspRatio = NA, vp = NULL, na.rm = FALSE)
 }
 \arguments{
   \item{dtf}{a data.frame. Required.}
@@ -137,6 +137,11 @@
   \item{aspRatio}{preferred aspect ratio of the main
   rectangle, defined by width/height. When set to
   \code{NA}, the available window size is used.}
+
+  \item{vp}{\code{\link[grid:viewport]{viewport}} to draw
+  in. By default it is not specified, which means that a
+  new plot is created. Useful when drawing small multiples,
+  or when placing a treemap in a custom grid based plot.}
 
   \item{na.rm}{logical that determines whether missing
   values are omitted during aggregation}
