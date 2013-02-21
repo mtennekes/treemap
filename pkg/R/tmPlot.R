@@ -492,8 +492,8 @@ function(dtf,
 	}
 	
 	# go to root viewport (from grid layout)
-	upViewport()
-
+    upViewport(1 + !is.null(vp))
+    
 	# save treemaps (indices, subindices, and coordinates), and number of rows and number of columns)
 	tmSave <- list(tm = tm,
                    type = type,
