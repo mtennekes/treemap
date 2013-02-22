@@ -2,6 +2,7 @@ treemap
 =======
 
 R package for treemap visualisation
+![A treemap example](http://www.von-tijn.nl/tijn/research/Treemap.png)
 
 Installation
 ------------
