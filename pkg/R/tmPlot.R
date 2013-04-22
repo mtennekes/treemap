@@ -404,6 +404,7 @@ function(dtf,
 		vColor <- rep("temp_ones", n)
 	}
 	
+    browser()
 	##########
 	## Determine grid
 	##########
