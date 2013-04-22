@@ -30,7 +30,6 @@ function(dat,
 	fsLegend <- min(fontsize.legend, (height*3.6), (width*3.6))
 	
 	# Determine legend viewports
-	#browser()
 	titleSpace <- convertHeight(unit(1.5* (fsTitle/get.gpar()$fontsize),
 									 "lines"), "inches")
 	if (position.legend == "bottom") {
@@ -60,7 +59,7 @@ function(dat,
 		if (type=="categorical") {
 			maxStringWidth	<- max(maxStringWidth, 
 								  convertWidth(stringWidth(
-								  	levels(dat$value2)),
+								  	levels(dat$c)),
 								  			 "inches",
 								  			 valueOnly=TRUE)*scale+.75)
 			
@@ -113,52 +112,33 @@ function(dat,
 	
 	#determine depth
 	depth <- sum(substr(colnames(dat),1,5)=="index")
-#browser()
-	dats <- list()
-	datV <- data.table(value=numeric(0), value2=numeric(0), index=character(0), level=integer(0), clevel=integer(0))
-	getMode <- function(x) which.max(table(x))[1]
- 	for (i in 1:depth) {
-		indexList <- paste("index", 1:i, sep="")
-		value <- NULL; rm(value)
-		value2 <- NULL; rm(value2)
-		sortInd <- NULL; rm(sortInd)
-		if (type == "categorical") {
-			dats_i <- dat[, list(value=sum(value),
-								 value2=getMode(value2),
-								 sortInd=sum(sortInd)), 
-								 by=indexList]
-			dats_i$value2 <- factor(dats_i$value2,
-									labels=levels(dat$value2))
-		} else {
-			dats_i <- dat[, lapply(.SD[, list(value, value2, sortInd)],
-								   sum), by=indexList]
-		}
-		
-		## remove rectangles of size 0
-		dats_i <- dats_i[dats_i$value>0, ]
+    
+    indexList <- paste0("index", 1:depth)
+    
+    dats <- list()
+    for (d in seq_len(depth)) {
+        datd <- aggTmData(dat, indexList[1:d], na.rm=TRUE)
+        if (d < depth) {
+            indexPlus <- indexList[(d+1):depth]
+            datd[, indexPlus] <- lapply(indexPlus, function(x)factor(NA))
+            setcolorder(datd, c(indexList, "s", "c", "i"))
+        }
+        datd[, l:=d]
+        datd <- datd[order(datd$i),]
+        
+        dats[[d]] <- datd
+    }
+        
+    datlist <- do.call("rbind", dats)
 
-		if (type=="dens") {
-			dats_i$value2 <- dats_i$value2 / dats_i$value
-			dats_i$value2[is.nan(dats_i$value2)] <- 0
-		}
-		
-		dats_i$clevel <- i
-		dats_i$level <- ifelse(is.na(dats_i[[paste("index", i, sep="")]]),
-							   dats[[i-1]][["level"]][match(
-							   	dats_i[[paste("index", i-1, sep="")]],
-							   	dats[[i-1]][[paste("index", i-1, sep="")]]
-							   	)], i)
-		dats_i <- dats_i[order(dats_i$sortInd),]
-		
-		
-		datV <- rbind(datV, 
-					  dats_i[, list(value, value2,
-					  			  index=do.call(paste, 
-					  			  			  c(lapply(dats_i[, indexList, with=FALSE], as.integer), sep="__")), 
-					  			  level, clevel)])
-		dats[[i]] <- dats_i
+	if (type=="dens") {
+	    datlist$c <- datlist$c / datlist$s
+	    datlist$c[is.nan(datlist$c)] <- 0
 	}
 	
+    datlist$ind <- as.factor(do.call("paste", c(as.list(datlist[, c(indexList, "l"), with=FALSE]), sep="__")))
+    
+    
 	# Show legenda and determine colors
 	if (position.legend!="none") {	
 		pushViewport(vpLeg2)
@@ -170,29 +150,21 @@ function(dat,
     
     
     if (type == "comp") {
-		datV$color <- comp2col(datV, position.legend, palette, range)
+        datlist$color <- comp2col(datlist, position.legend, palette, range)
 	} else if (type == "dens") {
-		datV$color <- dens2col(datV, position.legend, palette, range) 
+	    datlist$color <- dens2col(datlist, position.legend, palette, range) 
 	} else if (type == "linked") {
-		datV$color <- linked2col(datV, position.legend, palette)
+	    datlist$color <- linked2col(datlist, position.legend, palette)
 	} else if (type == "depth") {
-		datV$color <- depth2col(datV, position.legend, palette, indexNames)
+	    datlist$color <- depth2col(datlist, position.legend, palette, indexNames)
 	} else if (type == "index") {
-	    datV$color <- index2col(datV, position.legend, palette, levels(dat$index1))
+	    datlist$color <- index2col(datlist, position.legend, palette, levels(dat$index1))
 	} else if (type == "value") {
-		datV$color <- value2col(datV, position.legend, palette, range)
+	    datlist$color <- value2col(datlist, position.legend, palette, range)
 	} else if (type == "categorical") {
-		datV$color <- cat2col(datV, position.legend, palette, levels(dat$value2))
+	    datlist$color <- cat2col(datlist, position.legend, palette, levels(dat$c))
 	}
 	if (position.legend!="none") upViewport()
-	
-	datL <- sapply(dats, FUN=nrow)
-	datL1 <- cumsum(c(1, datL[-depth]))
-	datL2 <- (datL1 + datL) - 1
-	for (i in 1:depth) {
-		dats[[i]]$color <- datV[datL1[i]:datL2[i], color]
-	}
-	
 	
 	pushViewport(vpDat2)
 	grid.text(sizeTitle)
@@ -224,17 +196,18 @@ function(dat,
 	pushViewport(vpDat3)
 
 	dataRec <- data.table(X0=0, Y0=0, W=datWidth, H=datHeight)
-	recList <- data.table(ind=factor(NULL), 
-						  clevel=numeric(0),
-						  color=character(0),
-						  x0=numeric(0),
-						  y0=numeric(0),
-						  w=numeric(0),
-						  h=numeric(0),
-						  fullname=character(0))
 
-	
-	dats[[1]] <- cbind(dats[[1]], dataRec[rep(1,nrow(dats[[1]]))])	
+    
+    datlist[, X0:=0]
+	datlist[, Y0:=0]
+	datlist[, W:=datWidth]
+	datlist[, H:=datHeight]
+
+	datlist[, x0:=0]
+	datlist[, y0:=0]
+	datlist[, w:=0]
+	datlist[, h:=0]
+    
 	x0 <- NULL; rm(x0); #trick R CMD check
 	y0 <- NULL; rm(y0); #trick R CMD check
 	w <- NULL; rm(w); #trick R CMD check
@@ -252,6 +225,48 @@ function(dat,
 	ind <- NULL; rm(ind); #trick R CMD check
 	clevel <- NULL; rm(clevel); #trick R CMD check
 
+	setkey(datlist, ind)
+
+    
+	subTM <- function(x) {
+	    rec <- unlist((x[1, list(X0, Y0, W, H)]))
+	    x <- x[order(x$i),]
+	    value <- x$s
+	    names(value) <- x$ind
+	    
+	    recDat <- do.call(algorithm, list(value, rec))
+	    recNames <- row.names(recDat)
+	    recDat <- as.data.table(recDat)
+	    #recDat <- as.data.frame(recDat)
+	    recDat$ind <- factor(recNames, levels=levels(x$ind))
+	    setkeyv(recDat, "ind")    		
+	}
+	
+	for (i in 1:depth) {
+        if (i!=1) {
+            active <- datlist$l==i
+            parents_active <- datlist$l==(i-1)
+            
+            parents <- datlist[[paste0("index", i-1)]][active]
+            parents2 <- datlist[[paste0("index", i-1)]][parents_active]
+            matchID <- match(parents, parents2)
+            
+            datlist[active, c("X0", "X0", "W", "H"):= as.list(datlist[parents_active,][matchID, c("x0", "y0", "w", "h"), with=FALSE])]
+            
+            indList <- indexList[1:(i-1)]
+            res <- datlist[active, subTM(.SD), by=indList]
+        } else {
+            res <- subTM(datlist[datlist$l==1])
+        }
+        setkey(res, ind)
+        datlist[match(res$ind, datlist$ind), c("x0", "y0", "w", "h"):= as.list(res[, c("x0", "y0", "w", "h"), with=FALSE])]
+
+    }
+    
+	browser()
+	
+    
+    
 	for (i in 1:depth) {
 		dats_i <- dats[[i]]
 		if (i==1) {

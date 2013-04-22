@@ -3,7 +3,7 @@ function(dat, position.legend, palette, range) {
 	color <- colorRampPalette(palette,space="rgb")(99)
 
     if (any(is.na(range))) {
-	    prettyP <- pretty(dat$value2,n=8)
+	    prettyP <- pretty(dat$c,n=8)
     } else {
         prettyP <- pretty(range,n=8)
     }
@@ -25,7 +25,7 @@ function(dat, position.legend, palette, range) {
 	if (position.legend!="none") drawLegend(prettyT, legCol,
 											position.legend=="bottom")
 
-	scale <- floor((dat$value2 - minP) / (maxP - minP) * 98) + 1
+	scale <- floor((dat$c - minP) / (maxP - minP) * 98) + 1
 	if (any(scale<1)) {
 	    warning("Values found that are lower than the minimum of range")
 	    scale[scale<1] <- 1

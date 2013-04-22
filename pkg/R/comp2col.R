@@ -4,9 +4,9 @@ function(dat, position.legend, palette, range) {
 	color <- colorRampPalette(palette,space="rgb")(99)
 	
 	
-	perc <-((dat$value - dat$value2)/dat$value2) * 100
+	perc <-((dat$s - dat$c)/dat$c) * 100
 	
-	growth <- (dat$value / dat$value2)
+	growth <- (dat$s / dat$c)
 	
 	# edit growth
 	growth[growth<0.1] <- 0.1

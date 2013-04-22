@@ -4,8 +4,8 @@
 #'
 #' @param dtf a data.frame. Required.
 #' @param index	vector containing the column names in \code{dtf} that contain the aggregation indices. Required.
-#' @param vSize name of the variable that determines the sizes of the rectangles. For small multiples, a vector of variable names (one for each treemap) should be given.  Required.
-#' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". For small multiples, a vector of variable names (one for each treemap) should be given.
+#' @param vSize name of the variable that determines the sizes of the rectangles.  Required.
+#' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". 
 #' @param type the type of the treemap:
 #' \describe{
 #'    	\item{\code{"value"}:}{the \code{vColor}-variable is directly mapped to a color palette (by default Brewer's diverging color palette "RdBu").}
@@ -15,10 +15,10 @@
 #'		\item{\code{"depth"}:}{each aggregation level (defined by \code{index}) has a distinct color}
 #'		\item{\code{"index"}:}{colors are determined by the \code{index} variables. Each aggregation of the first index variable is assigned to a color of \code{palette}. Each aggregation of on of the other index variables is assigned to a similar color, that varies on hue or lightness.}
 #'    	\item{\code{"categorical"}:}{\code{vColor} is a categorical variable that determines the color}}
-#' @param title title of the treemap. For small multiples, a vector of titles should be given. Titles are used to describe the sizes of the rectangles.
-#' @param subtitle subtitle of the treemap. For small multiples, a vector of subtitles should be given. Subtitles are used to describe the colors of the rectangles.
+#' @param title title of the treemap.
+#' @param subtitle subtitle of the treemap.
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
-#' @param sortID name of the variable that determines the order in which the rectangles are placed from top left to bottom right. Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left. For small multiples, a vector of variable names (one for each treemap) can be given. Only applicable when \code{algortihm=="pivotSize"}.
+#' @param sortID name of the variable that determines the order in which the rectangles are placed from top left to bottom right. Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left. Only applicable when \code{algortihm=="pivotSize"}.
 #' @param palette either a color palette or a name of a Brewer palette (see \code{display.brewer.all()}). A Brewer palette can be reversed by prefixing its name with a "-".
 #' @param range range of values that determine the colors. When omitted, the range of actual values is used. This range is mapped to \code{palette}.
 #' @param vColorRange deprecated, use \code{range} instead.
@@ -38,9 +38,7 @@
 #' @param vp \code{\link[grid:viewport]{viewport}} to draw in. By default it is not specified, which means that a new plot is created. Useful when drawing small multiples, or when placing a treemap in a custom grid based plot.
 #' @param na.rm logical that determines whether missing values are omitted during aggregation
 #' @return A list is silently returned:
-#'	\item{tm}{list with for each treemap a \code{data.frame} containing information about the rectangles}
-#'	\item{nRow}{number of rows in the treemap grid}
-#'	\item{nCol}{number of rows in the treemap grid}
+#'	\item{tm}{a \code{data.frame} containing information about the rectangles}
 #'  \item{vSize}{argument vSize}
 #'  \item{vColor}{argument vColor}
 #'	This list can be used to locate a mouse click (see \code{\link{tmLocate}}).
@@ -98,16 +96,11 @@ function(dtf,
 	if (any(!index %in% names(dtf))) stop("<index> contains invalid column names")
 
 	# vSize
-	if (!all(vSize %in% names(dtf))) stop("vSize contains invalid column names")
-	n <- length(vSize)
-	if (inherits(dtf, "data.table"))
-		isNumeric <- sapply(dtf[, vSize, with=FALSE], is.numeric)
-	else
-		isNumeric <- sapply(dtf[, vSize], is.numeric)
-	if (!all(isNumeric))
+    if (length(vSize)!=1) stop("vSize should be one column name")
+    if (!vSize %in% names(dtf)) stop("vSize is invalid column name")
+	if (!is.numeric(dtf[[vSize]]))
 		stop(paste("Column(s) in vSize not numeric",sep=""))
 	
-
 	# vColor
 	vColorMplySplit <- function(vColor) {
 		divided <- 0
@@ -125,15 +118,14 @@ function(dtf,
 	}
 	
 	if (!is.null(vColor)) {
-		vColor2 <- lapply(vColor, FUN="vColorMplySplit")
-		vColorX <- as.numeric(sapply(vColor2, function(x)x[2]))
-		if (any(is.na(vColorX))) stop("vColor: invalid scale factor(s)")
-		vColor <- sapply(vColor2, function(x)x[1])
-		if (length(vColor) != n) 
-			stop("vColor does not have the same length as vSize")
-		if (!all(vColor %in% names(dtf)))
-			stop("Invalid column name(s) found in vColor.")
-		vColorDiv <- as.logical(as.numeric(sapply(vColor2, function(x)x[3])))
+	    if (length(vColor)!=1) stop("length of vColor should be one")
+	    vColor2 <- vColorMplySplit(vColor)
+		vColorX <- as.numeric(vColor2[2])
+		if (is.na(vColorX)) stop("vColor: invalid scale factor")
+		vColor <- vColor2[1]
+		if (!(vColor %in% names(dtf)))
+			stop("Invalid column name in vColor.")
+		vColorDiv <- as.logical(as.numeric(vColor2[3]))
 	}	
 	
 	# type
@@ -141,22 +133,16 @@ function(dtf,
 		stop("Invalid type")
 	
 	# title	
-	if (!is.na(title[1]) && length(title) != n) {
-		warning(paste("Number of titles should be ", n, 
-					  ". Titles will be ignored.", sep=""))
+	if (!is.na(title[1]) && length(title) != 1) {
+		warning("Length of title should be 1")
 		title <- NA}
 	if (is.na(title[1])) {	
-		options(warn=-1) 
-		vSizeNames <- vSize
-		options(warn=0) 
-	} else {
-		vSizeNames <- as.character(title)
+		title <- vSize
 	}
 
 	# subtitle	
-	if (!is.na(subtitle[1]) && length(subtitle) != n) {
-		warning(paste("Number of subtitles should be ", n, 
-					  ". Subtitles will be ignored.", sep=""))
+	if (!is.na(subtitle[1]) && length(subtitle) != 1) {
+		warning("Length of subtitle should be 1")
 		subtitle <- NA}
 
 	formatColorTitle <- function(var, varX=NA, var2=NA, var2X=NA, div) {
@@ -185,20 +171,13 @@ function(dtf,
 		options(warn=-1) 
 		if (!is.null(vColor)) {
 			if (type=="dens") 
-				vColorNames <- mapply(FUN="formatColorTitle", 
-									  var=vColor, 
-									  var2=vSize, 
-									  var2X=vColorX, 
-									  div=vColorDiv)
+				subtitle <- formatColorTitle(var=vColor, var2=vSize, 
+                                                var2X=vColorX, div=vColorDiv)
 			else
-				vColorNames <- mapply(FUN="formatColorTitle", 
-									  var=vColor, 
-									  varX=vColorX, 
-									  div=vColorDiv)
-		} else vColorNames <- rep("",n)
+			    subtitle <- formatColorTitle(var=vColor, varX=vColorX, 
+                                             div=vColorDiv)
+		} else subtitle <- ""
 		options(warn=0) 
-	} else {
-		vColorNames <- as.character(subtitle)
 	}
 	
 	# algorithm
@@ -206,16 +185,15 @@ function(dtf,
 		stop("Invalid algorithm")
 	
 	# sortID
-	if (!length(sortID) %in% c(1, n))
-		stop("Incorrect sortID length")
-	ascending <- rep(TRUE, n)
-	sortID <- rep(sortID, length.out=n)
-	negSort <- substr(sortID,1,1)=="-"
-	ascending[negSort] <- FALSE
-	sortID[negSort] <- substr(sortID[negSort],2,nchar(sortID[negSort]))
-	sortID[sortID=="size"] <- vSize[sortID=="size"]
-	sortID[sortID=="color"] <- vSize[sortID=="color"]
-	if (!all(sortID %in% names(dtf)))
+	if (length(sortID)!=1)
+		stop("sortID should be of length one")
+    ascending <- substr(sortID,1,1)!="-"
+    if (!ascending) sortID <- substr(sortID,2,nchar(sortID))
+
+    if (sortID=="size") sortID <- vSize
+    if (sortID=="color") sortID <- vColor
+    
+    if (!(sortID %in% names(dtf)))
 		stop("Incorrect sortID")
 	
 
@@ -333,109 +311,40 @@ function(dtf,
 	###########
 	## Aggregate
 	###########
-	vars <- unique(c(vSize, vColor))
+    
+	vars <- unique(c(vSize, vColor, sortID))
 	
-	dtfDT <- as.data.table(dtf)
+    
+	dtfDT <- as.data.table(dtf[, c(index, vSize, vColor, sortID)])
 	
+    depth <- length(index)
+    indexList <- paste0("index", 1:depth)
+    setnames(dtfDT, old=names(dtfDT), new=c(indexList, "s", "c", "i"))
+    
 	## cast non-factor index columns to factor
-	for (i in index) {
-		if (is.numeric(dtfDT[[1]])) { 
+	for (i in indexList) {
+		if (is.numeric(dtfDT[[i]])) { 
 			dtfDT[, i:=factor(dtfDT[[i]], levels=sort(unique(dtfDT[[i]]))), with=FALSE] 
-		} else if (!is.factor(dtfDT[[1]])) {
+		} else if (!is.factor(dtfDT[[i]])) {
 			dtfDT[, i:=factor(dtfDT[[i]]), with=FALSE]
 		}
 	}
-	
-	setkeyv(dtfDT, index)
+    setkeyv(dtfDT, indexList)
+    
 	
 	.SD <- NULL; rm(.SD); #trick R CMD check
 	
-	## aggregate numeric variable
-	varsNum <- sapply(dtfDT, is.numeric)[vars]
-	dat <- dtfDT[ , lapply(.SD[, vars[varsNum], with=FALSE], sum, na.rm=na.rm), by=index]
+    dat <- aggTmData(dtfDT, indexList, na.rm=na.rm)
 	
-	## aggregate categorical variables: for each aggregate, get the mode
-	for (i in index) {
-		if (any(vars==i)) {
-			i_new <- paste(i, "tmp", sep="__")
-			dtfDT[[i_new]] <- dtfDT[[i]]
-			vars[vars==i] <- i_new
-			vColor[vColor==i] <- i_new
-		}
-	}
-	
-	if (!all(varsNum)) {
-		datCat <- dtfDT[ , lapply(.SD[, vars[!varsNum], with=FALSE],
-							  function(x)which.max(table(x))), by=index]
-		dat <- data.table(dat, datCat[, vars[!varsNum], with=FALSE])
-	}
-	for (v in vars[!varsNum]) {
-		dat[[v]] <- factor(dat[[v]], labels=levels(dtfDT[[v]]))
-	}
-	
-	
-	depth <- length(index)
-	indexList <- paste("index", 1:depth, sep="")
-	
-	setnames(dat, 1:depth, indexList)
-	
-	minima <- sapply(dat[, vars[varsNum], with=FALSE], min)
-	if (any(is.na(minima)))
-		stop(paste("Column(s) ",
-				   paste(names(minima)[is.na(minima)],
-				   	  collapse=", "), " contain missing values.", sep=""))
-	
-	if (min(minima[vSize]) < 0)
-		stop(paste("Column(s) ",
-				   paste(names(minima[vSize])[minima[vSize]<0],
-				   	  collapse=", "),
-				   " contain negative values.", 
-				   sep=""))
+	if (min(dat[["s"]]) < 0) stop("Column vSize contains negative values.")
 	
 	if (!is.null(vColor) && !(type %in% c("depth", "linked"))) {
-		scaledInd <- which(vColorX!=1 & varsNum[match(vColor, vars)])
-		for (i in scaledInd) {
-			colName <- paste(vColor[i], vColorX[i], sep="__")
-			dat[[colName]] <- dat[[vColor[i]]] * vColorX[i]
-			vColor[i] <- colName
+		if (vColorX!=1) {
+			dat[["c"]] <- dat[["c"]] * vColorX
 		}
 	} else {
-	    dat$temp_ones <- 1
-		vColor <- rep("temp_ones", n)
+	    dat$c <- 1
 	}
-	
-    browser()
-	##########
-	## Determine grid
-	##########
-	
-	width <- par("din")[1]
-	height <- par("din")[2]
-	
-	mx <- n
-	numbers <- matrix(rep(1:mx, mx) * rep(1:mx, each=mx), nrow=mx,ncol=mx) 
-	optnum <- rep(0,mx)
-	
-	for (i in 1:mx) {
-		optnum[i] <- min(100,which(numbers[i,]>=n))
-	}
-	optnum <- unique(optnum)
-	optnum <- optnum[optnum!=100]
-	optn <- length(optnum)
-	minAsp <- 0
-	for (i in 1:optn){
-		rW <- optnum[i]/width
-		cH <- optnum[optn+1-i]/height
-		aspR <- min(rW/cH, cH/rW)
-		if (aspR > minAsp) {
-			minAsp <- aspR
-			minAspI <- i
-		}
-	}
-
-	nCol <- optnum[minAspI]
-	nRow <- optnum[optn+1-minAspI]
-	
 	
 	############
 	## Plot treemap(s)
@@ -447,59 +356,38 @@ function(dtf,
             seekViewport(vp)
         else pushViewport(vp)
     }	
-	pushViewport(viewport(name="grid",layout=grid.layout(nRow, nCol)))
 
-	iCol<-1
-	iRow<-1
-	tm<-list()
-	for (i in 1:n) {
-		#browser()
-		dat_i <- data.table(value=dat[[vSize[i]]],
-							value2=dat[[vColor[i]]],
-							sortInd=dat[[sortID[i]]])
-		dat_i <- cbind(dat_i, dat[, indexList, with=FALSE])
-
-		if (!ascending[i]) {
-			dat_i[["sortInd"]] <- -dat_i[["sortInd"]]
-		}
-
-		pushViewport(viewport(name=paste("tm",i,sep=""),layout.pos.col=iCol, layout.pos.row=iRow))
-		tm[[i]] <- baseTreemap(
-			dat=dat_i,
-			type=type,
-			algorithm=algorithm,
-			position.legend=position.legend,
-			sizeTitle=vSizeNames[i],
-			colorTitle=vColorNames[i],
-			palette=palette,
-			range=range,
-			fontsize.title=fontsize.title, 
-			fontsize.labels=fontsize.labels, 
-			fontsize.legend=fontsize.legend,
-			lowerbound.cex.labels=lowerbound.cex.labels,
-			inflate.labels=inflate.labels,
-			bg.labels=bg.labels,
-			force.print.labels=force.print.labels,
-			cex_indices=cex_indices,
-			indexNames=index,
-			aspRatio)
-			
-		upViewport()
-		iRow<-iRow+1
-		if (iRow>nRow) {
-			iRow<-1
-			iCol<-iCol+1
-		}	
+	if (!ascending) {
+		dat[["i"]] <- -dat[["i"]]
 	}
+
+	tm <- baseTreemap(
+		dat=dat,
+		type=type,
+		algorithm=algorithm,
+		position.legend=position.legend,
+		sizeTitle=title,
+		colorTitle=subtitle,
+		palette=palette,
+		range=range,
+		fontsize.title=fontsize.title, 
+		fontsize.labels=fontsize.labels, 
+		fontsize.legend=fontsize.legend,
+		lowerbound.cex.labels=lowerbound.cex.labels,
+		inflate.labels=inflate.labels,
+		bg.labels=bg.labels,
+		force.print.labels=force.print.labels,
+		cex_indices=cex_indices,
+		indexNames=index,
+		aspRatio)
+		
 	
 	# go to root viewport (from grid layout)
-    upViewport(1 + !is.null(vp))
+    upViewport(0 + !is.null(vp))
     
 	# save treemaps (indices, subindices, and coordinates), and number of rows and number of columns)
 	tmSave <- list(tm = tm,
                    type = type,
-				   nRow = nRow,
-				   nCol = nCol,
 				   vSize = vSize,
 				   vColor = names(vColorNames))
 	invisible(tmSave)

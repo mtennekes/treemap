@@ -5,6 +5,6 @@ function(dat, position.legend, palette, labels) {
 	
 	if (position.legend!="none") drawLegend(labels, colorl, position.legend=="bottom")
 	
-	return (colorl[dat$value2])
+	return (colorl[dat$c])
 }
 

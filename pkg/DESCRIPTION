@@ -17,6 +17,7 @@ Imports:
     RColorBrewer,
     data.table
 Collate:
+    'aggTmData.R'
     'baseTreemap.R'
     'cat2col.R'
     'comp2col.R'

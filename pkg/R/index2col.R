@@ -1,6 +1,6 @@
 index2col <-
 function(dat, position.legend, palette, labels) {
-    ss <- strsplit(dat$index, split="__")
+    ss <- strsplit(dat$ind, split="__")
     
     index1 <- as.integer(sapply(ss, function(x)x[1]))
     index2 <- sapply(ss, function(x)x[2])
