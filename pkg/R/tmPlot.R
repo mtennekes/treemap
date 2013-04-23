@@ -389,7 +389,7 @@ function(dtf,
 	tmSave <- list(tm = tm,
                    type = type,
 				   vSize = vSize,
-				   vColor = names(vColorNames))
+				   vColor = vColor)
 	invisible(tmSave)
 }
 

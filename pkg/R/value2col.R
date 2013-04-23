@@ -1,10 +1,10 @@
 value2col <-
     function(dat, position.legend, palette, range) {
-        maxlev <- max(dat$i)
+        maxlev <- max(dat$l)
         
         #browser()
         if (any(is.na(range))) {
-            range <- range(dat$c[dat$i==maxlev])
+            range <- range(dat$c[dat$l==maxlev])
             if (range[1] > 0) {
                 ## all positive
                 range[1] <- 0
@@ -41,11 +41,11 @@ value2col <-
         
         scale <- floor((dat$c - minP) / (maxP - minP) * 98) + 1
         if (any(scale<1)) {
-            if (any(scale<1 & dat$i==maxlev)) warning("Values found that are lower than the minimum of range")
+            if (any(scale<1 & dat$l==maxlev)) warning("Values found that are lower than the minimum of range")
             scale[scale<1] <- 1
         }
         if (any(scale>99)) {
-            if (any(scale>99 & dat$i==maxlev)) warning("Values found that are higher than the maximum of range")
+            if (any(scale>99 & dat$l==maxlev)) warning("Values found that are higher than the maximum of range")
             scale[scale>99] <- 99
         }
         

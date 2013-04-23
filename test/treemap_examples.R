@@ -1,6 +1,13 @@
-
-
+### new treemap engine
 data(sbsData)
+sbsData$ssubsection <- sbsData$subsection
+
+tmPlot(sbsData, index=c("section", "subsection", "ssubsection"), vSize="employees08", vColor="turnover08")
+
+tmPlot(sbsData, index=c("section", "subsection"), vSize="employees08", vColor="turnover08")
+
+
+###
 tm <- tmPlot(sbsData, 
 	   index=c("section", "subsection"), 
 	   vSize=c("employees09", "turnover09"), 

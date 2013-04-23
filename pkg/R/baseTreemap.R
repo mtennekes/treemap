@@ -251,7 +251,7 @@ function(dat,
             parents2 <- datlist[[paste0("index", i-1)]][parents_active]
             matchID <- match(parents, parents2)
             
-            datlist[active, c("X0", "X0", "W", "H"):= as.list(datlist[parents_active,][matchID, c("x0", "y0", "w", "h"), with=FALSE])]
+            datlist[active, c("X0", "Y0", "W", "H"):= as.list(datlist[parents_active,][matchID, c("x0", "y0", "w", "h"), with=FALSE])]
             
             indList <- indexList[1:(i-1)]
             res <- datlist[active, subTM(.SD), by=indList]
@@ -263,63 +263,14 @@ function(dat,
 
     }
     
-	browser()
 	
-    
-    
-	for (i in 1:depth) {
-		dats_i <- dats[[i]]
-		if (i==1) {
-			rec <- unlist(dats_i[1, list(X0, Y0, W, H)])
-			value<-dats_i$value
-			names(value) <- dats_i$index1
-			recDat <- do.call(algorithm, list(value, rec))
-			#recDat <- pivotSize(value, rec)
-			recNames <- row.names(recDat)
-			recDat <- as.data.table(recDat)
-			recDat$ind <- factor(recNames, levels=levels(dats_i$index1))
-			setkeyv(dats_i, "index1")
-			setkeyv(recDat, "ind")
-			dats_i <- cbind(dats_i, recDat[, list(x0, y0, w, h)])
-		} else {
-			indexList <- paste("index", 1:(i-1), sep="")
-			indexList2 <- paste("index", 1:i, sep="")
-
-			setkeyv(dats_i, indexList2)
-
-			dats_i <- dats_i[dats[[i-1]][,
-				c(indexList, "x0", "y0", "w", "h"), with=FALSE]]
-			
-			setnames(dats_i, c("x0", "y0", "w", "h"), c("X0", "Y0", "W", "H"))
-			subTM <- function(x) {
-				rec <- unlist((x[1, list(X0, Y0, W, H)]))
-				x$index <- x[[paste("index", i, sep="")]]
-				x <- x[order(x$sortInd),]
-				value <- x$value
-				names(value) <- x[[paste("index", i, sep="")]]
-				
-				recDat <- do.call(algorithm, list(value, rec))
-				#recDat <- pivotSize(value, rec)
-				recNames <- row.names(recDat)
-				recDat <- as.data.table(recDat)
-				recDat$ind <- factor(recNames, levels=levels(x$index))
-				setkeyv(recDat, "ind")			
-			}
-			
-			res <- dats_i[, subTM(.SD), by=indexList]
-			setnames(res, "ind", paste("index", i, sep=""))
-			setkeyv(res, indexList2)
-			dats_i <- cbind(dats_i, res[, list(x0, y0, w, h)])
-		}
-		dats[[i]] <- dats_i
-		dats_i$fullname <- do.call(paste, 
-								   c(unclass(dats_i[, paste("index", 1:i, sep=""), 
-								   			   with=FALSE]), sep="__"))
-		setnames(dats_i, paste("index", i, sep=""), "ind")
-		recList <- rbind(recList, dats_i[,
-			list(ind, clevel, color, x0, y0, w, h, fullname)])
-	}
+    recList <- datlist
+    recList[, fullname:=recList$ind]
+    recList[, ind:=apply(recList, MARGIN=1, FUN=function(x) x[as.integer(x["l"])])]
 	
+    browser()
+	
+    #recList <- recList[!is.na(recList$ind),]
 
 	# convert to npc (0 to 1)
 	recList$x0 <- recList$x0 / dataRec$W
@@ -346,10 +297,12 @@ function(dat,
 		grid.draw(recs_fill$recs)
 		grid.draw(recs_fill$txt)
 	} else {
-
-		whichBold <- recList$clevel==1
-		lwds <- depth - recList$clevel + 1
-		whichFill <- recList$clevel==depth
+browser()
+		whichBold <- recList$l==1
+		lwds <- depth - recList$l + 1
+		whichFill <- recList$l==depth
+        
+        whichNA <- is.na(recList$ind)
 		
 		recs_fill_norm <- createRec(recList[whichFill & !whichBold,], 
 									filled=TRUE, 
@@ -360,7 +313,7 @@ function(dat,
 									force.print.labels=force.print.labels, 
 									cex_index=cex_indices[3])
 		
-		recs_trans_norm <- createRec(recList[!whichFill & !whichBold,], 
+		recs_trans_norm <- createRec(recList[!whichFill & !whichBold & !whichNA,], 
 									 filled=FALSE, 
 									 label="normal",
 									 labellb=lowerbound.cex.labels, 
@@ -402,10 +355,9 @@ function(dat,
 		drawRecs(recs_trans_bold)
 		
 	}
-		
 	
 	## prepare output
-	res <- strsplit(recList$fullname[whichFill], split="__")
+	res <- strsplit(as.character(recList$fullname[whichFill]), split="__")
 	mat <- t(sapply(res, FUN=function(x){y <- rep("", depth)
 								y[1:length(x)] <- x
 								y}))
