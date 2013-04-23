@@ -2,11 +2,12 @@ index2col <-
 function(dat, position.legend, palette, labels) {
     ss <- strsplit(dat$ind, split="__")
     
-    index1 <- as.integer(sapply(ss, function(x)x[1]))
+    browser()
+    index1 <- sapply(ss, function(x)x[1])
     index2 <- sapply(ss, function(x)x[2])
     
     index2[index2=="NA"] <- NA
-    index2 <- as.integer(index2)
+    #index2 <- as.integer(index2)
     
     indexDT <- data.table(index1=index1, index2=index2)
     
@@ -43,7 +44,7 @@ function(dat, position.legend, palette, labels) {
         hex(HSV(co))
     }
     
-    
+
     indexDT[, color:=createColor(base_color, fact)]
     
     

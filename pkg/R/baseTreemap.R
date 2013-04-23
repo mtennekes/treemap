@@ -136,7 +136,7 @@ function(dat,
 	    datlist$c[is.nan(datlist$c)] <- 0
 	}
 	
-    datlist$ind <- as.factor(do.call("paste", c(as.list(datlist[, c(indexList, "l"), with=FALSE]), sep="__")))
+    datlist$ind <- do.call("paste", c(as.list(datlist[, c(indexList, "l"), with=FALSE]), sep="__"))
     
     
 	# Show legenda and determine colors
@@ -241,15 +241,18 @@ function(dat,
 	    recDat$ind <- factor(recNames, levels=levels(x$ind))
 	    setkeyv(recDat, "ind")    		
 	}
-	
-	for (i in 1:depth) {
+browser()
+    for (i in 1:depth) {
         if (i!=1) {
             active <- datlist$l==i
             parents_active <- datlist$l==(i-1)
+
+            parent_names <- apply(datlist[, paste0("index", 1:(i-1)), with=FALSE], 
+                             1, paste, collapse="_")
             
-            parents <- datlist[[paste0("index", i-1)]][active]
-            parents2 <- datlist[[paste0("index", i-1)]][parents_active]
-            matchID <- match(parents, parents2)
+            parents1 <- parent_names[active]
+            parents2 <- parent_names[parents_active]
+            matchID <- match(parents1, parents2)
             
             datlist[active, c("X0", "Y0", "W", "H"):= as.list(datlist[parents_active,][matchID, c("x0", "y0", "w", "h"), with=FALSE])]
             
@@ -303,12 +306,20 @@ browser()
 		whichFill <- recList$l==depth
         
         whichNA <- is.na(recList$ind)
+
+        recs_fill_NA <- createRec(recList[whichFill & !whichBold & whichNA,], 
+                                    filled=TRUE, 
+                                    label="", 
+                                    lwd = lwds[whichFill & !whichBold & whichNA], 
+                                    inflate.labels=inflate.labels,
+                                    force.print.labels=force.print.labels, 
+                                    cex_index=cex_indices[3])
 		
-		recs_fill_norm <- createRec(recList[whichFill & !whichBold,], 
+		recs_fill_norm <- createRec(recList[whichFill & !whichBold &!whichNA,], 
 									filled=TRUE, 
 									label="normal", 
 									labellb=lowerbound.cex.labels, 
-									lwd = lwds[whichFill & !whichBold], 
+									lwd = lwds[whichFill & !whichBold &!whichNA], 
 									inflate.labels=inflate.labels,
 									force.print.labels=force.print.labels, 
 									cex_index=cex_indices[3])
@@ -318,7 +329,7 @@ browser()
 									 label="normal",
 									 labellb=lowerbound.cex.labels, 
 									 labelbg = bg.labels, 
-									 lwd = lwds[!whichFill & !whichBold],
+									 lwd = lwds[!whichFill & !whichBold & !whichNA],
 									 inflate.labels=inflate.labels,
 									 force.print.labels=force.print.labels, 
 									 cex_index=cex_indices[2]) 
@@ -350,7 +361,8 @@ browser()
 # 				recs_trans_bold$txtbg$gp$fill <- bg.labels
 # 		}
 	
-		drawRecs(recs_fill_norm)
+        drawRecs(recs_fill_NA)
+        drawRecs(recs_fill_norm)
 		drawRecs(recs_trans_norm)
 		drawRecs(recs_trans_bold)
 		

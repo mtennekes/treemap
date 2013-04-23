@@ -314,11 +314,17 @@ function(dtf,
     
 	vars <- unique(c(vSize, vColor, sortID))
 	
+    if (is.null(vColor)) {
+        vColor <- "vColor.temp"
+        vColorX <- 1
+        dtf$vColor.temp <- 1
+    }
     
 	dtfDT <- as.data.table(dtf[, c(index, vSize, vColor, sortID)])
 	
     depth <- length(index)
     indexList <- paste0("index", 1:depth)
+    browser()
     setnames(dtfDT, old=names(dtfDT), new=c(indexList, "s", "c", "i"))
     
 	## cast non-factor index columns to factor
@@ -326,7 +332,8 @@ function(dtf,
 		if (is.numeric(dtfDT[[i]])) { 
 			dtfDT[, i:=factor(dtfDT[[i]], levels=sort(unique(dtfDT[[i]]))), with=FALSE] 
 		} else if (!is.factor(dtfDT[[i]])) {
-			dtfDT[, i:=factor(dtfDT[[i]]), with=FALSE]
+		    fact <- factor(dtfDT[[i]])
+			dtfDT[, i:=fact, with=FALSE]
 		}
 	}
     setkeyv(dtfDT, indexList)
@@ -342,8 +349,6 @@ function(dtf,
 		if (vColorX!=1) {
 			dat[["c"]] <- dat[["c"]] * vColorX
 		}
-	} else {
-	    dat$c <- 1
 	}
 	
 	############
