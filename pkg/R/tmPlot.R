@@ -307,94 +307,59 @@ function(dtf,
 		stop("Invalid na.rm")
 
 	
-	
 	###########
-	## Aggregate
+	## prepare data for aggregation
 	###########
+
+    if (is.data.table(dtf)) {
+        dtfDT <- copy(dtf[, c(index, vSize, vColor, sortID)])
+    } else {
+        dtfDT <- as.data.table(dtf[, c(index, vSize, vColor, sortID)])
+    }
     
-	vars <- unique(c(vSize, vColor, sortID))
-	
     if (is.null(vColor)) {
         vColor <- "vColor.temp"
         vColorX <- 1
-        dtf$vColor.temp <- 1
+        dtfDT[, vColor.temp:=1]
     }
     
-	dtfDT <- as.data.table(dtf[, c(index, vSize, vColor, sortID)])
-	
     depth <- length(index)
     indexList <- paste0("index", 1:depth)
-    browser()
     setnames(dtfDT, old=names(dtfDT), new=c(indexList, "s", "c", "i"))
     
-	## cast non-factor index columns to factor
-	for (i in indexList) {
-		if (is.numeric(dtfDT[[i]])) { 
-			dtfDT[, i:=factor(dtfDT[[i]], levels=sort(unique(dtfDT[[i]]))), with=FALSE] 
-		} else if (!is.factor(dtfDT[[i]])) {
-		    fact <- factor(dtfDT[[i]])
-			dtfDT[, i:=fact, with=FALSE]
-		}
-	}
+    if (vColorX!=1) dtfDT[, c:=c*vColorX]
+    ## cast non-factor index columns to factor
+    for (i in 1:depth) {
+        if (is.numeric(dtfDT[[i]])) { 
+            fact <- factor(dtfDT[[i]], levels=sort(unique(dtfDT[[i]])))
+            dtfDT[, i:=fact, with=FALSE] 
+        } else if (!is.factor(dtfDT[[i]])) {
+            fact <- factor(dtfDT[[i]])
+            dtfDT[, i:=fact, with=FALSE]
+        }
+    }
     setkeyv(dtfDT, indexList)
     
-	
-	.SD <- NULL; rm(.SD); #trick R CMD check
-	
-    dat <- aggTmData(dtfDT, indexList, na.rm=na.rm)
-	
-	if (min(dat[["s"]]) < 0) stop("Column vSize contains negative values.")
-	
-	if (!is.null(vColor) && !(type %in% c("depth", "linked"))) {
-		if (vColorX!=1) {
-			dat[["c"]] <- dat[["c"]] * vColorX
-		}
-	}
-	
-	############
-	## Plot treemap(s)
-	############
-    if (is.null(vp)) {
-        grid.newpage()
-    } else {
-        if (is.character(vp)) 
-            seekViewport(vp)
-        else pushViewport(vp)
-    }	
+    ###########
+    ## process treemap
+    ###########
+    datlist <- tmAggregate(dtfDT, indexList, type, ascending, na.rm)
+    vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
+                           position.legend, type, aspRatio)
+    tmPrintTitles(vps, title, subtitle, position.legend)
+    datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range)
+    datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
 
-	if (!ascending) {
-		dat[["i"]] <- -dat[["i"]]
-	}
-
-	tm <- baseTreemap(
-		dat=dat,
-		type=type,
-		algorithm=algorithm,
-		position.legend=position.legend,
-		sizeTitle=title,
-		colorTitle=subtitle,
-		palette=palette,
-		range=range,
-		fontsize.title=fontsize.title, 
-		fontsize.labels=fontsize.labels, 
-		fontsize.legend=fontsize.legend,
-		lowerbound.cex.labels=lowerbound.cex.labels,
-		inflate.labels=inflate.labels,
-		bg.labels=bg.labels,
-		force.print.labels=force.print.labels,
-		cex_indices=cex_indices,
-		indexNames=index,
-		aspRatio)
-		
-	
-	# go to root viewport (from grid layout)
+    tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices)
+    
     upViewport(0 + !is.null(vp))
     
 	# save treemaps (indices, subindices, and coordinates), and number of rows and number of columns)
-	tmSave <- list(tm = tm,
-                   type = type,
-				   vSize = vSize,
-				   vColor = vColor)
-	invisible(tmSave)
+# 	tmSave <- list(tm = tm,
+#                    type = type,
+# 				   vSize = vSize,
+# 				   vColor = vColor)
+# 	invisible(tmSave)
+    invisible()
 }
 
