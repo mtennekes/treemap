@@ -1,5 +1,5 @@
-tmGetViewports <- function(datlist, vp, fontsize.title, fontsize.labels, fontsize.legend,
-                              position.legend, type, aspRatio, subtitle) {
+tmGetViewports <- function(vp, fontsize.title, fontsize.labels, fontsize.legend,
+                              position.legend, type, aspRatio, subtitle, catLabels) {
 
     ############
     ## Prepare plot viewport
@@ -49,19 +49,12 @@ tmGetViewports <- function(datlist, vp, fontsize.title, fontsize.labels, fontsiz
         scale <- fsLegend / get.gpar()$fontsize
         maxStringWidth <- max(convertWidth(stringWidth(subtitle), "inches",
                                            valueOnly=TRUE)*scale+.5, 1)
-        if (type=="categorical") {
+        if (type %in% c("categorical", "index")) {
             maxStringWidth	<- max(maxStringWidth, 
-                                  convertWidth(stringWidth(
-                                      levels(datlist$c)),
+                                  convertWidth(stringWidth(catLabels),
                                                "inches",
                                                valueOnly=TRUE)*scale+.75)
             
-        } else if (type=="index") {
-            maxStringWidth	<- max(maxStringWidth, 
-                                  convertWidth(stringWidth(
-                                      indexNames),
-                                               "inches",
-                                               valueOnly=TRUE)*scale+.75)
         }
         
         legWidth <- unit(maxStringWidth, "inches")

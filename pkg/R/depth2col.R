@@ -1,10 +1,14 @@
 depth2col <-
-function(dat, position.legend, palette, indexnames) {
+function(dat, position.legend, palette, indexNames) {
     color <- palette
-    colorl <- rep(color, length.out=max(dat$l))
     
-    if (position.legend!="none") drawLegend(indexnames, colorl, position.legend=="bottom")
+    depth <- length(indexNames)
+    depthID <- apply(dat[, 1:depth, with=FALSE], MARGIN=1, FUN=function(x)sum(!is.na(x)))
+
+    colorl <- rep(color, length.out=depth)
     
-    return (colorl[dat$l])
+    if (position.legend!="none") drawLegend(indexNames, colorl, position.legend=="bottom")
+    
+    return (colorl[depthID])
 }
 

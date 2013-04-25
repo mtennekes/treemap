@@ -1,4 +1,4 @@
-tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range) {
+tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, indexNames) {
     if (position.legend!="none") {    
         pushViewport(vps$vpLeg)
     }

@@ -1,6 +1,16 @@
 index2col <-
 function(dat, position.legend, palette, labels) {
-    ss <- strsplit(dat$ind, split="__")
+    browser()
+    
+    
+    
+    key(dat)
+    
+    setkeyv(dat)
+    
+    
+    
+    ss <- strsplit(as.character(dat$k), split="__")
     
     browser()
     index1 <- sapply(ss, function(x)x[1])

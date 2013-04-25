@@ -11,7 +11,6 @@
 #'    	\item{\code{"value"}:}{the \code{vColor}-variable is directly mapped to a color palette (by default Brewer's diverging color palette "RdBu").}
 #'		\item{\code{"comp"}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable in percentages. Note: the negative scale may be different from the positive scale in order to compensate for the ratio distribution.}
 #'		\item{\code{"dens"}:}{colors indicate density. This is aanalogous to a population density map where \code{vSize}-values are area sizes, \code{vColor}-values are populations per area, and colors are computed as densities (i.e.\ population per squared km's).}
-#'		\item{\code{"linked"}:}{each object has a distinct color, which can be useful for small multiples (objects are linked by color)}
 #'		\item{\code{"depth"}:}{each aggregation level (defined by \code{index}) has a distinct color}
 #'		\item{\code{"index"}:}{colors are determined by the \code{index} variables. Each aggregation of the first index variable is assigned to a color of \code{palette}. Each aggregation of on of the other index variables is assigned to a similar color, that varies on hue or lightness.}
 #'    	\item{\code{"categorical"}:}{\code{vColor} is a categorical variable that determines the color}}
@@ -351,10 +350,13 @@ function(dtf,
     ## process treemap
     ###########
     datlist <- tmAggregate(dtfDT, indexList, type, ascending, na.rm)
-    vps <- tmGetViewports(datlist, vp, fontsize.title, fontsize.labels, fontsize.legend,
-                           position.legend, type, aspRatio, subtitle)
+    
+    catLabels <- switch(type, categorical=levels(datlist$c), index=index, depth=index, NA)
+    
+    vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
+                           position.legend, type, aspRatio, subtitle, catLabels)
     tmPrintTitles(vps, title, subtitle, position.legend)
-    datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range)
+    datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index)
     datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
 
     tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices)
