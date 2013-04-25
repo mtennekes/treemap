@@ -48,8 +48,7 @@ tmPlot(dow.jan.2005,
 	   algorithm="squarified",
 	   palette="RdYlBu",
 	   subtitle = "month.ret (in percentages)",
-	   vColorRange=c(-13,13),
-	   algorithm="squarified")
+	   range=c(-13,13))
 
 
 data(sbsData)
@@ -74,7 +73,7 @@ tmPlot(sbsData,
 	   type="value",
 	   algorithm="squarified",
 	   fontsize.labels=14,
-	   vColorRange=c(-80,80)
+	   range=c(-80,80)
 	   )
 
 

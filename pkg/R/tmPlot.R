@@ -329,23 +329,30 @@ function(dtf,
     
     if (vColorX!=1) dtfDT[, c:=c*vColorX]
     ## cast non-factor index columns to factor
-    for (i in 1:depth) {
-        if (is.numeric(dtfDT[[i]])) { 
-            fact <- factor(dtfDT[[i]], levels=sort(unique(dtfDT[[i]])))
-            dtfDT[, i:=fact, with=FALSE] 
-        } else if (!is.factor(dtfDT[[i]])) {
-            fact <- factor(dtfDT[[i]])
-            dtfDT[, i:=fact, with=FALSE]
+    for (d in 1:depth) {
+        if (is.numeric(dtfDT[[d]])) { 
+            fact <- factor(dtfDT[[i]], levels=sort(unique(dtfDT[[d]])))
+            dtfDT[, d:=fact, with=FALSE] 
+        } else if (!is.factor(dtfDT[[d]])) {
+            fact <- factor(dtfDT[[d]])
+            dtfDT[, d:=fact, with=FALSE]
         }
     }
+    
+    ## cast sortID to numeric
+    if (!is.numeric(dtfDT[["i"]])) {
+        warning("sortID must be a numeric variable")
+        dtfDT[, i:=integer(nrow(dtfDT))]
+    }
+    
     setkeyv(dtfDT, indexList)
     
     ###########
     ## process treemap
     ###########
     datlist <- tmAggregate(dtfDT, indexList, type, ascending, na.rm)
-    vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
-                           position.legend, type, aspRatio)
+    vps <- tmGetViewports(datlist, vp, fontsize.title, fontsize.labels, fontsize.legend,
+                           position.legend, type, aspRatio, subtitle)
     tmPrintTitles(vps, title, subtitle, position.legend)
     datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range)
     datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)

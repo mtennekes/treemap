@@ -1,5 +1,5 @@
-tmGetViewports <- function(vp, fontsize.title, fontsize.labels, fontsize.legend,
-                              position.legend, type, aspRatio) {
+tmGetViewports <- function(datlist, vp, fontsize.title, fontsize.labels, fontsize.legend,
+                              position.legend, type, aspRatio, subtitle) {
 
     ############
     ## Prepare plot viewport
@@ -47,12 +47,12 @@ tmGetViewports <- function(vp, fontsize.title, fontsize.labels, fontsize.legend,
         
     } else if (position.legend == "right") {
         scale <- fsLegend / get.gpar()$fontsize
-        maxStringWidth <- max(convertWidth(stringWidth(colorTitle), "inches",
+        maxStringWidth <- max(convertWidth(stringWidth(subtitle), "inches",
                                            valueOnly=TRUE)*scale+.5, 1)
         if (type=="categorical") {
             maxStringWidth	<- max(maxStringWidth, 
                                   convertWidth(stringWidth(
-                                      levels(dat$c)),
+                                      levels(datlist$c)),
                                                "inches",
                                                valueOnly=TRUE)*scale+.75)
             
