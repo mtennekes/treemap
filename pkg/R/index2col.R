@@ -1,12 +1,64 @@
 index2col <-
 function(dat, position.legend, palette, labels) {
+    
+    
+    
+    
+    dt <- copy(dat)
+    
+    depth <- sum(substr(names(dt), 1, 5)=="index")
+    
+    indexList <- paste0("index", 1:depth)
+    
+    setkeyv(dt, indexList)
+    
     browser()
+
+    dt[,lb:=0]
+    dt[,ub:=1]
+    dt[,LB:=0]
+    dt[,UB:=1]
     
     
+    addRange <- function(x) {
+        #browser()
+        LB <- x$LB[1]
+        UB <- x$UB[1]
+        
+        nr <- nrow(x)
+        
+        sq <- seq(LB, UB, length.out=nr+1)
+        
+        list(lb=sq[1:nr], ub=sq[2:(nr+1)])
+    }
     
-    key(dat)
     
-    setkeyv(dat)
+    for (d in 1:depth) {
+        if (d==1) {
+            dt[dt$l==d, c("lb", "ub"):=addRange(dt[dt$l==d, ])]
+            for (lv in levels(dt[[1]])) {
+                lowb <- dt$lb[dt[[1]]==lv & dt$l==d]
+                upb <- dt$ub[dt[[1]]==lv & dt$l==d]
+                dt[dt[[1]]==lv & dt$l>d, c("LB", "UB"):=list(LB=lowb, UB=upb)]
+            }
+            
+        } else {
+            id <- indexList[1:(d-1)]
+            dtAgg <- dt[dt$l==d, addRange(.SD), by=id]
+            for (lv in levels(dt[[(d-1)]])) {
+                dt[dt[[(d-1)]]==lv & dt$l==d, c("lb", "ub"):=dtAgg[lv, c("lb", "ub"), with=FALSE]]
+            }
+        }
+    }
+    
+    
+    addRange
+    
+    levels(dt$index1)
+    
+    
+    id <- indexList[1]
+    dt[, addRange(.SD), by=id]
     
     
     
