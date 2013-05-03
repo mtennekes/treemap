@@ -7,8 +7,6 @@ tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, 
         datlist$color <- comp2col(datlist, position.legend, palette, range)
     } else if (type == "dens") {
         datlist$color <- dens2col(datlist, position.legend, palette, range) 
-    } else if (type == "linked") {
-        datlist$color <- linked2col(datlist, position.legend, palette)
     } else if (type == "depth") {
         datlist$color <- depth2col(datlist, position.legend, palette, indexNames)
     } else if (type == "index") {

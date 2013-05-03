@@ -4,6 +4,14 @@ sbsData$ssubsection <- sbsData$subsection
 
 str(sbsData)
 
+
+tmPlot(sbsData,
+       index=c("section", "subsection"),
+       vSize="turnover08",
+       type="index",
+       palette="Set3")
+
+
 dtf <- sbsData
 index <- c("section", "subsection", "ssubsection")
 vSize <- "turnover08"
@@ -24,3 +32,10 @@ tmPlot(GNI2010,
        vSize="population",
        vColor="GNI",
        type="index")
+
+tmPlot(GNI2010,
+       index=c("continent", "iso3"),
+       vSize="population",
+       vColor="continent",
+       type="categorical",
+       palette="Set2")

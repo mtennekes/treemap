@@ -128,7 +128,7 @@ function(dtf,
 	}	
 	
 	# type
-	if (!type %in% c("value", "categorical", "comp", "dens", "linked", "index", "depth")) 
+	if (!type %in% c("value", "categorical", "comp", "dens", "index", "depth")) 
 		stop("Invalid type")
 	
 	# title	
@@ -202,10 +202,6 @@ function(dtf,
 			palette <- brewer.pal(11,"RdBu")
 		} else if (type == "dens") {
 			palette <- brewer.pal(9,"OrRd")
-		} else if (type == "linked") {
-			palette <- c(brewer.pal(12,"Set3"),
-						 brewer.pal(8,"Set2")[c(1:4,7,8)],
-						 brewer.pal(9,"Pastel1")[c(1,2,4,5)])
 		} else if (type == "depth") {
 			palette <- brewer.pal(8,"Set2")
 		} else if (type == "index") {
@@ -330,13 +326,21 @@ function(dtf,
     ## cast non-factor index columns to factor
     for (d in 1:depth) {
         if (is.numeric(dtfDT[[d]])) { 
-            fact <- factor(dtfDT[[i]], levels=sort(unique(dtfDT[[d]])))
+            fact <- factor(dtfDT[[d]], levels=sort(unique(dtfDT[[d]])))
             dtfDT[, d:=fact, with=FALSE] 
         } else if (!is.factor(dtfDT[[d]])) {
             fact <- factor(dtfDT[[d]])
             dtfDT[, d:=fact, with=FALSE]
         }
     }
+    
+    
+    ## cast character color columns to factor
+    if (is.character(dtfDT[["c"]])) {
+        fact <- factor(dtfDT[["c"]])
+        dtfDT[, "c":=fact, with=FALSE] 
+    }
+    
     
     ## cast sortID to numeric
     if (!is.numeric(dtfDT[["i"]])) {
@@ -352,7 +356,6 @@ function(dtf,
     datlist <- tmAggregate(dtfDT, indexList, type, ascending, na.rm)
     
     catLabels <- switch(type, categorical=levels(datlist$c), index=index, depth=index, NA)
-    
     vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
                            position.legend, type, aspRatio, subtitle, catLabels)
     tmPrintTitles(vps, title, subtitle, position.legend)

@@ -8,38 +8,65 @@ function(dat, position.legend, palette, labels) {
     
     depth <- sum(substr(names(dt), 1, 5)=="index")
     
+    dt[, md:=apply(dt[, 1:depth, with=FALSE], MARGIN=1, FUN=function(x)sum(!is.na(x)))]
+
+    
     indexList <- paste0("index", 1:depth)
     
-    setkeyv(dt, indexList)
-    
+    #setkeyv(dt, indexList)
     
     ## generic function for hierarchical structures
     ## dt = data.table
     ## index = list of index names
-    ## values = named list of initial numeric values (i.e. that belongs to the root node)
+    ## values = named list of initial numeric values 
+    ## each element can be a single element (i.e. that belongs to the root node), or a vector of the same size as the first index
     ## function to be applied
-    treeapply <- function(dt, index, values, fun) {
+    
+    treeapply <- function(dt, index, values, fun, ...) {
+        args <- list(...)
+        vars <- names(values)
         
+        #setkeyv(dt, index)
+        
+        if (length(values[[1]])==1) {
+            dt[, eval(vars):=values]
+            # apply function on first layer
+            dt[dt$l==d, eval(vars):=do.call(fun, args=c(list(as.list(dt[dt$l==d,vars,with=FALSE]), depth=1, maxdepth=dt$md[dt$l==d]), args))]
+        } else {
+            ind1 <- dt[[index[1]]]
+            lvls <- levels(ind1)
+            dt[, eval(vars):=1]
+            for (l in 1:length(lvls)) {
+                lv <- lvls[l]
+                vls <- lapply(values, function(v)v[l])
+                vls <- as.data.frame(vls)
+                dt[ind1==lv, eval(vars):=vls]
+            }
+        }
+        
+        if (length(index)>1) for (d in 2:length(index)) {
+            id <- index[1:(d-1)]
+            # assign values of layer above to parent values of current layer
+            #dt[dt$l==d, eval(parents):=children, by=id]
+            fn <- function(x) {
+                x <- copy(x)
+                x[x$l==d, eval(vars):=as.list(x[x$l==(d-1), vars, with=FALSE])]
+                x[x$l==d, eval(vars):=do.call(fun, args=c(list(as.list(x[x$l==d,vars,with=FALSE]), depth=d, maxdepth=x$md[x$l==d]), args))]
+                x
+            }
+            res <- as.list(dt[, fn(.SD), by=id][, vars, with=FALSE])
+            dt[, eval(vars):=res]
+        }
+        dt
     }
     
-    
-    
-    
     ########## method 1: split hcl circle
-
-    dt[,lb:=0]
-    dt[,ub:=1]
-    dt[,LB:=0]
-    dt[,UB:=1]
-    
-    frc <- 0.3
-    
-    addRange <- function(x) {
+    addRange <- function(x, depth, maxdepth, frc = 0.3) {
         #browser()
-        LB <- x$LB[1]
-        UB <- x$UB[1]
+        LB <- x[[1]][1]
+        UB <- x[[2]][2]
         
-        nr <- nrow(x)
+        nr <- length(x[[1]])
         
         sq <- seq(LB, UB, length.out=nr+1)
         step <- sq[2] - sq[1]
@@ -49,103 +76,47 @@ function(dat, position.legend, palette, labels) {
     }
     
     
-    for (d in 1:depth) {
-        if (d==1) {
-            dt[dt$l==d, c("lb", "ub"):=addRange(dt[dt$l==d, ])]
-            for (lv in levels(dt[[1]])) {
-                lowb <- dt$lb[dt[[1]]==lv & dt$l==d]
-                upb <- dt$ub[dt[[1]]==lv & dt$l==d]
-                dt[dt[[1]]==lv & dt$l>d, c("LB", "UB"):=list(LB=lowb, UB=upb)]
-            }
-            
-        } else {
-            id <- indexList[1:(d-1)]
-            dtAgg <- dt[dt$l==d, addRange(.SD), by=id]
-            for (lv in levels(dt[[(d-1)]])) {
-                dt[dt[[(d-1)]]==lv & dt$l==d, c("lb", "ub"):=dtAgg[lv, c("lb", "ub"), with=FALSE]]
-            }
-        }
-    }
-    
-
-    require(colorspace)
-    browser()
-    
-    dt[, point:=(lb+ub)/2]
-    dt[, color:=hcl(point*360)]
-    
+#     dt <- treeapply(dt, indexList, list(lb=0, ub=1), "addRange")
+#     require(colorspace)
+#     dt[, point:=(lb+ub)/2]
+#     dt[, color:=hcl(point*360)]
+#     
     ########## method 2: split hcl circle
     
-    
-    
-    
-    
-    
-    
     co <- coords(as(hex2RGB(palette), "HSV"))
-    hex(HSV(co))
+    nl <- nlevels(dt[[1]])
+    value <- lapply(as.list(as.data.frame(co)), function(x)x[1:nl])
+    
+    hsvs <- function(x, depth, maxdepth) {
+        H <- x[[1]]
+        S <- x[[2]]
+        V <- x[[3]]
+        
+        nr <- length(H)
+        hrng <- 10
+        srng <- .05
+        
+        if (nr > 1) {
+            r <- seq(0, 2*pi, length.out=nr+1)[1:nr]
+            H <- H + sin(r)*hrng
+            H[H<0] <- H[H<0] + 360
+            H[H>360] <- H[H>360] - 360
+            
+            S <- S + cos(r)*srng
+            S[S<0] <- 0
+            S[S>1] <- 1
+            V[maxdepth==depth] <- V[maxdepth==depth] * .75
+        }
+        list(H=H, S=S, V=V)
+    }
+    
+    dt <- treeapply(dt, indexList, value, "hsvs")
+    dt[, color:=hex(HSV(H, S, V))]
     
     
-#     
-#     
-#     addRange
-#     
-#     levels(dt$index1)
-#     
-#     
-#     id <- indexList[1]
-#     dt[, addRange(.SD), by=id]
-#     
-#     
-#     
-#     ss <- strsplit(as.character(dat$k), split="__")
-#     
-#     browser()
-#     index1 <- sapply(ss, function(x)x[1])
-#     index2 <- sapply(ss, function(x)x[2])
-#     
-#     index2[index2=="NA"] <- NA
-#     #index2 <- as.integer(index2)
-#     
-#     indexDT <- data.table(index1=index1, index2=index2)
-#     
-#     
-#     condense <- function(x) {
-#         y <- order(order(x))
-#         y[is.na(x)] <- NA
-#         y
-#     }
-#     indexDT[, index2:=condense(index2), by=index1]
-# 
-#     
-#     color <- palette 
-#     colorl <- rep(color, length.out=max(index1))
-#     
-#     indexDT[, base_color:=colorl[indexDT$index1]]
-# 	
-#     
-#     spread <- function(x) {
-#         y <- rep(1, length(x))
-#         if (!all(is.na(x))) {
-#             y[!is.na(x)] <- seq(0.5, 1.25, length.out=sum(!is.na(x)))[order(order(na.omit(x)))]
-#         }
-#         y
-#     }
-#     
-#     indexDT[, fact:=spread(index2), by=index1]
-#     
-#     require(colorspace)
-#     createColor <- function(bc, f) {
-#         co <- coords(as(hex2RGB(bc), "HSV"))
-#         co[, "V"] <- co[, "V"] * f
-#         co[, "V"][co[, "V"]>1] <- 1
-#         hex(HSV(co))
-#     }
-#     
-# 
-#     indexDT[, color:=createColor(base_color, fact)]
-#     
-#     
+    
+    
+     
  	if (position.legend!="none") {
  	    labels <- dt$n[dt$l==1]
  	    colorl <- dt$color[dt$l==1]
