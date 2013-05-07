@@ -30,12 +30,13 @@ tmPlot(GNI2010,
 tmPlot(GNI2010,
        index=c("continent", "iso3"),
        vSize="population",
-       vColor="GNI",
        type="index")
+
+
+GNI2010$col <- "#ABCDEF"
 
 tmPlot(GNI2010,
        index=c("continent", "iso3"),
        vSize="population",
-       vColor="continent",
-       type="categorical",
-       palette="Set2")
+       vColor="col",
+       type="color")

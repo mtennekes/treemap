@@ -13,7 +13,8 @@
 #'		\item{\code{"dens"}:}{colors indicate density. This is aanalogous to a population density map where \code{vSize}-values are area sizes, \code{vColor}-values are populations per area, and colors are computed as densities (i.e.\ population per squared km's).}
 #'		\item{\code{"depth"}:}{each aggregation level (defined by \code{index}) has a distinct color}
 #'		\item{\code{"index"}:}{colors are determined by the \code{index} variables. Each aggregation of the first index variable is assigned to a color of \code{palette}. Each aggregation of on of the other index variables is assigned to a similar color, that varies on hue or lightness.}
-#'    	\item{\code{"categorical"}:}{\code{vColor} is a categorical variable that determines the color}}
+#'    	\item{\code{"categorical"}:}{\code{vColor} is a categorical variable that determines the color}
+#'      \item{\code{"color"}:}{\code{vColor} is a vector of colors in the hexadecimal (#RRGGBB) format}}
 #' @param title title of the treemap.
 #' @param subtitle subtitle of the treemap.
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
@@ -128,7 +129,7 @@ function(dtf,
 	}	
 	
 	# type
-	if (!type %in% c("value", "categorical", "comp", "dens", "index", "depth")) 
+	if (!type %in% c("value", "categorical", "comp", "dens", "index", "depth", "color")) 
 		stop("Invalid type")
 	
 	# title	
@@ -316,6 +317,7 @@ function(dtf,
         vColor <- "vColor.temp"
         vColorX <- 1
         dtfDT[, vColor.temp:=1]
+        setcolorder(dtfDT, c(1:(ncol(dtfDT)-2), ncol(dtfDT), ncol(dtfDT)-1))
     }
     
     depth <- length(index)
@@ -359,7 +361,11 @@ function(dtf,
     vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
                            position.legend, type, aspRatio, subtitle, catLabels)
     tmPrintTitles(vps, title, subtitle, position.legend)
-    datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index)
+    if (type == "color") {
+        datlist$color <- as.character(datlist$c)
+    } else {
+        datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index)
+    }
     datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
 
     tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices)

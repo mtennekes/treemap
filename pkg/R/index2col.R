@@ -1,5 +1,5 @@
 index2col <-
-function(dat, position.legend, palette, labels) {
+function(dat, position.legend, palette, labels, method="HSV") {
     
     
     
@@ -13,15 +13,12 @@ function(dat, position.legend, palette, labels) {
     
     indexList <- paste0("index", 1:depth)
     
-    #setkeyv(dt, indexList)
-    
     ## generic function for hierarchical structures
     ## dt = data.table
     ## index = list of index names
     ## values = named list of initial numeric values 
     ## each element can be a single element (i.e. that belongs to the root node), or a vector of the same size as the first index
     ## function to be applied
-    
     treeapply <- function(dt, index, values, fun, ...) {
         args <- list(...)
         vars <- names(values)
@@ -31,7 +28,7 @@ function(dat, position.legend, palette, labels) {
         if (length(values[[1]])==1) {
             dt[, eval(vars):=values]
             # apply function on first layer
-            dt[dt$l==d, eval(vars):=do.call(fun, args=c(list(as.list(dt[dt$l==d,vars,with=FALSE]), depth=1, maxdepth=dt$md[dt$l==d]), args))]
+            dt[dt$l==1, eval(vars):=do.call(fun, args=c(list(as.list(dt[dt$l==1,vars,with=FALSE]), depth=1, maxdepth=dt$md[dt$l==1]), args))]
         } else {
             ind1 <- dt[[index[1]]]
             lvls <- levels(ind1)
@@ -76,17 +73,6 @@ function(dat, position.legend, palette, labels) {
     }
     
     
-#     dt <- treeapply(dt, indexList, list(lb=0, ub=1), "addRange")
-#     require(colorspace)
-#     dt[, point:=(lb+ub)/2]
-#     dt[, color:=hcl(point*360)]
-#     
-    ########## method 2: split hcl circle
-    
-    co <- coords(as(hex2RGB(palette), "HSV"))
-    nl <- nlevels(dt[[1]])
-    value <- lapply(as.list(as.data.frame(co)), function(x)x[1:nl])
-    
     hsvs <- function(x, depth, maxdepth) {
         H <- x[[1]]
         S <- x[[2]]
@@ -97,12 +83,19 @@ function(dat, position.legend, palette, labels) {
         srng <- .05
         
         if (nr > 1) {
-            r <- seq(0, 2*pi, length.out=nr+1)[1:nr]
-            H <- H + sin(r)*hrng
+            # circle
+#             r <- seq(0, 2*pi, length.out=nr+1)[1:nr]
+#             H <- H + sin(r)*hrng
+#             S <- S + cos(r)*srng
+            # grid
+            ncol <- ceiling(sqrt(nr))
+            nrow <- ceiling(nr/ncol)
+            H <- H + rep(seq(-hrng, hrng,length.out=nrow), times=ncol)[1:nr]
+            S <- S + rep(seq(-srng, srng,length.out=ncol), each=nrow)[1:nr]
+            
+            
             H[H<0] <- H[H<0] + 360
             H[H>360] <- H[H>360] - 360
-            
-            S <- S + cos(r)*srng
             S[S<0] <- 0
             S[S>1] <- 1
             V[maxdepth==depth] <- V[maxdepth==depth] * .75
@@ -110,16 +103,32 @@ function(dat, position.legend, palette, labels) {
         list(H=H, S=S, V=V)
     }
     
-    dt <- treeapply(dt, indexList, value, "hsvs")
-    dt[, color:=hex(HSV(H, S, V))]
+    browser()
     
+    if (method=="HCL") {
+        dt <- treeapply(dt, indexList, list(lb=0, ub=1), "addRange")
+
+        dt[, point:=(lb+ub)/2]
+        dt[, color:=hcl(point*360)]
+    } else if (method=="HSV") {
+        require(colorspace)
+        co <- coords(as(hex2RGB(palette), "HSV"))
+        nl <- nlevels(dt[[1]])
+        value <- lapply(as.list(as.data.frame(co)), function(x)x[1:nl])
+
+        dt <- treeapply(dt, indexList, value, "hsvs")
+        dt[, color:=hex(HSV(H, S, V))]
+    }
+    
+    ## test
+    #plot(dt$H, dt$S)
     
     
     
      
  	if (position.legend!="none") {
  	    labels <- dt$n[dt$l==1]
- 	    colorl <- dt$color[dt$l==1]
+  	    colorl <- dt$color[dt$l==1]
  	    drawLegend(labels, colorl, position.legend=="bottom")
  	}
     
