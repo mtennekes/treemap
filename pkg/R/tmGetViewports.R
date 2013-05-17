@@ -77,6 +77,8 @@ tmGetViewports <- function(vp, fontsize.title, fontsize.labels, fontsize.legend,
     } else {
         legWidth <- unit(0, "npc")
         legHeight <- unit(0, "npc")
+        vpLeg <- NA
+        vpLegTitle <- NA
     }
     
     vpDat <- viewport(name = "data",

@@ -12,6 +12,20 @@ tmPlot(sbsData,
        palette="Set3")
 
 
+tmPlot(sbsData,
+       index=c("section", "subsection"),
+       vSize="turnover08",
+       type="index",
+       palette="HCL")
+
+
+
+tmPlot(sbsData,
+       index=c("section", "subsection", "ssubsection"),
+       vSize="turnover08",
+       type="index",
+       palette="HCL")
+
 dtf <- sbsData
 index <- c("section", "subsection", "ssubsection")
 vSize <- "turnover08"

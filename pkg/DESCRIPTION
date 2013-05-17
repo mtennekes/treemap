@@ -40,4 +40,5 @@ Collate:
     'tmLocate.R'
     'tmPlot.R'
     'tmPrintTitles.R'
+    'treefunctions.R'
     'value2col.R'

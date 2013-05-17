@@ -19,7 +19,7 @@
 #' @param subtitle subtitle of the treemap.
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
 #' @param sortID name of the variable that determines the order in which the rectangles are placed from top left to bottom right. Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left. Only applicable when \code{algortihm=="pivotSize"}.
-#' @param palette either a color palette or a name of a Brewer palette (see \code{display.brewer.all()}). A Brewer palette can be reversed by prefixing its name with a "-".
+#' @param palette one of the following: 1) a color palette, 2) a name of a Brewer palette (see \code{display.brewer.all()}), which can be reversed by prefixing with a "-", or 3) "HCL", where colors are derived from the Hue-Chroma-Luminance color space model. The latter is only applicable for qualitative palettes, which are applied to the categorical treemap types "depth", "index", and "categorical".
 #' @param range range of values that determine the colors. When omitted, the range of actual values is used. This range is mapped to \code{palette}.
 #' @param vColorRange deprecated, use \code{range} instead.
 #' @param fontsize.title (maximum) font size of the title
@@ -206,7 +206,7 @@ function(dtf,
 		} else if (type == "depth") {
 			palette <- brewer.pal(8,"Set2")
 		} else if (type == "index") {
-		    palette <- brewer.pal(8,"Set2")
+		    palette <- "HCL"
 		} else if (type == "value") {
 			palette <- brewer.pal(11,"RdBu")
 		} else if (type == "categorical") {
@@ -220,11 +220,15 @@ function(dtf,
 			palette <- brewer.pal(brewer.pal.info[palette, "maxcolors"], palette)
 			if (reverse) palette <- rev(palette)
 		} else {
-			if (class(try(col2rgb(palette), silent=TRUE))=="try-error") 
+            if (palette[1]=="HCL" && !(type %in% c("depth", "index", "categorical"))) {
+                stop("HCL palette only applicable for treemap types \"depth\", \"index\" and \"categorical\".")
+            }
+            if (palette[1]!="HCL") if (class(try(col2rgb(palette), silent=TRUE))=="try-error") 
 				stop("color palette is not correct")
 		}
 	}
 	
+    
 	# vColorRange
     if (!missing(vColorRange)) {
         warning("vColorRange is deprecated: use range instead.")
@@ -356,8 +360,7 @@ function(dtf,
     ## process treemap
     ###########
     datlist <- tmAggregate(dtfDT, indexList, type, ascending, na.rm)
-    
-    catLabels <- switch(type, categorical=levels(datlist$c), index=index, depth=index, NA)
+    catLabels <- switch(type, categorical=levels(datlist$c), index=levels(datlist$index1), depth=index, NA)
     vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
                            position.legend, type, aspRatio, subtitle, catLabels)
     tmPrintTitles(vps, title, subtitle, position.legend)
