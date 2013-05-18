@@ -78,31 +78,36 @@ addRange <- function(x, depth, frc = .5) {
 	sq <- seq(LB, UB, length.out=nr+1)
 	spacer <- (sq[2] - sq[1]) * frc *.5
 
- 	### determine order of brothers/sisters in tree
-    ### to prevent that neighbouring brothers/sisters have similar colors, they are spread based on quintiles
-    #for (nr in 1:50) {
-	if (nr<5) {
-		spread <- 1:nr
-	} else {
-		spread.step <- floor(nr/(2.5))
-		spread <- seq(1, by=spread.step, length.out=nr)
-		spread <- spread %% nr
- 		spread[spread==0] <- nr
-		dup <- which(duplicated(spread))[1]
-		if (!is.na(dup)) spread <- spread + 
-			rep(0:(spread.step-1), each=(dup-1), length.out=nr)
-	}		
-# 		print(nr)
-#  		print(setequal(spread, 1:nr))
-# 		print(spread)
-# 	}		
+	s <- spread(nr)
 	
-	start <- sq[1:nr][spread]
-	end <- sq[2:(nr+1)][spread]
+	start <- sq[1:nr][s]
+	end <- sq[2:(nr+1)][s]
 	
 	list(lb=start+spacer, ub=end-spacer)
 }
 
+
+spread <- function(n) {
+    ### determine order of brothers/sisters in tree
+    ### to prevent that neighbouring brothers/sisters have similar colors, they are spread based on quintiles
+    #for (n in 1:50) {
+    if (n<5) {
+        s <- 1:n
+    } else {
+        s.step <- floor(n/(2.5))
+        s <- seq(1, by=s.step, length.out=n)
+        s <- s %% n
+        s[s==0] <- n
+        dup <- which(duplicated(s))[1]
+        if (!is.na(dup)) s <- s + 
+            rep(0:(s.step-1), each=(dup-1), length.out=n)
+    }		
+    # 		print(n)
+    #  		print(setequal(s, 1:n))
+    # 		print(s)
+    # 	}
+    s
+}
 
 hsvs <- function(x, depth) {
 	H <- x[[1]]

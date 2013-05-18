@@ -8,8 +8,9 @@ str(sbsData)
 tmPlot(sbsData,
        index=c("section", "subsection"),
        vSize="turnover08",
-       type="index",
-       palette="Set3")
+       vColor="section",
+       type="categorical",
+       palette="HCL")
 
 
 tmPlot(sbsData,
@@ -18,6 +19,12 @@ tmPlot(sbsData,
        type="index",
        palette="HCL")
 
+
+tmPlot(sbsData,
+       index=c("section", "subsection"),
+       vSize="turnover08",
+       type="depth",
+       palette="HCL")
 
 
 tmPlot(sbsData,
