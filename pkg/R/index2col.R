@@ -6,9 +6,9 @@ function(dat, position.legend, palette, labels) {
     
     
     #browser()
-    dt <- copy(dat)
+    #dt <- copy(dat)
     
-    depth <- sum(substr(names(dt), 1, 5)=="index")
+    depth <- sum(substr(names(dat), 1, 5)=="index")
     
     #dt[, md:=apply(dt[, 1:depth, with=FALSE], MARGIN=1, FUN=function(x)sum(!is.na(x)))]
 
@@ -16,19 +16,19 @@ function(dat, position.legend, palette, labels) {
     #indexList <- paste0("index", 1:depth)
     
     
-    dt$color <- if (palette[1]=="HCL") {
-        treepalette(dt[,1:depth,with=FALSE], method="HCL", frc=.5)
+    dat$color <- if (palette[1]=="HCL") {
+        treepalette(dat[,1:depth,with=FALSE], method="HCL", frc=.5)
     } else {
-        treepalette(dt[,1:depth,with=FALSE], method="HSV", palette=palette)       
+        treepalette(dat[,1:depth,with=FALSE], method="HSV", palette=palette)       
     }
 
      
  	if (position.legend!="none") {
- 	    labels <- dt$n[dt$l==1]
-  	    colorl <- dt$color[dt$l==1]
+ 	    labels <- dat$n[dat$l==1]
+  	    colorl <- dat$color[dat$l==1]
  	    drawLegend(labels, colorl, position.legend=="bottom")
  	}
     
 	
-	return (dt$color)
+	return (dat$color)
 }

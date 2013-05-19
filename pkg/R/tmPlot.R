@@ -70,9 +70,9 @@ function(dtf,
 	fontsize.legend=12,
 	lowerbound.cex.labels=0.4,
 	inflate.labels=FALSE,
-	bg.labels= ifelse(type %in% c("value", "linked", "categorical"), "#CCCCCCAA", NA),
+	bg.labels= ifelse(type %in% c("value", "categorical"), "#CCCCCCAA", NA),
 	force.print.labels=FALSE,
-	position.legend=ifelse(type %in% c("categorical", "index", "depth"), "right", ifelse(type=="linked", "none", "bottom")),
+	position.legend=ifelse(type %in% c("categorical", "depth"), "right", ifelse(type=="index", "none", "bottom")),
 	aspRatio=NA,
     vp=NULL,
 	na.rm = FALSE) {
@@ -375,12 +375,15 @@ function(dtf,
     
     upViewport(0 + !is.null(vp))
     
-	# save treemaps (indices, subindices, and coordinates), and number of rows and number of columns)
-# 	tmSave <- list(tm = tm,
-#                    type = type,
-# 				   vSize = vSize,
-# 				   vColor = vColor)
-# 	invisible(tmSave)
-    invisible()
+	# return treemap info
+    tm <- datlist[, c(indexList, "s", "l", "x0", "y0", "w", "h"), with=FALSE]
+    setnames(tm, c(index, "size", "level", "x0", "y0", "w", "h"))
+        
+    tmSave <- list(tm = as.data.table(tm),
+                   type = type,
+				   vSize = vSize,
+				   vColor = ifelse(vColor=="vColor.temp", NA, vColor),
+                   algorithm = algorithm)
+	invisible(tmSave)
 }
 

@@ -13,7 +13,7 @@ tmPlot(sbsData,
        palette="HCL")
 
 
-tmPlot(sbsData,
+tm <- tmPlot(sbsData,
        index=c("section", "subsection"),
        vSize="turnover08",
        type="index",
@@ -42,7 +42,7 @@ vColor <- "employees08"
 data(GNI2010)
 
 # create treemap
-tmPlot(GNI2010,
+tm <- tmPlot(GNI2010,
        index=c("continent", "iso3"),
        vSize="population",
        vColor="GNI",

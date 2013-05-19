@@ -3,15 +3,14 @@ treedepth <- function(data) {
 	apply(data, MARGIN=1, FUN=function(x)k-sum(is.na(x)))
 }
 
-treeapply <- function(dat, values, depth=NULL, fun, ...) {
-	if (is.data.table(dat)) {
+treeapply <- function(dat, values, depth=NULL, fun, prepare.dat=FALSE, ...) {
+	if (prepare.dat) if (is.data.table(dat)) {
 		dat[, names(dat):=lapply(.SD,as.factor)]
 	} else {
 		dat <- lapply(dat, as.factor)
 		require(data.table)
 		dat <- as.data.table(dat)
 	}
-	
 	dt <- dat[!duplicated(dat), ]
 	
 	k <- ncol(dt)
@@ -88,8 +87,7 @@ addRange <- function(x, depth, frc = .5) {
 
 
 spread <- function(n) {
-    ### determine order of brothers/sisters in tree
-    ### to prevent that neighbouring brothers/sisters have similar colors, they are spread based on quintiles
+    ### spread cyclic vector 1:n, such that adjacent entries are kept at a distance. Based on the five-cycle: 1 3 5 2 4, where between any two original neighbors, there is an angle of 2/5*360=144 degrees.
     #for (n in 1:50) {
     if (n<5) {
         s <- 1:n
