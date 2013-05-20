@@ -111,7 +111,6 @@ hsvs <- function(x, depth) {
 	H <- x[[1]]
 	S <- x[[2]]
 	V <- x[[3]]
-	
 	nr <- length(H)
 	hrng <- 10
 	
@@ -132,21 +131,29 @@ hsvs <- function(x, depth) {
 }
 
 
-treepalette <- function(dat, method="HCL", palette=NULL,...) {
+treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, ...) {
 	k <- ncol(dat)
 	if (method=="HCL") {
-		res <- treeapply(dat, list(lb=0, ub=1), fun="addRange", ...)
+		res <- treeapply(dat, list(lb=palette.HCL.options$hue_start, 
+                                   ub=palette.HCL.options$hue_end), 
+                         fun="addRange", frc=palette.HCL.options$hue_fraction)
 		
 		point <- with(res, (lb+ub)/2)
-		chr <- 75 - (k-res$l) * 10 #100
-		lum <- 95 - res$l * 10 #90
-		color <- hcl(point*360,c=chr, l=lum)
+		chr <- palette.HCL.options$chroma + 
+            palette.HCL.options$chroma_slope * (res$l-1)
+        #75 - (k-res$l) * 10
+		lum <- palette.HCL.options$luminance + 
+            palette.HCL.options$luminance_slope * (res$l-1)
+        #lum <- 95 - res$l * 10 #90
+		color <- hcl(point,c=chr, l=lum)
 	} else if (method=="HSV") {
-		#browser()
 		require(colorspace)
-		co <- coords(as(hex2RGB(palette), "HSV"))
 		nl <- length(unique(dat[[1]])) #nlevels(dat[[1]])
-		value <- lapply(as.list(as.data.frame(co)), function(x)x[1:nl])
+		
+        palette <- rep(palette, length.out=nl)
+
+        co <- coords(as(hex2RGB(palette), "HSV"))
+        value <- lapply(as.list(as.data.frame(co)), function(x)x[1:nl])
 		
 		res <- treeapply(dat, value, fun="hsvs")
 		color <- with(res, hex(HSV(H, S, V)))

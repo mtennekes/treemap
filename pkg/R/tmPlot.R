@@ -20,6 +20,16 @@
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
 #' @param sortID name of the variable that determines the order in which the rectangles are placed from top left to bottom right. Also the values "size" and "color" can be used. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left. Only applicable when \code{algortihm=="pivotSize"}.
 #' @param palette one of the following: 1) a color palette, 2) a name of a Brewer palette (see \code{display.brewer.all()}), which can be reversed by prefixing with a "-", or 3) "HCL", where colors are derived from the Hue-Chroma-Luminance color space model. The latter is only applicable for qualitative palettes, which are applied to the categorical treemap types "depth", "index", and "categorical".
+#' @param palette.HCL.options list of advanced options to pick colors from  the HCL space (when \code{palette="HCL"}). This list contains: 
+#' \describe{
+#'        \item{\code{hue_start}:} number between 0 and 360 that determines the starting hue value (default: 30)
+#'        \item{\code{hue_end}:} number between \code{hue_start} and \code{hue_start + 360} that determines the ending hue value (default: 390)
+#'        \item{\code{hue_spread}:} boolean that determines whether the colors are spread such that adjacent levels get more distinguishable colors. If \code{FALSE}, then the colors are equally distributed from \code{hue_start} to \code{hue_end}
+#'        \item{\code{hue_fraction}:} number between 0 and 1 that determines the fraction of the hue circle that is used for recursive color picking: if 0 then the full hue circle is used, which means that the hue of the colors of lower-level nodes are spread maximally. If 1, then the hue of the colors of lower-level nodes are identical of the hue of their parents.
+#'        \item{\code{chroma}:} chroma value of colors of the first-level nodes, that are determined by the first index variable (default: )
+#'        \item{\code{luminance}:} luminance value of colors of the first-level nodes (determined by the first index variable)
+#'        \item{\code{chroma_slope}:} slope value for chroma of the non-first-level nodes. The chroma values for the second-level nodes are \code{chroma+chroma_slope}, for the third-level nodes \code{chroma+2*chroma_slope}, etc.
+#'        \item{\code{luminance_slope}:} slope value for luminance of the non-first-level nodes}
 #' @param range range of values that determine the colors. When omitted, the range of actual values is used. This range is mapped to \code{palette}.
 #' @param vColorRange deprecated, use \code{range} instead.
 #' @param fontsize.title (maximum) font size of the title
@@ -31,7 +41,7 @@
 #' @param fontsize.legend (maximum) font size of the legend
 #' @param lowerbound.cex.labels multiplier between 0 and 1 that sets the lowerbound for the data label font sizes: 0 means draw all data labels, and 1 means only draw data labels if they fit at \code{fontsize.data}.
 #' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles.
-#' @param bg.labels background color of labels of high aggregation levels. If set to \code{NA}, the color is determined by the color of the underlying rectangle. For value, categorical and linked treemaps, the default is transparent grey (\code{"#CCCCCCAA"}), and for the other types, \code{NA}.
+#' @param bg.labels background of labels of high aggregation levels. Either a color, or a number between 0 and 255 that determines the transparency of the labels. In the latter case, the color itself is determined by the color of the underlying rectangle. For value and categorical treemaps, the default is transparent grey (\code{"#CCCCCCAA"}), and for the other types, \code{220}.
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed (also when they don't fit).
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For categorical and index treemaps, \code{"right"} is the default value, for linked treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
@@ -63,6 +73,9 @@ function(dtf,
 	algorithm="pivotSize",
 	sortID="-size",
 	palette=NA,
+    palette.HCL.options=list(hue_start=30, hue_end=390, hue_spread=TRUE,
+                              hue_fraction=0.5, chroma=45, luminance=85, 
+                              chroma_slope=10, luminance_slope=-10),
 	range=NA,
     vColorRange=NULL,
 	fontsize.title=14, 
@@ -70,7 +83,7 @@ function(dtf,
 	fontsize.legend=12,
 	lowerbound.cex.labels=0.4,
 	inflate.labels=FALSE,
-	bg.labels= ifelse(type %in% c("value", "categorical"), "#CCCCCCAA", NA),
+	bg.labels= ifelse(type %in% c("value", "categorical"), "#CCCCCCAA", 220),
 	force.print.labels=FALSE,
 	position.legend=ifelse(type %in% c("categorical", "depth"), "right", ifelse(type=="index", "none", "bottom")),
 	aspRatio=NA,
@@ -282,9 +295,11 @@ function(dtf,
 	
 	# bg.labels
 	if (length(bg.labels)!=1) stop("Invalid bg.labels")
-	if (!is.na(bg.labels)) {
+	if (!is.numeric(bg.labels)) {
 		if (class(try(col2rgb(bg.labels), silent=TRUE))=="try-error") stop("Invalid bg.labels")
-	} 
+	} else {
+        if (bg.labels < 0 || bg.labels > 255) stop("bg.labels should be between 0 and 255")
+	}
 		
 	
 	
@@ -367,7 +382,7 @@ function(dtf,
     if (type == "color") {
         datlist$color <- as.character(datlist$c)
     } else {
-        datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index)
+        datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options)
     }
     datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
 

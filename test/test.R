@@ -19,6 +19,11 @@ tm <- tmPlot(sbsData,
        type="index",
        palette="HCL")
 
+tm <- tmPlot(sbsData,
+             index=c("section", "subsection"),
+             vSize="turnover08",
+             type="index",
+             palette="HCL")
 
 tmPlot(sbsData,
        index=c("section", "subsection"),

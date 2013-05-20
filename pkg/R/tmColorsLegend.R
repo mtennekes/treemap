@@ -1,4 +1,4 @@
-tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, indexNames) {
+tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, indexNames, palette.HCL.options) {
     if (position.legend!="none") {    
         pushViewport(vps$vpLeg)
     }
@@ -10,7 +10,7 @@ tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, 
     } else if (type == "depth") {
         datlist$color <- depth2col(datlist, position.legend, palette, indexNames)
     } else if (type == "index") {
-        datlist$color <- index2col(datlist, position.legend, palette, levels(datlist$index1))
+        datlist$color <- index2col(datlist, position.legend, palette, levels(datlist$index1), palette.HCL.options)
     } else if (type == "value") {
         datlist$color <- value2col(datlist, position.legend, palette, range)
     } else if (type == "categorical") {
