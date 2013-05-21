@@ -23,62 +23,62 @@ tmPlot(GNI2010,
 #########################################
 
 ### load fictive structural business statistics data
-data(sbsData)
-sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
+data(business)
+business$employees.growth <- (business$employees - business$employees.prev) / sqrt(business$employees)
 
 
 #########################################
 ### types
 #########################################
 
+
+tmPlot(business, 
+       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       vSize="employees", 
+       type="index")
+
 # value treemap: the color variable is directly mapped to the colors
-tmPlot(sbsData, 
-       index=c("section", "subsection"), 
-       vSize="employees09", 
+tmPlot(business, 
+       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       vSize="employees", 
        vColor="employees.growth",
        type="value")
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08",
+tmPlot(business, 
+	   index=c("NACE1", "NACE2"), 
+	   vSize="employees", 
+	   vColor="employees.prev",
 	   type="comp")
 
-# four comparisson treemaps
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize=c("employees09", "value added09", "turnover09", "salaries09"), 
-	   vColor=c("employees08", "value added08", "turnover08", "salaries08"),
-	   type="comp")
 
 # density treemaps: colors indicate density (like a population density map)
-tmPlot(sbsData,
-	   index=c("section", "subsection"), 
-	   vSize="turnover09",
-	   vColor="employees09*1000",
+tmPlot(business,
+	   index=c("NACE1", "NACE2"), 
+	   vSize="turnover",
+	   vColor="employees*1000",
 	   type="dens")
 
-tmPlot(sbsData,
-	   index=c("section", "subsection"), 
-	   vSize="employees09",
-	   vColor="turnover09",
+tmPlot(business,
+	   index=c("NACE1", "NACE2"), 
+	   vSize="employees",
+	   vColor="turnover",
 	   type="dens")
 
 # linked treemaps: objects are linked by color over different treemaps
-tmPlot(sbsData[sbsData$section=="Manufacturing",],
-	   index="subsection",
-	   vSize=c("income09", "employees09", "expenditures09", "salaries09"),
-	   type="linked")
+tmPlot(business[business$NACE1=="C - Manufacturing",],
+	   index=c("NACE2", "NACE3"),
+	   vSize=c("employees"),
+	   type="index")
 
 # depth treemap: each aggregation depth has distinct color
-tmPlot(sbsData,
-	   index=c("section", "subsection"), 
-	   vSize="employees09",
+tmPlot(business,
+	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+	   vSize="employees",
 	   type="depth")
 
 # index treemap: colors are determined by index
-tmPlot(sbsData,
+tmPlot(business,
        index=c("section", "subsection"), 
        vSize="employees09",
        type="index")
@@ -94,9 +94,9 @@ tmPlot(sbsData,
 ### layout algorithm
 #########################################
 
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
+tmPlot(business, 
+	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+	   vSize="employees", 
 	   vColor="employees.growth",
 	   type="value",
 	   algorithm="squarified")

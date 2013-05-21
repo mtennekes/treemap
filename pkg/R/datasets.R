@@ -1,8 +1,8 @@
-#' Structural Business Statistics Data
+#' Business Statistics Data
 #'
-#' Fictive structural business statistics data of 2008 and 2009.
+#' Fictive business statistics data.
 #'
-#' @name sbsData
+#' @name business
 {}
 
 #' GNI 2010 Data
