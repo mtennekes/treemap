@@ -1,47 +1,24 @@
-data(sbsData)
+data(business)
 
-sbsData$ssubsection <- sbsData$subsection
-
-str(sbsData)
+tmPlot(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees")
 
 
-tmPlot(sbsData,
-       index=c("section", "subsection"),
-       vSize="turnover08",
-       vColor="section",
-       type="categorical",
-       palette="HCL")
+palette.HCL.options <- list(hue_start=30, hue_end=390, hue_spread=TRUE,
+                        hue_fraction=0.5, chroma=60, luminance=70, 
+                        chroma_slope=5, luminance_slope=-10)
 
 
-tm <- tmPlot(sbsData,
-       index=c("section", "subsection"),
-       vSize="turnover08",
-       type="index",
-       palette="HCL")
+tmPlot(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees",
+       palette.HCL.options=palette.HCL.options, bg.labels=255)
 
-tm <- tmPlot(sbsData,
-             index=c("section", "subsection"),
-             vSize="turnover08",
-             type="index",
-             palette="HCL")
+tmPlot(business, index=c("NACE1"), vSize="employees",
+       palette.HCL.options=palette.HCL.options, bg.labels=255)
 
-tmPlot(sbsData,
-       index=c("section", "subsection"),
-       vSize="turnover08",
-       type="depth",
-       palette="HCL")
+tmPlot(business, index=c("NACE1", "NACE2"), vSize="employees",
+       palette.HCL.options=palette.HCL.options, bg.labels=255)
 
-
-tmPlot(sbsData,
-       index=c("section", "subsection", "ssubsection"),
-       vSize="turnover08",
-       type="index",
-       palette="HCL")
-
-dtf <- sbsData
-index <- c("section", "subsection", "ssubsection")
-vSize <- "turnover08"
-vColor <- "employees08"
+tmPlot(business, index=c("NACE1", "NACE2", "NACE3"), vSize="employees",
+       palette.HCL.options=palette.HCL.options, bg.labels=255)
 
 
 data(GNI2010)

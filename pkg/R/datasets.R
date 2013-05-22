@@ -1,6 +1,6 @@
 #' Business Statistics Data
 #'
-#' Fictive business statistics data.
+#' Fictive business statistics data. The 
 #'
 #' @name business
 {}

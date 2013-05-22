@@ -8,11 +8,11 @@
 #' @param vColor name of the variable that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". 
 #' @param type the type of the treemap:
 #' \describe{
+#'    	\item{\code{"index"}:}{colors are determined by the \code{index} variables. Each aggregation of the first index variable is assigned to a color of \code{palette}. Each aggregation of on of the other index variables is assigned to a similar color, that varies on hue or lightness. For this type, \code{vColor} is not needed.}
 #'    	\item{\code{"value"}:}{the \code{vColor}-variable is directly mapped to a color palette (by default Brewer's diverging color palette "RdBu").}
 #'		\item{\code{"comp"}:}{colors indicate change of the \code{vSize}-variable with respect to the \code{vColor}-variable in percentages. Note: the negative scale may be different from the positive scale in order to compensate for the ratio distribution.}
 #'		\item{\code{"dens"}:}{colors indicate density. This is aanalogous to a population density map where \code{vSize}-values are area sizes, \code{vColor}-values are populations per area, and colors are computed as densities (i.e.\ population per squared km's).}
 #'		\item{\code{"depth"}:}{each aggregation level (defined by \code{index}) has a distinct color}
-#'		\item{\code{"index"}:}{colors are determined by the \code{index} variables. Each aggregation of the first index variable is assigned to a color of \code{palette}. Each aggregation of on of the other index variables is assigned to a similar color, that varies on hue or lightness.}
 #'    	\item{\code{"categorical"}:}{\code{vColor} is a categorical variable that determines the color}
 #'      \item{\code{"color"}:}{\code{vColor} is a vector of colors in the hexadecimal (#RRGGBB) format}}
 #' @param title title of the treemap.
@@ -67,7 +67,7 @@ function(dtf,
 	index, 
 	vSize, 
 	vColor=NULL, 
-	type="value",
+	type="index",
 	title=NA,
 	subtitle=NA,
 	algorithm="pivotSize",
@@ -88,7 +88,7 @@ function(dtf,
 	position.legend=ifelse(type %in% c("categorical", "depth"), "right", ifelse(type=="index", "none", "bottom")),
 	aspRatio=NA,
     vp=NULL,
-	na.rm = FALSE) {
+	na.rm = TRUE) {
 
     require(data.table)
 	#############

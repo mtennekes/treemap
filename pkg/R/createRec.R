@@ -5,31 +5,46 @@ function(datlist, filled, label, bg.labels=220, labellb, lwd, inflate.labels, fo
 	if (nrow(datlist)==0) {
 		return(list(recs=NA, txt=NA, txtbg=NA))
 	}
-	transp <- c(rep(200,nrow(datlist)))
-	rgbcol <- col2rgb(as.character(datlist$color))
-	rgbcol2 <- rgb(rgbcol["red",],rgbcol["green",],rgbcol["blue",],alpha=transp,maxColorValue=255)
-
-	fill <- datlist$color
-	
-	if (is.numeric(bg.labels)) {
-		txtfill <- as.character(rgbcol2)
-		txtRgb <- rgbcol
-	} else {
-# 		bg.labelsRgb <- col2rgb(bg.labels, alpha=TRUE)
+# 	transp <- c(rep(200,nrow(datlist)))
+# 	rgbcol <- col2rgb(as.character(datlist$color))
+# 	rgbcol2 <- rgb(rgbcol["red",],rgbcol["green",],rgbcol["blue",],alpha=transp,maxColorValue=255)
+# 
+# 	fill <- datlist$color
+# 	
+# 	if (is.numeric(bg.labels)) {
+# 		txtfill <- as.character(rgbcol2)
+# 		txtRgb <- rgbcol
+# 	} else {
+# 
+# 		txtfill <- rep(bg.labels, nrow(datlist))
+# 		txtRgb <- col2rgb(txtfill)
 # 		
-# 		txtRgb <- apply(rgbcol, MARGIN=2, FUN=function(x, y, t){
-# 			x*(255-t)/255 + y*(t)/255}, bg.labelsRgb[1:3], bg.labelsRgb[4])
-# 		txtfill <- apply(txtRgb, MARGIN=2, FUN=function(x){rgb(x[1], x[2], x[3], maxColorValue=255)} )
-
-		txtfill <- rep(bg.labels, nrow(datlist))
-		txtRgb <- col2rgb(txtfill)
-		
+# 	}
+# 	
+# 	if (!filled) {
+# 		fill <- NA
+# 	}
+	
+	rgbcol <- col2rgb(as.character(datlist$color))
+	
+	if (filled) {
+	    fill <- datlist$color
+	    txtfill <- NA
+	    txtRgb <- rgbcol
+	} else if (is.numeric(bg.labels)) {
+	    transp <- c(rep(bg.labels, nrow(datlist)))
+	    rgbcol2 <- rgb(rgbcol["red",],rgbcol["green",],rgbcol["blue",],alpha=transp,maxColorValue=255)
+	    txtfill <- as.character(rgbcol2)
+	    txtRgb <- rgbcol
+	    fill <- NA
+	} else {
+	    txtfill <- rep(bg.labels, nrow(datlist))
+	    txtRgb <- col2rgb(txtfill)
+	    fill <- NA
 	}
 	
-	if (!filled) {
-		fill <- NA
-	}
-	
+    
+    
 	recs <- rectGrob(x=unit(datlist$x0,"npc"), y=unit(datlist$y0,"npc"), width=unit(datlist$w,"npc"), 
 		height=unit(datlist$h,"npc"), just=c("left","bottom"), name=datlist$n, gp = gpar(lwd=lwd, lex=1,fill = fill))
 	

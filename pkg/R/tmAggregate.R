@@ -14,8 +14,10 @@ tmAggregate <- function(dtfDT, indexList, type, ascending, na.rm) {
         dats[[d]] <- datd
     }
     datlist <- rbindlist(dats)
+    if (any(is.na(datlist$s)) && !na.rm) stop("vSize contains missing values. Set na.rm=TRUE to neglect them")
     
-    if (min(datlist$s) < 0) stop("Column vSize contains negative values.")
+    datlist <- datlist[!is.na(datlist$s), ]
+    if (min(datlist$s) < 0) stop("vSize contains negative values.")
     
     datlist <- datlist[datlist$s>0,]
     if (type=="dens") {

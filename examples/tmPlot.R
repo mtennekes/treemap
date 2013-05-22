@@ -15,7 +15,6 @@ tmPlot(GNI2010,
        type="value")
 
 
-
 #########################################
 ### extended examples
 ###
@@ -24,14 +23,12 @@ tmPlot(GNI2010,
 
 ### load fictive structural business statistics data
 data(business)
-business$employees.growth <- (business$employees - business$employees.prev) / sqrt(business$employees)
-
 
 #########################################
 ### types
 #########################################
 
-
+# index treemap: colors are determined by the index argument
 tmPlot(business, 
        index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
        vSize="employees", 
@@ -50,7 +47,6 @@ tmPlot(business,
 	   vSize="employees", 
 	   vColor="employees.prev",
 	   type="comp")
-
 
 # density treemaps: colors indicate density (like a population density map)
 tmPlot(business,
@@ -77,17 +73,13 @@ tmPlot(business,
 	   vSize="employees",
 	   type="depth")
 
-# index treemap: colors are determined by index
-tmPlot(business,
-       index=c("section", "subsection"), 
-       vSize="employees09",
-       type="index")
 
 # categorical treemap: colors are determined by a categorical variable
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="section",
+business$rand <- cut(runif(nrow(business)), breaks=10)
+tmPlot(business[business$NACE1=="C - Manufacturing",], 
+	   index=c("NACE3", "NACE4"), 
+	   vSize="employees", 
+	   vColor="rand",
 	   type="categorical")
 
 #########################################

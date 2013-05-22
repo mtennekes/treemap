@@ -46,13 +46,12 @@ treeapply <- function(dat, values, depth=NULL, fun, prepare.dat=FALSE, ...) {
 		}
 	}
 	
-	#browser()
 	if (k>1) for (d in 2:k) {
 		id <- names(dt)[1:(d-1)]
 		# assign values of layer above to parent values of current layer
 		#dt[dt$l==d, eval(parents):=children, by=id]
 		fn <- function(x) {
-			x <- copy(x)
+		    x <- copy(x)
 			x[x$l==d, eval(vars):=as.list(x[x$l==(d-1), vars, with=FALSE])]
 			x[x$l==d, eval(vars):=do.call(fun, args=c(list(as.list(x[x$l==d,vars,with=FALSE]), depth=d), args))]
 			x
