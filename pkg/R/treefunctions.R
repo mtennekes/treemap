@@ -14,8 +14,8 @@ treeapply <- function(dat, values, depth=NULL, fun, prepare.dat=FALSE, ...) {
 	dt <- dat[!duplicated(dat), ]
 	
 	k <- ncol(dt)
-	
-	# hierarchical depth
+
+    # hierarchical depth
 	if (missing(depth)) {
 		dt[, l:=treedepth(dt)]
 	} else {
@@ -84,9 +84,33 @@ addRange <- function(x, depth, frc = .5) {
 	list(lb=start+spacer, ub=end-spacer)
 }
 
+########## method 2: modify fixed colors with hsv space
+hsvs <- function(x, depth) {
+    H <- x[[1]]
+    S <- x[[2]]
+    V <- x[[3]]
+    nr <- length(H)
+    hrng <- 10
+    
+    if (nr > 1) {
+        ncol <- ceiling(sqrt(nr))
+        nrow <- ceiling(nr/ncol)
+        H <- H + seq(-hrng, hrng,length.out=nr)
+        S <- S * 1.2
+        
+        H[H<0] <- H[H<0] + 360
+        H[H>360] <- H[H>360] - 360
+        S[S<0] <- 0
+        S[S>1] <- 1
+        V <- V * .9
+        #V[maxdepth==depth] <- V[maxdepth==depth] * .75
+    }
+    list(H=H, S=S, V=V)
+}
 
+
+### spread cyclic vector 1:n, such that adjacent entries are kept at a distance. Based on the five-cycle: 1 3 5 2 4, where between any two original neighbors, there is an angle of 2/5*360=144 degrees.
 spread <- function(n) {
-    ### spread cyclic vector 1:n, such that adjacent entries are kept at a distance. Based on the five-cycle: 1 3 5 2 4, where between any two original neighbors, there is an angle of 2/5*360=144 degrees.
     #for (n in 1:50) {
     if (n<5) {
         s <- 1:n
@@ -106,36 +130,16 @@ spread <- function(n) {
     s
 }
 
-hsvs <- function(x, depth) {
-	H <- x[[1]]
-	S <- x[[2]]
-	V <- x[[3]]
-	nr <- length(H)
-	hrng <- 10
-	
-	if (nr > 1) {
-		ncol <- ceiling(sqrt(nr))
-		nrow <- ceiling(nr/ncol)
-		H <- H + seq(-hrng, hrng,length.out=nr)
-		S <- S * 1.2
-		
-		H[H<0] <- H[H<0] + 360
-		H[H>360] <- H[H>360] - 360
-		S[S<0] <- 0
-		S[S>1] <- 1
-		V <- V * .9
-		#V[maxdepth==depth] <- V[maxdepth==depth] * .75
-	}
-	list(H=H, S=S, V=V)
-}
 
 
-treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, ...) {
+
+treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, prepare.dat=FALSE, ...) {
 	k <- ncol(dat)
 	if (method=="HCL") {
 		res <- treeapply(dat, list(lb=palette.HCL.options$hue_start, 
                                    ub=palette.HCL.options$hue_end), 
-                         fun="addRange", frc=palette.HCL.options$hue_fraction)
+                         fun="addRange", frc=palette.HCL.options$hue_fraction,
+                         prepare.dat=prepare.dat)
 		
 		point <- with(res, (lb+ub)/2)
 		chr <- palette.HCL.options$chroma + 

@@ -14,6 +14,9 @@ tmAggregate <- function(dtfDT, indexList, type, ascending, na.rm) {
         dats[[d]] <- datd
     }
     datlist <- rbindlist(dats)
+    
+    datlist <- datlist[!is.na(datlist$index1), ]
+    
     if (any(is.na(datlist$s)) && !na.rm) stop("vSize contains missing values. Set na.rm=TRUE to neglect them")
     
     datlist <- datlist[!is.na(datlist$s), ]

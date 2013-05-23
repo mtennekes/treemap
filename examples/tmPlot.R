@@ -3,8 +3,6 @@
 ###
 ### data: Gross national income data
 #########################################
-
-# load Gross national income data
 data(GNI2010)
 
 # create treemap
@@ -18,10 +16,8 @@ tmPlot(GNI2010,
 #########################################
 ### extended examples
 ###
-### data: fictive structural business statistics data
+### data: fictive business statistics data
 #########################################
-
-### load fictive structural business statistics data
 data(business)
 
 #########################################
@@ -35,10 +31,12 @@ tmPlot(business,
        type="index")
 
 # value treemap: the color variable is directly mapped to the colors
+business <- transform(business, x = 1)
+
 tmPlot(business, 
        index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
-       vSize="employees", 
-       vColor="employees.growth",
+       vSize="x", 
+       vColor="x",
        type="value")
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
@@ -56,7 +54,7 @@ tmPlot(business,
 	   type="dens")
 
 tmPlot(business,
-	   index=c("NACE1", "NACE2"), 
+	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
 	   vSize="employees",
 	   vColor="turnover",
 	   type="dens")

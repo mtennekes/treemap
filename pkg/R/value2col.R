@@ -3,55 +3,39 @@ value2col <-
         maxlev <- max(dat$l)
         
         #browser()
+        
+        values_all <- dat$c
+        values <- values_all[dat$l==maxlev]
+        prettyV <- pretty(values, n=8)
+
+        
         if (any(is.na(range))) {
-            range <- range(dat$c[dat$l==maxlev])
-            if (range[1] > 0) {
-                ## all positive
-                range[1] <- 0
-                prettyP <- pretty(range,n=8)
-                palette <- palette[floor(length(palette)/2):length(palette)]
-                
-            } else if (range[2] < 0) {
-                ## all negative
-                range[2] <- 0
-                prettyP <- pretty(range,n=8)
-                palette <- palette[1:ceiling(length(palette)/2)]
-            } else {
-                ## positive and negative
-                prettyP <- pretty(range,n=8)
-                
-                sumP <- sum(prettyP>0)
-                sumN <- sum(prettyP<0)
-                
-                k <- max(sumP, sumN)
-                
-                colorTemp <- colorRampPalette(palette, space="rgb")(2*k+1)
-                palette <- colorTemp[(k+1-sumN):(k+1+sumP)]
-            }
+            
+            mx <- max(c(values, prettyV))
+            
+            value.ids <- round((values_all / mx * 50) + 51)
+            prettyV.ids <- round((prettyV / mx * 50) + 51)
             
         } else {
-            prettyP <- pretty(range, n=8)
-        }
-        color <- colorRampPalette(palette, space="rgb")(99)
-        n <- length(prettyP)
-        legCol <- colorRampPalette(palette, space="rgb")(n)
-        
-        minP <- min(prettyP)
-        maxP <- max(prettyP)
-        
-        scale <- floor((dat$c - minP) / (maxP - minP) * 98) + 1
-        if (any(scale<1)) {
-            if (any(scale<1 & dat$l==maxlev)) warning("Values found that are lower than the minimum of range")
-            scale[scale<1] <- 1
-        }
-        if (any(scale>99)) {
-            if (any(scale>99 & dat$l==maxlev)) warning("Values found that are higher than the maximum of range")
-            scale[scale>99] <- 99
+            if (any(values < range[1]) || any(values > range[2])) stop("Values are found that exceed the provided range")
+            
+            prettyV <- prettyV[prettyV>=range[1] & prettyV<=range[2]]
+            
+            
+            diff <- range[2] - range[1]
+            value.ids <- round(((values_all + range[1]) /  diff) * 100 + 1)
+            prettyV.ids <- round(((prettyV + range[1]) /  diff) * 100 + 1)
+            
         }
         
+        value.ids[value.ids < 1] <- 1
+        value.ids[value.ids > 101] <- 101
         
-        if (position.legend!="none") drawLegend(format(prettyP), legCol,
-                                                position.legend=="bottom")
+            
+        colpal <- colorRampPalette(palette)(101)
         
-        return (color[scale])
+        
+        if (position.legend!="none") drawLegend(format(prettyV), colpal[prettyV.ids], position.legend=="bottom")
+        
+        return (colpal[value.ids])
     }
