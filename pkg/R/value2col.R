@@ -6,10 +6,10 @@ value2col <-
         
         values_all <- dat$c
         values <- values_all[dat$l==maxlev]
-        prettyV <- pretty(values, n=8)
 
         
         if (any(is.na(range))) {
+            prettyV <- pretty(values, n=8)
             
             mx <- max(c(values, prettyV))
             
@@ -19,12 +19,13 @@ value2col <-
         } else {
             if (any(values < range[1]) || any(values > range[2])) stop("Values are found that exceed the provided range")
             
+            prettyV <- pretty(range, n=8)
             prettyV <- prettyV[prettyV>=range[1] & prettyV<=range[2]]
             
             
             diff <- range[2] - range[1]
-            value.ids <- round(((values_all + range[1]) /  diff) * 100 + 1)
-            prettyV.ids <- round(((prettyV + range[1]) /  diff) * 100 + 1)
+            value.ids <- round(((values_all - range[1]) /  diff) * 100 + 1)
+            prettyV.ids <- round(((prettyV - range[1]) /  diff) * 100 + 1)
             
         }
         
@@ -33,7 +34,6 @@ value2col <-
         
             
         colpal <- colorRampPalette(palette)(101)
-        
         
         if (position.legend!="none") drawLegend(format(prettyV), colpal[prettyV.ids], position.legend=="bottom")
         

@@ -2,70 +2,64 @@
 \alias{tmPlot}
 \title{Create treemap}
 \usage{
-  tmPlot(dtf, index, vSize, vColor = NULL, type = "value",
-    title = NA, subtitle = NA, algorithm = "pivotSize",
-    sortID = "-size", palette = NA, range = NA,
-    vColorRange = NULL, fontsize.title = 14,
-    fontsize.labels = 11, fontsize.legend = 12,
-    lowerbound.cex.labels = 0.4, inflate.labels = FALSE,
-    bg.labels = ifelse(type \%in\% c("value", "linked", "categorical"), "#CCCCCCAA", NA),
+  tmPlot(dtf, index, vSize, vColor = NULL, type = "index",
+    title = NA, title.legend = NA, algorithm = "pivotSize",
+    sortID = "-size", palette = NA,
+    palette.HCL.options = list(hue_start = 30, hue_end = 390, hue_spread = TRUE, hue_fraction = 0.5, chroma = 60, luminance = 70, chroma_slope = 5, luminance_slope = -10),
+    range = NA, fontsize.title = 14, fontsize.labels = 11,
+    fontsize.legend = 12, lowerbound.cex.labels = 0.4,
+    inflate.labels = FALSE,
+    bg.labels = ifelse(type \%in\% c("value", "categorical"), "#CCCCCCAA", 220),
     force.print.labels = FALSE,
-    position.legend = ifelse(type \%in\% c("categorical", "index", "depth"), "right", ifelse(type == "linked", "none", "bottom")),
-    aspRatio = NA, vp = NULL, na.rm = FALSE)
+    position.legend = ifelse(type \%in\% c("categorical", "depth"), "right", ifelse(type == "index", "none", "bottom")),
+    aspRatio = NA, vp = NULL, na.rm = TRUE)
 }
 \arguments{
   \item{dtf}{a data.frame. Required.}
 
-  \item{index}{vector containing the column names in
-  \code{dtf} that contain the aggregation indices.
+  \item{index}{vector of column names in \code{dtf} that
+  specify the aggregation indices. It could contain only
+  one column name, which results in a treemap without
+  hierarchy. If multiple column names are provided, the
+  first name is the highest aggregation level, the second
+  name the second-highest aggregation level, and so on.
   Required.}
 
-  \item{vSize}{name of the variable that determines the
-  sizes of the rectangles. For small multiples, a vector of
-  variable names (one for each treemap) should be given.
-  Required.}
+  \item{vSize}{name of the variable in \code{dtf} that
+  determines the sizes of the rectangles. Required.}
 
   \item{vColor}{name of the variable that, in combination
   with \code{type}, determines the colors of the
   rectangles. The variable can be scaled by the addition of
-  "*<scale factor>" or "/<scale factor>". For small
-  multiples, a vector of variable names (one for each
-  treemap) should be given.}
+  "*<scale factor>" or "/<scale factor>".}
 
-  \item{type}{the type of the treemap: \describe{
-  \item{\code{"value"}:}{the \code{vColor}-variable is
-  directly mapped to a color palette (by default Brewer's
-  diverging color palette "RdBu").}
-  \item{\code{"comp"}:}{colors indicate change of the
-  \code{vSize}-variable with respect to the
+  \item{type}{the type of the treemap, which determines how
+  the rectangles are colored: \describe{
+  \item{\code{"index"}:}{colors are determined by the
+  \code{index} variables. Different branches in the
+  hierarchical tree get different colors. For this type,
+  \code{vColor} is not needed.} \item{\code{"value"}:}{the
+  \code{vColor}-variable is directly mapped to a color
+  palette.} \item{\code{"comp"}:}{colors indicate change of
+  the \code{vSize}-variable with respect to the
   \code{vColor}-variable in percentages. Note: the negative
   scale may be different from the positive scale in order
   to compensate for the ratio distribution.}
   \item{\code{"dens"}:}{colors indicate density. This is
-  aanalogous to a population density map where
+  analogous to a population density map where
   \code{vSize}-values are area sizes, \code{vColor}-values
   are populations per area, and colors are computed as
-  densities (i.e.\ population per squared km's).}
-  \item{\code{"linked"}:}{each object has a distinct color,
-  which can be useful for small multiples (objects are
-  linked by color)} \item{\code{"depth"}:}{each aggregation
-  level (defined by \code{index}) has a distinct color}
-  \item{\code{"index"}:}{colors are determined by the
-  \code{index} variables. Each aggregation of the first
-  index variable is assigned to a color of \code{palette}.
-  Each aggregation of on of the other index variables is
-  assigned to a similar color, that varies on hue or
-  lightness.} \item{\code{"categorical"}:}{\code{vColor} is
-  a categorical variable that determines the color}}}
+  densities (i.e. population per squared km).}
+  \item{\code{"depth"}:}{each aggregation level (defined by
+  \code{index}) has a distinct color}
+  \item{\code{"categorical"}:}{\code{vColor} is a
+  categorical variable that determines the color}
+  \item{\code{"color"}:}{\code{vColor} is a vector of
+  colors in the hexadecimal (#RRGGBB) format}}}
 
-  \item{title}{title of the treemap. For small multiples, a
-  vector of titles should be given. Titles are used to
-  describe the sizes of the rectangles.}
+  \item{title}{title of the treemap.}
 
-  \item{subtitle}{subtitle of the treemap. For small
-  multiples, a vector of subtitles should be given.
-  Subtitles are used to describe the colors of the
-  rectangles.}
+  \item{title.legend}{title of the legend.}
 
   \item{algorithm}{name of the used algorithm:
   \code{"squarified"} or \code{"pivotSize"}. The squarified
@@ -78,23 +72,64 @@
 
   \item{sortID}{name of the variable that determines the
   order in which the rectangles are placed from top left to
-  bottom right. Also the values "size" and "color" can be
-  used. To inverse the sorting order, use "-" in the
-  prefix. By default, large rectangles are placed top left.
-  For small multiples, a vector of variable names (one for
-  each treemap) can be given. Only applicable when
-  \code{algortihm=="pivotSize"}.}
+  bottom right. Only applicable when
+  \code{algortihm=="pivotSize"}. Also the values "size" and
+  "color" can be used, which refer to \code{vSize} and
+  \code{vColor} respectively. To inverse the sorting order,
+  use "-" in the prefix. By default, large rectangles are
+  placed top left.}
 
-  \item{palette}{either a color palette or a name of a
-  Brewer palette (see \code{display.brewer.all()}). A
-  Brewer palette can be reversed by prefixing its name with
-  a "-".}
+  \item{palette}{one of the following: #' \describe{
+  \item{a color palette:}{i.e., a vector of hexadecimal
+  colors (#RRGGBB)} \item{a name of a Brewer palette:}{See
+  \code{RColorBrewer::display.brewer.all()} for the
+  options. The palette can be reversed by prefixing with a
+  "-". For treemap types "value" and "comp", a diverging
+  palette should be chosen (default="RdYlGn"), for type
+  "dens" a sequential (default="OrRd"). The default value
+  for "depth" is "Set2".} \item{"HCL":}{Colors are derived
+  from the Hue-Chroma-Luminance color space model. This is
+  only applicable for qualitative palettes, which are
+  applied to the treemap types "index", "depth", and
+  "categorical". For "index" and "categorical" this is the
+  default value.}}}
+
+  \item{palette.HCL.options}{list of advanced options to
+  pick colors from the HCL space (when
+  \code{palette="HCL"}). This list contains: \describe{
+  \item{\code{hue_start}:}{number between 0 and 360 that
+  determines the starting hue value (default: 30)}
+  \item{\code{hue_end}:}{number between \code{hue_start}
+  and \code{hue_start + 360} that determines the ending hue
+  value (default: 390)} \item{\code{hue_spread}:}{boolean
+  that determines whether the colors are spread such that
+  adjacent levels get more distinguishable colors. If
+  \code{FALSE}, then the colors are equally distributed
+  from \code{hue_start} to \code{hue_end} (default: TRUE)}
+  \item{\code{hue_fraction}:}{number between 0 and 1 that
+  determines the fraction of the hue circle that is used
+  for recursive color picking: if 0 then the full hue
+  circle is used, which means that the hue of the colors of
+  lower-level nodes are spread maximally. If 1, then the
+  hue of the colors of lower-level nodes are identical of
+  the hue of their parents. (default: .5)}
+  \item{\code{chroma}:}{chroma value of colors of the
+  first-level nodes, that are determined by the first index
+  variable (default: 60)}
+  \item{\code{luminance}:}{luminance value of colors of the
+  first-level nodes, i.e. determined by the first index
+  variable (default: 70)} \item{\code{chroma_slope}:}{slope
+  value for chroma of the non-first-level nodes. The chroma
+  values for the second-level nodes are
+  \code{chroma+chroma_slope}, for the third-level nodes
+  \code{chroma+2*chroma_slope}, etc. (default: 5)}
+  \item{\code{luminance_slope}:}{slope value for luminance
+  of the non-first-level nodes (default: -10)}}}
 
   \item{range}{range of values that determine the colors.
+  Only applicable for types "value", "comp", and "dens".
   When omitted, the range of actual values is used. This
   range is mapped to \code{palette}.}
-
-  \item{vColorRange}{deprecated, use \code{range} instead.}
 
   \item{fontsize.title}{(maximum) font size of the title}
 
@@ -112,17 +147,22 @@
   \item{lowerbound.cex.labels}{multiplier between 0 and 1
   that sets the lowerbound for the data label font sizes: 0
   means draw all data labels, and 1 means only draw data
-  labels if they fit at \code{fontsize.data}.}
+  labels if they fit (given \code{fontsize.labels}).}
 
   \item{inflate.labels}{logical that determines whether
-  data labels are inflated inside the rectangles.}
+  data labels are inflated inside the rectangles. If TRUE,
+  \code{fontsize.labels} is does not determine the maximum
+  fontsize, but it does determine in combination with
+  \code{lowerbound.cex.labels} the minimum fontsize.}
 
-  \item{bg.labels}{background color of labels of high
-  aggregation levels. If set to \code{NA}, the color is
-  determined by the color of the underlying rectangle. For
-  value, categorical and linked treemaps, the default is
-  transparent grey (\code{"#CCCCCCAA"}), and for the other
-  types, \code{NA}.}
+  \item{bg.labels}{background of labels of high aggregation
+  levels. Either a color, or a number between 0 and 255
+  that determines the transparency of the labels. In the
+  latter case, the color itself is determined by the color
+  of the underlying rectangle. For "value" and
+  "categorical" treemaps, the default is transparent grey
+  (\code{"#CCCCCCAA"}), and for the other types slightly
+  transparent: \code{220}.}
 
   \item{force.print.labels}{logical that determines whether
   data labels are being forced to be printed (also when
@@ -130,9 +170,9 @@
 
   \item{position.legend}{position of the legend:
   \code{"bottom"}, \code{"right"}, or \code{"none"}. For
-  categorical and index treemaps, \code{"right"} is the
-  default value, for linked treemap, \code{"none"}, and for
-  the other types, \code{"bottom"}.}
+  "categorical" and "index" treemaps, \code{"right"} is the
+  default value, for "index" treemap, \code{"none"}, and
+  for the other types, \code{"bottom"}.}
 
   \item{aspRatio}{preferred aspect ratio of the main
   rectangle, defined by width/height. When set to
@@ -147,13 +187,11 @@
   values are omitted during aggregation}
 }
 \value{
-  A list is silently returned: \item{tm}{list with for each
-  treemap a \code{data.frame} containing information about
-  the rectangles} \item{nRow}{number of rows in the treemap
-  grid} \item{nCol}{number of rows in the treemap grid}
-  \item{vSize}{argument vSize} \item{vColor}{argument
-  vColor} This list can be used to locate a mouse click
-  (see \code{\link{tmLocate}}).
+  A list is silently returned: \item{tm}{a
+  \code{data.frame} containing information about the
+  rectangles} \item{vSize}{argument vSize}
+  \item{vColor}{argument vColor} This list can be used to
+  locate a mouse click (see \code{\link{tmLocate}}).
 }
 \description{
   Create treemap
@@ -164,8 +202,6 @@
 ###
 ### data: Gross national income data
 #########################################
-
-# load Gross national income data
 data(GNI2010)
 
 # create treemap
@@ -176,131 +212,112 @@ tmPlot(GNI2010,
        type="value")
 
 
-
 #########################################
 ### extended examples
 ###
-### data: fictive structural business statistics data
+### data: fictive business statistics data
 #########################################
-
-### load fictive structural business statistics data
-data(sbsData)
-sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
-
+data(business)
 
 #########################################
-### types
+### treemap types
 #########################################
+
+# index treemap: colors are determined by the index argument
+tmPlot(business, 
+       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       vSize="employees", 
+       type="index")
 
 # value treemap: the color variable is directly mapped to the colors
-tmPlot(sbsData, 
-       index=c("section", "subsection"), 
-       vSize="employees09", 
-       vColor="employees.growth",
+business <- transform(business, x = 1)
+
+tmPlot(business, 
+       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       vSize="x", 
+       vColor="x",
        type="value")
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08",
-	   type="comp")
-
-# four comparisson treemaps
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize=c("employees09", "value added09", "turnover09", "salaries09"), 
-	   vColor=c("employees08", "value added08", "turnover08", "salaries08"),
+tmPlot(business, 
+	   index=c("NACE1", "NACE2"), 
+	   vSize="employees", 
+	   vColor="employees.prev",
 	   type="comp")
 
 # density treemaps: colors indicate density (like a population density map)
-tmPlot(sbsData,
-	   index=c("section", "subsection"), 
-	   vSize="turnover09",
-	   vColor="employees09*1000",
+tmPlot(business,
+	   index=c("NACE1", "NACE2"), 
+	   vSize="turnover",
+	   vColor="employees*1000",
 	   type="dens")
 
-tmPlot(sbsData,
-	   index=c("section", "subsection"), 
-	   vSize="employees09",
-	   vColor="turnover09",
+tmPlot(business,
+	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+	   vSize="employees",
+	   vColor="turnover",
 	   type="dens")
 
 # linked treemaps: objects are linked by color over different treemaps
-tmPlot(sbsData[sbsData$section=="Manufacturing",],
-	   index="subsection",
-	   vSize=c("income09", "employees09", "expenditures09", "salaries09"),
-	   type="linked")
+tmPlot(business[business$NACE1=="C - Manufacturing",],
+	   index=c("NACE2", "NACE3"),
+	   vSize=c("employees"),
+	   type="index")
 
 # depth treemap: each aggregation depth has distinct color
-tmPlot(sbsData,
-	   index=c("section", "subsection"), 
-	   vSize="employees09",
+tmPlot(business,
+	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+	   vSize="employees",
 	   type="depth")
 
-# index treemap: colors are determined by index
-tmPlot(sbsData,
-       index=c("section", "subsection"), 
-       vSize="employees09",
-       type="index")
 
 # categorical treemap: colors are determined by a categorical variable
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="section",
+business$data.available <- factor(!is.na(business$turnover))
+tmPlot(business, 
+       index=c("NACE1", "NACE2"), 
+	   vSize="x", 
+	   vColor="data.available",
 	   type="categorical")
 
 #########################################
 ### layout algorithm
 #########################################
 
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees.growth",
-	   type="value",
+tmPlot(business, 
+	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+	   vSize="employees", 
 	   algorithm="squarified")
 
 #########################################
 ### graphical options: fontsize
 #########################################
 
-# draw labels at fixed fontsize (fit only)
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08",
-	   type="comp",
+# draw labels at fixed fontsize 12 (if they fit)
+tmPlot(business, 
+	   index=c("NACE1", "NACE2"), 
+	   vSize="employees", 
 	   fontsize.labels=12, 
 	   lowerbound.cex.labels=1)
 
-# draw labels at flexible fontsize (skip tiny rectangles)
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08", 
-	   type="comp",
-	   fontsize.labels=12, 
+# draw labels at fontsize (.6*12) to 12 (if they fit)
+tmPlot(business, 
+       index=c("NACE1", "NACE2"), 
+       vSize="employees", 
+       fontsize.labels=12, 
 	   lowerbound.cex.labels=.6)
 
-# draw labels at maximal fontsize
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08", 
-	   type="comp",
-	   fontsize.labels=10, 
-	   lowerbound.cex.labels=1, 
+# draw all labels at maximal fontsize
+tmPlot(business, 
+       index=c("NACE1", "NACE2"), 
+       vSize="employees", 
+	   lowerbound.cex.labels=0, 
 	   inflate.labels = TRUE)
 
-# draw all labels at fixed fontsize
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08", 
-	   type="comp",
-	   fontsize.labels=10, 
+# draw all labels at fixed fontsize, even if they don't fit
+tmPlot(business, 
+       index=c("NACE1", "NACE2"), 
+       vSize="employees", 
+       fontsize.labels=10, 
 	   lowerbound.cex.labels=1, 
 	   force.print.labels=TRUE)
 
@@ -308,23 +325,44 @@ tmPlot(sbsData,
 ### graphical options: color palette
 #########################################
 
+
+## for comp and value typed treemaps all diverging brewer palettes can be chosen
+tmPlot(business, 
+       index=c("NACE1", "NACE2"), 
+       vSize="employees", 
+       vColor="employees.prev",
+       type="comp",
+       palette="RdBu")
+
+palette.HCL.options <- list(hue_start=30, hue_end=390, hue_spread=TRUE,
+                            hue_fraction=0.5, chroma=60, luminance=70, 
+                            chroma_slope=5, luminance_slope=-10)
+
+
+tmPlot(business, 
+       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       vSize="employees", 
+       type="index",
+       palette="Set3")
+
+
 # terrain colors
-sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees.growth", 
+business$employees.growth <- business$employees - business$employees.prev
+tmPlot(business, 
+       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       vSize="employees", 
+       vColor="employees.growth", 
 	   type="value", 
 	   palette=terrain.colors(10))
 
 # Brewer's Red-White-Grey palette reversed with predefined range
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees.growth", 
+tmPlot(business, 
+       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       vSize="employees", 
+       vColor="employees.growth", 
 	   type="value", 
 	   palette="-RdGy", 
-	   range=c(-20000,20000))
+	   range=c(-30000,30000))
 }
 \references{
   Bederson, B., Shneiderman, B., Wattenberg, M. (2002)

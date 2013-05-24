@@ -4,7 +4,7 @@ function(dat, position.legend, palette, labels) {
     l <- length(labels)
     
     if (palette[1]=="HCL") {
-        require(colorspace)
+        #require(colorspace)
         s <- spread(l)
         color <- hcl(seq(30, 390, length.out=l+1)[1:l], c=65, l=85)[s]
     } else {

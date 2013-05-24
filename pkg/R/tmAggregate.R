@@ -1,5 +1,6 @@
 tmAggregate <- function(dtfDT, indexList, type, ascending, na.rm) {
-
+    l <- s <- i <- k <- n <- NULL
+    
     depth <- length(indexList)
     dats <- list()
     for (d in 1:depth) {
@@ -44,7 +45,8 @@ tmAggregate <- function(dtfDT, indexList, type, ascending, na.rm) {
 
 
 tmAggregateStep <- function(dtfDT, indexList, na.rm) {
-        
+    .SD <- s <- i <- NULL
+    
     isCat <- !is.numeric(dtfDT$c)
     
     ## aggregate numeric variable

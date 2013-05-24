@@ -1,4 +1,6 @@
 tmGenerateRect <- function(datlist, vps, indexList, algorithm) {
+    k <- NULL
+    
     datWidth <- vps$datWidth
     datHeight <- vps$datHeight
     

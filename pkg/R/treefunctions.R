@@ -4,11 +4,13 @@ treedepth <- function(data) {
 }
 
 treeapply <- function(dat, values, depth=NULL, fun, prepare.dat=FALSE, ...) {
+    .SD <- NULL
+    
 	if (prepare.dat) if (is.data.table(dat)) {
 		dat[, names(dat):=lapply(.SD,as.factor)]
 	} else {
 		dat <- lapply(dat, as.factor)
-		require(data.table)
+		#require(data.table)
 		dat <- as.data.table(dat)
 	}
 	dt <- dat[!duplicated(dat), ]
@@ -27,7 +29,6 @@ treeapply <- function(dat, values, depth=NULL, fun, prepare.dat=FALSE, ...) {
 	
 	#setkeyv(dt, index)
 	
-	#browser()
 	if (length(values[[1]])==1) {
 		## apply function on first layer
 		dt[, eval(vars):=values]
@@ -42,7 +43,7 @@ treeapply <- function(dat, values, depth=NULL, fun, prepare.dat=FALSE, ...) {
 			lv <- lvls[l]
 			vls <- lapply(values, function(v)v[l])
 			vls <- as.data.frame(vls)
-			dt[ind1==lv, eval(vars):=vls]
+			if (any(ind1==lv)) dt[ind1==lv, eval(vars):=vls]
 		}
 	}
 	
@@ -134,7 +135,8 @@ spread <- function(n) {
 
 
 treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, prepare.dat=FALSE, ...) {
-	k <- ncol(dat)
+    #require(colorspace)
+    k <- ncol(dat)
 	if (method=="HCL") {
 		res <- treeapply(dat, list(lb=palette.HCL.options$hue_start, 
                                    ub=palette.HCL.options$hue_end), 
@@ -150,13 +152,12 @@ treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, pr
         #lum <- 95 - res$l * 10 #90
 		color <- hcl(point,c=chr, l=lum)
 	} else if (method=="HSV") {
-		require(colorspace)
-		nl <- length(unique(dat[[1]])) #nlevels(dat[[1]])
+		nl <- nlevels(dat[[1]])
 		
         palette <- rep(palette, length.out=nl)
 
         co <- coords(as(hex2RGB(palette), "HSV"))
-        value <- lapply(as.list(as.data.frame(co)), function(x)x[1:nl])
+        value <- as.list(as.data.frame(co))
 		
 		res <- treeapply(dat, value, fun="hsvs")
 		color <- with(res, hex(HSV(H, S, V)))

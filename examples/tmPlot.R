@@ -21,7 +21,7 @@ tmPlot(GNI2010,
 data(business)
 
 #########################################
-### types
+### treemap types
 #########################################
 
 # index treemap: colors are determined by the index argument
@@ -73,11 +73,11 @@ tmPlot(business,
 
 
 # categorical treemap: colors are determined by a categorical variable
-business$rand <- cut(runif(nrow(business)), breaks=10)
-tmPlot(business[business$NACE1=="C - Manufacturing",], 
-	   index=c("NACE3", "NACE4"), 
-	   vSize="employees", 
-	   vColor="rand",
+business$data.available <- factor(!is.na(business$turnover))
+tmPlot(business, 
+       index=c("NACE1", "NACE2"), 
+	   vSize="x", 
+	   vColor="data.available",
 	   type="categorical")
 
 #########################################
@@ -87,49 +87,38 @@ tmPlot(business[business$NACE1=="C - Manufacturing",],
 tmPlot(business, 
 	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
 	   vSize="employees", 
-	   vColor="employees.growth",
-	   type="value",
 	   algorithm="squarified")
 
 #########################################
 ### graphical options: fontsize
 #########################################
 
-# draw labels at fixed fontsize (fit only)
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08",
-	   type="comp",
+# draw labels at fixed fontsize 12 (if they fit)
+tmPlot(business, 
+	   index=c("NACE1", "NACE2"), 
+	   vSize="employees", 
 	   fontsize.labels=12, 
 	   lowerbound.cex.labels=1)
 
-# draw labels at flexible fontsize (skip tiny rectangles)
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08", 
-	   type="comp",
-	   fontsize.labels=12, 
+# draw labels at fontsize (.6*12) to 12 (if they fit)
+tmPlot(business, 
+       index=c("NACE1", "NACE2"), 
+       vSize="employees", 
+       fontsize.labels=12, 
 	   lowerbound.cex.labels=.6)
 
-# draw labels at maximal fontsize
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08", 
-	   type="comp",
-	   fontsize.labels=10, 
-	   lowerbound.cex.labels=1, 
+# draw all labels at maximal fontsize
+tmPlot(business, 
+       index=c("NACE1", "NACE2"), 
+       vSize="employees", 
+	   lowerbound.cex.labels=0, 
 	   inflate.labels = TRUE)
 
-# draw all labels at fixed fontsize
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees08", 
-	   type="comp",
-	   fontsize.labels=10, 
+# draw all labels at fixed fontsize, even if they don't fit
+tmPlot(business, 
+       index=c("NACE1", "NACE2"), 
+       vSize="employees", 
+       fontsize.labels=10, 
 	   lowerbound.cex.labels=1, 
 	   force.print.labels=TRUE)
 
@@ -137,20 +126,41 @@ tmPlot(sbsData,
 ### graphical options: color palette
 #########################################
 
+
+## for comp and value typed treemaps all diverging brewer palettes can be chosen
+tmPlot(business, 
+       index=c("NACE1", "NACE2"), 
+       vSize="employees", 
+       vColor="employees.prev",
+       type="comp",
+       palette="RdBu")
+
+palette.HCL.options <- list(hue_start=30, hue_end=390, hue_spread=TRUE,
+                            hue_fraction=0.5, chroma=60, luminance=70, 
+                            chroma_slope=5, luminance_slope=-10)
+
+
+tmPlot(business, 
+       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       vSize="employees", 
+       type="index",
+       palette="Set3")
+
+
 # terrain colors
-sbsData$employees.growth <- sbsData$employees09 - sbsData$employees08
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees.growth", 
+business$employees.growth <- business$employees - business$employees.prev
+tmPlot(business, 
+       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       vSize="employees", 
+       vColor="employees.growth", 
 	   type="value", 
 	   palette=terrain.colors(10))
 
 # Brewer's Red-White-Grey palette reversed with predefined range
-tmPlot(sbsData, 
-	   index=c("section", "subsection"), 
-	   vSize="employees09", 
-	   vColor="employees.growth", 
+tmPlot(business, 
+       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       vSize="employees", 
+       vColor="employees.growth", 
 	   type="value", 
 	   palette="-RdGy", 
-	   range=c(-20000,20000))
+	   range=c(-30000,30000))
