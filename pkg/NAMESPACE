@@ -1,6 +1,5 @@
-export(tmClick)
-export(tmLocate)
 export(tmPlot)
+export(treemap)
 import(RColorBrewer)
 import(colorspace)
 import(data.table)

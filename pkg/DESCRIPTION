@@ -1,14 +1,12 @@
 Package: treemap
 Type: Package
 Title: Treemap visualization
-Version: 1.1-1
-Date: 2012-07-10
+Version: 2.0
+Date: 2013-05-28
 Author: Martijn Tennekes
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
 Description: A treemap is a space-filling visualization of hierarchical
-    structures. With this package different kind of treemaps can be generated,
-    such as comparison treemaps and density treemaps. Small multiples are also
-    supported.
+    structures. This package offers great flexibility to draw treemaps.
 License: GPL-3
 LazyLoad: yes
 Imports:
@@ -32,13 +30,12 @@ Collate:
     'str2rect.R'
     'squarified.R'
     'tmAggregate.R'
-    'tmClick.R'
     'tmColorsLegend.R'
     'tmDrawRect.R'
     'tmGenerateRect.R'
     'tmGetViewports.R'
-    'tmLocate.R'
     'tmPlot.R'
     'tmPrintTitles.R'
     'treefunctions.R'
+    'treemap.R'
     'value2col.R'

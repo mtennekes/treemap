@@ -1,4 +1,5 @@
 version 2.0
+- main function migrated to treemap
 - treemap types revised: two new types added: "color", by which users are able to provide custom colors to each rectangle, and "index" (which different from the "index" in prior versions which is now renamed to "depth"). The new "index" type hierarchically assigns a color for each category in the index-tree (defined by the index variables). Treemap type "linked" removed, since it is obsolete by "categorical" type in combination of argument vp (see below).
 - color palette "HCL" added, which picks colors from the HCL color space. Applicable for "index", "depth" and "categorical". Additional arguments added to fully control color picking method.
 - vp argument added, to place treemap inside a grid.viewport. Useful for custom made visualizations or small multiples.
@@ -7,6 +8,7 @@ version 2.0
 - aggregation method (under the engine) re-implemented
 - businness statistics example dataset replaced. The new dataset contains four hierarchical levels.
 - bug in value-type color assignment fixed
+- color palette mapping improved
 
 version 1.1-2
 - no dependencies anymore, only imports
