@@ -6,7 +6,7 @@
 data(GNI2010)
 
 # create treemap
-tmPlot(GNI2010,
+treemap(GNI2010,
        index=c("continent", "iso3"),
        vSize="population",
        vColor="GNI",
@@ -25,48 +25,46 @@ data(business)
 #########################################
 
 # index treemap: colors are determined by the index argument
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
        vSize="employees", 
        type="index")
 
 # value treemap: the color variable is directly mapped to the colors
-business <- transform(business, x = 1)
-
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
-       vSize="x", 
-       vColor="x",
+       vSize="employees", 
+       vColor="employees",
        type="value")
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
-tmPlot(business, 
+treemap(business, 
 	   index=c("NACE1", "NACE2"), 
 	   vSize="employees", 
 	   vColor="employees.prev",
 	   type="comp")
 
 # density treemaps: colors indicate density (like a population density map)
-tmPlot(business,
+treemap(business,
 	   index=c("NACE1", "NACE2"), 
 	   vSize="turnover",
 	   vColor="employees*1000",
 	   type="dens")
 
-tmPlot(business,
+treemap(business,
 	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
 	   vSize="employees",
 	   vColor="turnover",
 	   type="dens")
 
 # linked treemaps: objects are linked by color over different treemaps
-tmPlot(business[business$NACE1=="C - Manufacturing",],
+treemap(business[business$NACE1=="C - Manufacturing",],
 	   index=c("NACE2", "NACE3"),
 	   vSize=c("employees"),
 	   type="index")
 
 # depth treemap: each aggregation depth has distinct color
-tmPlot(business,
+treemap(business,
 	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
 	   vSize="employees",
 	   type="depth")
@@ -74,7 +72,7 @@ tmPlot(business,
 
 # categorical treemap: colors are determined by a categorical variable
 business$data.available <- factor(!is.na(business$turnover))
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2"), 
 	   vSize="x", 
 	   vColor="data.available",
@@ -84,7 +82,7 @@ tmPlot(business,
 ### layout algorithm
 #########################################
 
-tmPlot(business, 
+treemap(business, 
 	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
 	   vSize="employees", 
 	   algorithm="squarified")
@@ -94,28 +92,28 @@ tmPlot(business,
 #########################################
 
 # draw labels at fixed fontsize 12 (if they fit)
-tmPlot(business, 
+treemap(business, 
 	   index=c("NACE1", "NACE2"), 
 	   vSize="employees", 
 	   fontsize.labels=12, 
 	   lowerbound.cex.labels=1)
 
 # draw labels at fontsize (.6*12) to 12 (if they fit)
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2"), 
        vSize="employees", 
        fontsize.labels=12, 
 	   lowerbound.cex.labels=.6)
 
 # draw all labels at maximal fontsize
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2"), 
        vSize="employees", 
 	   lowerbound.cex.labels=0, 
 	   inflate.labels = TRUE)
 
 # draw all labels at fixed fontsize, even if they don't fit
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2"), 
        vSize="employees", 
        fontsize.labels=10, 
@@ -128,7 +126,7 @@ tmPlot(business,
 
 
 ## for comp and value typed treemaps all diverging brewer palettes can be chosen
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2"), 
        vSize="employees", 
        vColor="employees.prev",
@@ -137,7 +135,7 @@ tmPlot(business,
 
 ## index treemaps, with palette="HCL":
 palette.HCL.options <- list(hue_start=270, hue_end=360+150)
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2"), 
        vSize="employees", 
        type="index",
@@ -147,7 +145,7 @@ tmPlot(business,
 
 # terrain colors
 business$employees.growth <- business$employees - business$employees.prev
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
        vSize="employees", 
        vColor="employees.growth", 
@@ -155,7 +153,7 @@ tmPlot(business,
 	   palette=terrain.colors(10))
 
 # Brewer's Red-White-Grey palette reversed with predefined range
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
        vSize="employees", 
        vColor="employees.growth", 

@@ -1,12 +1,12 @@
 depth2col <-
-function(dat, position.legend, palette, indexNames) {
+function(dat, position.legend, palette, indexNames, palette.HCL.options) {
     
     depth <- length(indexNames)
 
     if (palette[1]=="HCL") {
         #require(colorspace)
         s <- spread(depth)
-        color <- hcl(seq(30, 390, length.out=depth+1)[1:depth], c=65, l=85)[s]
+        color <- hcl(seq(palette.HCL.options$hue_start, palette.HCL.options$hue_end, length.out=depth+1)[1:depth], c=palette.HCL.options$chroma, l=palette.HCL.options$luminance)[s]
     } else {
         color <- palette
     }

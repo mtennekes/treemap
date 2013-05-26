@@ -46,9 +46,9 @@
 #' @param bg.labels background of labels of high aggregation levels. Either a color, or a number between 0 and 255 that determines the transparency of the labels. In the latter case, the color itself is determined by the color of the underlying rectangle. For "value" and "categorical" treemaps, the default is transparent grey (\code{"#CCCCCCAA"}), and for the other types slightly transparent: \code{220}.
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed (also when they don't fit).
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.
+#' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
 #' @param vp \code{\link[grid:viewport]{viewport}} to draw in. By default it is not specified, which means that a new plot is created. Useful when drawing small multiples, or when placing a treemap in a custom grid based plot.
-#' @param na.rm logical that determines whether missing values are omitted during aggregation
 #' @return A list is silently returned:
 #'	\item{tm}{a \code{data.frame} containing information about the rectangles}
 #'  \item{vSize}{argument vSize}
@@ -85,9 +85,9 @@ treemap <-
              bg.labels= ifelse(type %in% c("value", "categorical"), "#CCCCCCAA", 220),
              force.print.labels=FALSE,
              position.legend=switch(type, categorical="right", depth="right", index="none", "bottom"),
+             drop.unused.levels = TRUE,
              aspRatio=NA,
-             vp=NULL,
-             na.rm = TRUE) {
+             vp=NULL) {
         
         vColor.temp <- i <- NULL
         
@@ -314,14 +314,14 @@ treemap <-
         if (!position.legend %in% c("right", "bottom", "none")) 
             stop("Invalid position.legend")	
         
+        # drop.unused.levels
+        if (length(drop.unused.levels)!=1 ||
+                class(drop.unused.levels) !="logical")
+            stop("Invalid drop.unused.levels")
+
         # aspRatio
         if (length(aspRatio)!=1 || (!is.na(aspRatio[1]) && !is.numeric(aspRatio)))
             stop("Invalid aspRatio")
-        
-        # na.rm
-        if (length(na.rm)!=1 ||
-                class(na.rm) !="logical")
-            stop("Invalid na.rm")
         
         
         ###########
@@ -376,7 +376,7 @@ treemap <-
         ###########
         ## process treemap
         ###########
-        datlist <- tmAggregate(dtfDT, indexList, type, ascending, na.rm)
+        datlist <- tmAggregate(dtfDT, indexList, type, ascending, drop.unused.levels)
         catLabels <- switch(type, categorical=levels(datlist$c), index=levels(datlist$index1), depth=index, NA)
         vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
                               position.legend, type, aspRatio, title.legend, catLabels)

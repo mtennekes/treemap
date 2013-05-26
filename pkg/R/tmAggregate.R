@@ -1,10 +1,10 @@
-tmAggregate <- function(dtfDT, indexList, type, ascending, na.rm) {
+tmAggregate <- function(dtfDT, indexList, type, ascending, drop.unused.levels) {
     l <- s <- i <- k <- n <- NULL
     
     depth <- length(indexList)
     dats <- list()
     for (d in 1:depth) {
-        datd <- tmAggregateStep(dtfDT, indexList[1:d], na.rm=na.rm)
+        datd <- tmAggregateStep(dtfDT, indexList[1:d])
         if (d < depth) {
             indexPlus <- indexList[(d+1):depth]
             datd[, get("indexPlus"):=lapply(indexPlus, function(x)factor(NA, levels=levels(dtfDT[[x]])))]
@@ -18,12 +18,15 @@ tmAggregate <- function(dtfDT, indexList, type, ascending, na.rm) {
     
     datlist <- datlist[!is.na(datlist$index1), ]
     
-    if (any(is.na(datlist$s)) && !na.rm) stop("vSize contains missing values. Set na.rm=TRUE to neglect them")
-    
     datlist <- datlist[!is.na(datlist$s), ]
     if (min(datlist$s) < 0) stop("vSize contains negative values.")
     
     datlist <- datlist[datlist$s>0,]
+    
+    if (drop.unused.levels && is.factor(datlist$c)) 
+        datlist$c <- datlist$c[, drop=TRUE]
+    
+    
     if (type=="dens") {
         datlist[, c:=c/s]
         datlist[is.nan(datlist$c), c:=0]
@@ -44,7 +47,7 @@ tmAggregate <- function(dtfDT, indexList, type, ascending, na.rm) {
 }
 
 
-tmAggregateStep <- function(dtfDT, indexList, na.rm) {
+tmAggregateStep <- function(dtfDT, indexList) {
     .SD <- s <- i <- NULL
     
     isCat <- !is.numeric(dtfDT$c)
@@ -52,7 +55,7 @@ tmAggregateStep <- function(dtfDT, indexList, na.rm) {
     ## aggregate numeric variable
     fn <- function(x) {
         if (is.numeric(x)) {
-            sum(x, na.rm=na.rm)
+            sum(x, na.rm=TRUE)
         } else {
             which.max(table(x))
         }

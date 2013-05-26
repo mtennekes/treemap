@@ -28,7 +28,7 @@ treeapply <- function(dat, values, depth=NULL, fun, prepare.dat=FALSE, ...) {
 	vars <- names(values)
 	
 	#setkeyv(dt, index)
-	
+    
 	if (length(values[[1]])==1) {
 		## apply function on first layer
 		dt[, eval(vars):=values]
@@ -74,15 +74,16 @@ addRange <- function(x, depth, frc = .5) {
 	
 	nr <- length(x[[1]])
 	#browser()
-	sq <- seq(LB, UB, length.out=nr+1)
+	
+    sq <- seq(LB, UB, length.out=nr+1)
 	spacer <- (sq[2] - sq[1]) * frc *.5
 
 	s <- spread(nr)
 	
 	start <- sq[1:nr][s]
 	end <- sq[2:(nr+1)][s]
-	
-	list(lb=start+spacer, ub=end-spacer)
+
+    list(lb=start+spacer, ub=end-spacer)
 }
 
 ########## method 2: modify fixed colors with hsv space

@@ -8,13 +8,13 @@ tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, 
     } else if (type == "dens") {
         datlist$color <- dens2col(datlist, position.legend, palette, range) 
     } else if (type == "depth") {
-        datlist$color <- depth2col(datlist, position.legend, palette, indexNames)
+        datlist$color <- depth2col(datlist, position.legend, palette, indexNames, palette.HCL.options)
     } else if (type == "index") {
         datlist$color <- index2col(datlist, position.legend, palette, levels(datlist$index1), palette.HCL.options)
     } else if (type == "value") {
         datlist$color <- value2col(datlist, position.legend, palette, range)
     } else if (type == "categorical") {
-        datlist$color <- cat2col(datlist, position.legend, palette, levels(datlist$c))
+        datlist$color <- cat2col(datlist, position.legend, palette, levels(datlist$c), palette.HCL.options)
     }
     if (position.legend!="none") upViewport()
     
