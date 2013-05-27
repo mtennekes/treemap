@@ -1,4 +1,4 @@
-#' Treemap visualization
+#' Treemap package
 #'
 #' \tabular{ll}{
 #' Package: \tab treemap\cr
@@ -14,7 +14,6 @@
 #' See \code{\link{treemap}}
 #' 
 #' @name treemap-package
-#' @aliases treemap-treemap
 #' @docType package
 #' @author Martijn Tennekes \email{mtennekes@@gmail.com}
 #' @keywords treemap

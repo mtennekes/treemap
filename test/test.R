@@ -1,7 +1,12 @@
 data(business)
 
-tmPlot(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees")
 
+
+Rprof(tmp <- tempfile())
+treemap(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees")
+Rprof()
+summaryRprof(tmp)
+unlink(tmp)
 
 palette.HCL.options <- list(hue_start=30, hue_end=390, hue_spread=TRUE,
                         hue_fraction=0.5, chroma=60, luminance=70, 

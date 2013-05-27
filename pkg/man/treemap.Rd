@@ -5,14 +5,14 @@
   treemap(dtf, index, vSize, vColor = NULL, type = "index",
     title = NA, title.legend = NA, algorithm = "pivotSize",
     sortID = "-size", palette = NA,
-    palette.HCL.options = list(hue_start = 30, hue_end = 390, hue_spread = TRUE, hue_fraction = 0.5, chroma = 60, luminance = 70, chroma_slope = 5, luminance_slope = -10),
-    range = NA, fontsize.title = 14, fontsize.labels = 11,
+    palette.HCL.options = NULL, range = NA,
+    fontsize.title = 14, fontsize.labels = 11,
     fontsize.legend = 12, lowerbound.cex.labels = 0.4,
     inflate.labels = FALSE,
-    bg.labels = ifelse(type \%in\% c("value", "categorical"), "#CCCCCCAA", 220),
-    force.print.labels = FALSE,
-    position.legend = ifelse(type \%in\% c("categorical", "depth"), "right", ifelse(type == "index", "none", "bottom")),
-    aspRatio = NA, vp = NULL, na.rm = TRUE)
+    bg.labels = ifelse(type \%in\% c("value", "categorical"), "#CCCCCCDC", 220),
+    force.print.labels = FALSE, overlap.labels = 0.5,
+    position.legend = switch(type, categorical = "right", depth = "right", index = "none", "bottom"),
+    drop.unused.levels = TRUE, aspRatio = NA, vp = NULL)
 }
 \arguments{
   \item{dtf}{a data.frame. Required.}
@@ -73,7 +73,7 @@
   \item{sortID}{name of the variable that determines the
   order in which the rectangles are placed from top left to
   bottom right. Only applicable when
-  \code{algortihm=="pivotSize"}. Also the values "size" and
+  \code{algorithm=="pivotSize"}. Also the values "size" and
   "color" can be used, which refer to \code{vSize} and
   \code{vColor} respectively. To inverse the sorting order,
   use "-" in the prefix. By default, large rectangles are
@@ -161,18 +161,30 @@
   latter case, the color itself is determined by the color
   of the underlying rectangle. For "value" and
   "categorical" treemaps, the default is transparent grey
-  (\code{"#CCCCCCAA"}), and for the other types slightly
+  (\code{"#CCCCCCDC"}), and for the other types slightly
   transparent: \code{220}.}
 
   \item{force.print.labels}{logical that determines whether
-  data labels are being forced to be printed (also when
-  they don't fit).}
+  data labels are being forced to be printed if they don't
+  fit.}
+
+  \item{overlap.labels}{number between 0 and 1 that
+  determines the tolerance of the overlap between labels. 0
+  means that labels of lower level are not printed if
+  higher level labels overlap, 1 means that labels are
+  always printed. The default value is .5, which means that
+  lower level labels are printed if other labels do not
+  overlap with over .5 * their area size.}
 
   \item{position.legend}{position of the legend:
   \code{"bottom"}, \code{"right"}, or \code{"none"}. For
   "categorical" and "index" treemaps, \code{"right"} is the
   default value, for "index" treemap, \code{"none"}, and
   for the other types, \code{"bottom"}.}
+
+  \item{drop.unused.levels}{logical that determines whether
+  unused levels (if any) are shown in the legend.
+  Applicable for "categorical" treemap type.}
 
   \item{aspRatio}{preferred aspect ratio of the main
   rectangle, defined by width/height. When set to
@@ -182,9 +194,6 @@
   in. By default it is not specified, which means that a
   new plot is created. Useful when drawing small multiples,
   or when placing a treemap in a custom grid based plot.}
-
-  \item{na.rm}{logical that determines whether missing
-  values are omitted during aggregation}
 }
 \value{
   A list is silently returned: \item{tm}{a
@@ -212,7 +221,7 @@
 data(GNI2010)
 
 # create treemap
-tmPlot(GNI2010,
+treemap(GNI2010,
        index=c("continent", "iso3"),
        vSize="population",
        vColor="GNI",
@@ -231,56 +240,54 @@ data(business)
 #########################################
 
 # index treemap: colors are determined by the index argument
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
        vSize="employees", 
        type="index")
 
 # value treemap: the color variable is directly mapped to the colors
-business <- transform(business, x = 1)
-
-tmPlot(business, 
-       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
-       vSize="x", 
-       vColor="x",
+treemap(business, 
+       index=c("NACE1", "NACE2", "NACE3"), 
+       vSize="employees", 
+       vColor="employees",
        type="value")
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
-tmPlot(business, 
+treemap(business, 
 	   index=c("NACE1", "NACE2"), 
 	   vSize="employees", 
 	   vColor="employees.prev",
 	   type="comp")
 
 # density treemaps: colors indicate density (like a population density map)
-tmPlot(business,
+treemap(business,
 	   index=c("NACE1", "NACE2"), 
 	   vSize="turnover",
 	   vColor="employees*1000",
 	   type="dens")
 
-tmPlot(business,
-	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+treemap(business,
+	   index=c("NACE1", "NACE2"), 
 	   vSize="employees",
 	   vColor="turnover",
 	   type="dens")
 
 # linked treemaps: objects are linked by color over different treemaps
-tmPlot(business[business$NACE1=="C - Manufacturing",],
+treemap(business[business$NACE1=="C - Manufacturing",],
 	   index=c("NACE2", "NACE3"),
 	   vSize=c("employees"),
 	   type="index")
 
 # depth treemap: each aggregation depth has distinct color
-tmPlot(business,
+treemap(business,
 	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
 	   vSize="employees",
 	   type="depth")
 
 
 # categorical treemap: colors are determined by a categorical variable
-business$data.available <- factor(!is.na(business$turnover))
-tmPlot(business, 
+business <- transform(business, data.available = factor(!is.na(turnover)), x = 1)
+treemap(business, 
        index=c("NACE1", "NACE2"), 
 	   vSize="x", 
 	   vColor="data.available",
@@ -290,8 +297,8 @@ tmPlot(business,
 ### layout algorithm
 #########################################
 
-tmPlot(business, 
-	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+treemap(business, 
+	   index=c("NACE1", "NACE2"), 
 	   vSize="employees", 
 	   algorithm="squarified")
 
@@ -300,28 +307,28 @@ tmPlot(business,
 #########################################
 
 # draw labels at fixed fontsize 12 (if they fit)
-tmPlot(business, 
+treemap(business, 
 	   index=c("NACE1", "NACE2"), 
 	   vSize="employees", 
 	   fontsize.labels=12, 
 	   lowerbound.cex.labels=1)
 
 # draw labels at fontsize (.6*12) to 12 (if they fit)
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2"), 
        vSize="employees", 
        fontsize.labels=12, 
 	   lowerbound.cex.labels=.6)
 
 # draw all labels at maximal fontsize
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2"), 
        vSize="employees", 
 	   lowerbound.cex.labels=0, 
 	   inflate.labels = TRUE)
 
 # draw all labels at fixed fontsize, even if they don't fit
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2"), 
        vSize="employees", 
        fontsize.labels=10, 
@@ -334,37 +341,35 @@ tmPlot(business,
 
 
 ## for comp and value typed treemaps all diverging brewer palettes can be chosen
-tmPlot(business, 
+treemap(business, 
        index=c("NACE1", "NACE2"), 
        vSize="employees", 
        vColor="employees.prev",
        type="comp",
        palette="RdBu")
 
-palette.HCL.options <- list(hue_start=30, hue_end=390, hue_spread=TRUE,
-                            hue_fraction=0.5, chroma=60, luminance=70, 
-                            chroma_slope=5, luminance_slope=-10)
-
-
-tmPlot(business, 
-       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+## index treemaps, with palette="HCL":
+palette.HCL.options <- list(hue_start=270, hue_end=360+150)
+treemap(business, 
+       index=c("NACE1", "NACE2"), 
        vSize="employees", 
        type="index",
-       palette="Set3")
+       palette="HCL",
+       palette.HCL.options=palette.HCL.options)
 
 
 # terrain colors
 business$employees.growth <- business$employees - business$employees.prev
-tmPlot(business, 
-       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+treemap(business, 
+       index=c("NACE1", "NACE2"), 
        vSize="employees", 
        vColor="employees.growth", 
 	   type="value", 
 	   palette=terrain.colors(10))
 
 # Brewer's Red-White-Grey palette reversed with predefined range
-tmPlot(business, 
-       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+treemap(business, 
+       index=c("NACE1", "NACE2"), 
        vSize="employees", 
        vColor="employees.growth", 
 	   type="value", 

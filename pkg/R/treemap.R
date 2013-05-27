@@ -1,4 +1,4 @@
-#' Create treemap
+#' Treemap
 #'
 #' A treemap is a space-filling visualization of hierarchical structures. This package offers great flexibility to draw treemaps. Required is a data.frame (\code{dtf}) that contains one or more hierarchical index columns given by \code{index}, a column that determines the rectangle area sizes (\code{vSize}), and optionally a column that determines the rectangle colors (\code{vColor}). The way how rectangles are colored is determined by the argument \code{type}. #'
 #' @param dtf a data.frame. Required.
@@ -17,7 +17,7 @@
 #' @param title title of the treemap.
 #' @param title.legend title of the legend.
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
-#' @param sortID name of the variable that determines the order in which the rectangles are placed from top left to bottom right. Only applicable when \code{algortihm=="pivotSize"}. Also the values "size" and "color" can be used, which refer to \code{vSize} and \code{vColor} respectively. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left.
+#' @param sortID name of the variable that determines the order in which the rectangles are placed from top left to bottom right. Only applicable when \code{algorithm=="pivotSize"}. Also the values "size" and "color" can be used, which refer to \code{vSize} and \code{vColor} respectively. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left.
 #' @param palette one of the following: 
 #' #' \describe{
 #'        \item{a color palette:}{i.e., a vector of hexadecimal colors (#RRGGBB)}
@@ -43,8 +43,9 @@
 #' @param fontsize.legend (maximum) font size of the legend
 #' @param lowerbound.cex.labels multiplier between 0 and 1 that sets the lowerbound for the data label font sizes: 0 means draw all data labels, and 1 means only draw data labels if they fit (given \code{fontsize.labels}).
 #' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles. If TRUE, \code{fontsize.labels} is does not determine the maximum fontsize, but it does determine in combination with  \code{lowerbound.cex.labels} the minimum fontsize.
-#' @param bg.labels background of labels of high aggregation levels. Either a color, or a number between 0 and 255 that determines the transparency of the labels. In the latter case, the color itself is determined by the color of the underlying rectangle. For "value" and "categorical" treemaps, the default is transparent grey (\code{"#CCCCCCAA"}), and for the other types slightly transparent: \code{220}.
-#' @param force.print.labels logical that determines whether data labels are being forced to be printed (also when they don't fit).
+#' @param bg.labels background of labels of high aggregation levels. Either a color, or a number between 0 and 255 that determines the transparency of the labels. In the latter case, the color itself is determined by the color of the underlying rectangle. For "value" and "categorical" treemaps, the default is transparent grey (\code{"#CCCCCCDC"}), and for the other types slightly transparent: \code{220}.
+#' @param force.print.labels logical that determines whether data labels are being forced to be printed if they don't fit.
+#' @param overlap.labels number between 0 and 1 that determines the tolerance of the overlap between labels. 0 means that labels of lower level are not printed if higher level labels overlap, 1 means that labels are always printed. The default value is .5, which means that lower level labels are printed if other labels do not overlap with over .5 * their area size.
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
@@ -82,8 +83,9 @@ treemap <-
              fontsize.legend=12,
              lowerbound.cex.labels=0.4,
              inflate.labels=FALSE,
-             bg.labels= ifelse(type %in% c("value", "categorical"), "#CCCCCCAA", 220),
+             bg.labels= ifelse(type %in% c("value", "categorical"), "#CCCCCCDC", 220),
              force.print.labels=FALSE,
+             overlap.labels=0.5,
              position.legend=switch(type, categorical="right", depth="right", index="none", "bottom"),
              drop.unused.levels = TRUE,
              aspRatio=NA,
@@ -310,6 +312,12 @@ treemap <-
                 class(force.print.labels) !="logical")
             stop("Invalid force.print.labels")
         
+        # overlap.labels
+        if (length(overlap.labels)!=1 ||
+                !is.numeric(overlap.labels))
+            stop("Invalid overlap.labels")
+        if (overlap.labels<0 || overlap.labels > 1) stop("overlap.labels should be between 0 and 1")
+
         # position.legend
         if (!position.legend %in% c("right", "bottom", "none")) 
             stop("Invalid position.legend")	
@@ -388,7 +396,7 @@ treemap <-
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
         
-        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices)
+        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels)
         
         upViewport(0 + !is.null(vp))
         

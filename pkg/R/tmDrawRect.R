@@ -1,4 +1,4 @@
-tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices) {
+tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels) {
     pushViewport(vps$vpDat, vps$vpDatAsp)
     
     
@@ -28,7 +28,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
         whichFill <- datlist$l==depth
         
         whichNA <- is.na(datlist$n)
-        
+        #browser()
         recs_fill_NA <- createRec(datlist[whichFill & !whichBold & whichNA,], 
                                   filled=TRUE, 
                                   label="", 
@@ -55,7 +55,8 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      label="normal",
                                      labellb=lowerbound.cex.labels, 
                                      bg.labels = bg.labels, 
-                                     lwd = lwds[!whichFill & !whichBold & !whichNA],
+                                     lwd = lwds[!whichFill & !whichBold &
+                                                    !whichNA & datlist$l==r],
                                      inflate.labels=inflate.labels,
                                      force.print.labels=force.print.labels, 
                                      cex_index=cex_indices[2])) 
@@ -69,17 +70,33 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      inflate.labels=inflate.labels,
                                      force.print.labels=force.print.labels, 
                                      cex_index=cex_indices[1]) 
-        
-        if (length(rng)) {
-            covers <- lapply(1:length(rng), function(i) 
-                overlap(recs_fill_norm$txtbg, recs_trans_norm[[i]]$txtbg))
-            covers[[length(rng)+1]] <- 
-                overlap(recs_fill_norm$txtbg, recs_trans_bold$txtbg)
-            cover <- do.call("mapply", 
-                             args=c(covers, list(FUN=any, SIMPLIFY=TRUE)))
-            if (!is.na(cover[1])) {
-                recs_fill_norm$txt$gp$col[cover] <- NA
-                recs_fill_norm$bg$gp$fill[cover] <- NA
+        if (overlap.labels < 1) {
+            
+            anyTransBold <- any(!whichFill & whichBold)
+            anyTransNorm <- any(!whichFill & !whichBold & !whichNA)
+
+            layers <- list(recs_fill_norm$txtbg)
+            if (length(rng)) {
+                layers <- c(layers, lapply(recs_trans_norm, function(x)x$txtbg))
+            }
+            layers <- c(layers, list(recs_trans_bold$txtbg))
+            
+            select <- lapply(layers, function(l)rep(TRUE, length(l$x$arg1)))
+            for (i in length(layers):2) {
+                for (j in (i-1):1) {
+                    cover <- overlap(layers[[j]], layers[[i]], 
+                                     overlap.labels, select=select[[i]])
+                    select[[j]] <- select[[j]] & !cover
+                }
+            }
+            recs_fill_norm$txt$gp$col[!select[[1]]] <- NA
+            recs_fill_norm$txtbg$gp$fill[!select[[1]]] <- NA
+            recs_fill_norm$bg$gp$fill[!select[[1]]] <- NA
+            
+            if (length(rng)) for (i in 2:(length(layers)-1)) {
+                recs_trans_norm[[i-1]]$txt$gp$col[!select[[i]]] <- NA
+                recs_trans_norm[[i-1]]$txtbg$gp$fill[!select[[i]]] <- NA
+                recs_trans_norm[[i-1]]$bg$gp$fill[!select[[i]]] <- NA
             }
         }
         

@@ -9,6 +9,7 @@ version 2.0
 - businness statistics example dataset replaced. The new dataset contains four hierarchical levels.
 - bug in value-type color assignment fixed
 - color palette mapping improved
+- label overlapping improved: added overlap.labels argument
 
 version 1.1-2
 - no dependencies anymore, only imports

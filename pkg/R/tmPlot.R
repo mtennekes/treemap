@@ -1,4 +1,4 @@
-#' Create a treemap (deprecated)
+#' Treemap (deprecated)
 #'
 #' This function is migrated to \code{\link{treemap}}.
 #' 

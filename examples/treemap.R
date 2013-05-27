@@ -32,7 +32,7 @@ treemap(business,
 
 # value treemap: the color variable is directly mapped to the colors
 treemap(business, 
-       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       index=c("NACE1", "NACE2", "NACE3"), 
        vSize="employees", 
        vColor="employees",
        type="value")
@@ -52,7 +52,7 @@ treemap(business,
 	   type="dens")
 
 treemap(business,
-	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+	   index=c("NACE1", "NACE2"), 
 	   vSize="employees",
 	   vColor="turnover",
 	   type="dens")
@@ -71,7 +71,7 @@ treemap(business,
 
 
 # categorical treemap: colors are determined by a categorical variable
-business$data.available <- factor(!is.na(business$turnover))
+business <- transform(business, data.available = factor(!is.na(turnover)), x = 1)
 treemap(business, 
        index=c("NACE1", "NACE2"), 
 	   vSize="x", 
@@ -83,7 +83,7 @@ treemap(business,
 #########################################
 
 treemap(business, 
-	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+	   index=c("NACE1", "NACE2"), 
 	   vSize="employees", 
 	   algorithm="squarified")
 
@@ -146,7 +146,7 @@ treemap(business,
 # terrain colors
 business$employees.growth <- business$employees - business$employees.prev
 treemap(business, 
-       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       index=c("NACE1", "NACE2"), 
        vSize="employees", 
        vColor="employees.growth", 
 	   type="value", 
@@ -154,7 +154,7 @@ treemap(business,
 
 # Brewer's Red-White-Grey palette reversed with predefined range
 treemap(business, 
-       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
+       index=c("NACE1", "NACE2"), 
        vSize="employees", 
        vColor="employees.growth", 
 	   type="value", 
