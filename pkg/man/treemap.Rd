@@ -8,11 +8,10 @@
     palette.HCL.options = NULL, range = NA,
     fontsize.title = 14, fontsize.labels = 11,
     fontsize.legend = 12, lowerbound.cex.labels = 0.4,
-    inflate.labels = FALSE,
-    bg.labels = ifelse(type \%in\% c("value", "categorical"), "#CCCCCCDC", 220),
+    inflate.labels = FALSE, bg.labels = NULL,
     force.print.labels = FALSE, overlap.labels = 0.5,
-    position.legend = switch(type, categorical = "right", depth = "right", index = "none", "bottom"),
-    drop.unused.levels = TRUE, aspRatio = NA, vp = NULL)
+    position.legend = NULL, drop.unused.levels = TRUE,
+    aspRatio = NA, vp = NULL)
 }
 \arguments{
   \item{dtf}{a data.frame. Required.}
@@ -51,7 +50,8 @@
   are populations per area, and colors are computed as
   densities (i.e. population per squared km).}
   \item{\code{"depth"}:}{each aggregation level (defined by
-  \code{index}) has a distinct color.}
+  \code{index}) has a distinct color. For this type,
+  \code{vColor} is not needed.}
   \item{\code{"categorical"}:}{\code{vColor} is a factor
   column that determines the color.}
   \item{\code{"color"}:}{\code{vColor} is a vector of
@@ -201,8 +201,9 @@
 \value{
   A list is silently returned: \item{tm}{a
   \code{data.frame} containing information about the
-  rectangles} \item{vSize}{argument vSize}
-  \item{vColor}{argument vColor}
+  rectangles} \item{type}{argument type}
+  \item{vSize}{argument vSize} \item{vColor}{argument
+  vColor} \item{algorithm}{argument algorithm}
 }
 \description{
   A treemap is a space-filling visualization of
@@ -236,17 +237,17 @@ data(business)
 #########################################
 
 # index treemap: colors are determined by the index argument
+\dontrun{
+# large example which takes some time...
 treemap(business, 
-       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
-       vSize="employees", 
-       type="index")
-
-# value treemap: the color variable is directly mapped to the colors
-treemap(business, 
-       index=c("NACE1", "NACE2"), 
-       vSize="employees", 
-       vColor="employees",
-       type="value")
+        index=c("NACE1", "NACE2", "NACE3"), 
+        vSize="turnover", 
+        type="index")
+}
+treemap(business[business$NACE1=="C - Manufacturing",],
+        index=c("NACE2", "NACE3"),
+        vSize=c("employees"),
+        type="index")
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
 treemap(business, 
@@ -259,26 +260,8 @@ treemap(business,
 treemap(business,
 	   index=c("NACE1", "NACE2"), 
 	   vSize="turnover",
-	   vColor="employees",
+	   vColor="employees/1000",
 	   type="dens")
-
-treemap(business,
-	   index=c("NACE1", "NACE2"), 
-	   vSize="employees",
-	   vColor="turnover",
-	   type="dens")
-
-# linked treemaps: objects are linked by color over different treemaps
-treemap(business[business$NACE1=="C - Manufacturing",],
-	   index=c("NACE2", "NACE3"),
-	   vSize=c("employees"),
-	   type="index")
-
-# depth treemap: each aggregation depth has distinct color
-treemap(business,
-	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
-	   vSize="employees",
-	   type="depth")
 
 # categorical treemap: colors are determined by a categorical variable
 business <- transform(business, data.available = factor(!is.na(turnover)), 
@@ -293,6 +276,7 @@ treemap(business,
 ### graphical options: control fontsizes
 #########################################
 
+\dontrun{
 # draw labels at fixed fontsize 12 (if they fit)
 treemap(business, 
 	   index=c("NACE1", "NACE2"), 
@@ -360,6 +344,7 @@ treemap(business,
 	   type="value", 
 	   palette="-RdGy", 
 	   range=c(-30000,30000))
+}
 }
 \references{
   Bederson, B., Shneiderman, B., Wattenberg, M. (2002)

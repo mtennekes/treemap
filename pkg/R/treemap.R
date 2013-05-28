@@ -12,7 +12,7 @@
 #'    	\item{\code{"value"}:}{the numeric \code{vColor}-column is directly mapped to a color palette.}
 #'		\item{\code{"comp"}:}{colors indicate change of the \code{vSize}-column with respect to the numeric \code{vColor}-column in percentages. Note: the negative scale may be different from the positive scale in order to compensate for the ratio distribution.}
 #'		\item{\code{"dens"}:}{colors indicate density. This is analogous to a population density map where \code{vSize}-values are area sizes, \code{vColor}-values are populations per area, and colors are computed as densities (i.e. population per squared km).}
-#'		\item{\code{"depth"}:}{each aggregation level (defined by \code{index}) has a distinct color.}
+#'		\item{\code{"depth"}:}{each aggregation level (defined by \code{index}) has a distinct color. For this type, \code{vColor} is not needed.}
 #'    	\item{\code{"categorical"}:}{\code{vColor} is a factor column that determines the color.}
 #'      \item{\code{"color"}:}{\code{vColor} is a vector of colors in the hexadecimal (#RRGGBB) format}}
 #' @param title title of the treemap.
@@ -53,8 +53,10 @@
 #' @param vp \code{\link[grid:viewport]{viewport}} to draw in. By default it is not specified, which means that a new plot is created. Useful when drawing small multiples, or when placing a treemap in a custom grid based plot.
 #' @return A list is silently returned:
 #'	\item{tm}{a \code{data.frame} containing information about the rectangles}
+#'  \item{type}{argument type}
 #'  \item{vSize}{argument vSize}
 #'  \item{vColor}{argument vColor}
+#'  \item{algorithm}{argument algorithm}
 #' @references
 #' Bederson, B., Shneiderman, B., Wattenberg, M. (2002) Ordered and Quantum Treemaps: Making Effective Use of 2D Space to Display Hierarchies. ACM Transactions on Graphics, 21(4): 833-854.
 #'
@@ -84,10 +86,10 @@ treemap <-
              fontsize.legend=12,
              lowerbound.cex.labels=0.4,
              inflate.labels=FALSE,
-             bg.labels= ifelse(type %in% c("value", "categorical"), "#CCCCCCDC", 220),
+             bg.labels= NULL,
              force.print.labels=FALSE,
              overlap.labels=0.5,
-             position.legend=switch(type, categorical="right", depth="right", index="none", "bottom"),
+             position.legend=NULL,
              drop.unused.levels = TRUE,
              aspRatio=NA,
              vp=NULL) {
@@ -299,14 +301,16 @@ treemap <-
             stop("Invalid inflate.labels")
         
         # bg.labels
-        if (length(bg.labels)!=1) stop("Invalid bg.labels")
-        if (!is.numeric(bg.labels)) {
-            if (class(try(col2rgb(bg.labels), silent=TRUE))=="try-error") stop("Invalid bg.labels")
+        if (missing(bg.labels)) {
+            bg.labels <- ifelse(type %in% c("value", "categorical"), "#CCCCCCDC", 220)
         } else {
-            if (bg.labels < 0 || bg.labels > 255) stop("bg.labels should be between 0 and 255")
+            if (length(bg.labels)!=1) stop("Invalid bg.labels")
+            if (!is.numeric(bg.labels)) {
+                if (class(try(col2rgb(bg.labels), silent=TRUE))=="try-error") stop("Invalid bg.labels")
+            } else {
+                if (bg.labels < 0 || bg.labels > 255) stop("bg.labels should be between 0 and 255")
+            }
         }
-        
-        
         
         # force.print.labels
         if (length(force.print.labels)!=1 ||
@@ -320,8 +324,12 @@ treemap <-
         if (overlap.labels<0 || overlap.labels > 1) stop("overlap.labels should be between 0 and 1")
 
         # position.legend
-        if (!position.legend %in% c("right", "bottom", "none")) 
-            stop("Invalid position.legend")	
+        if (missing(position.legend)) {
+            position.legend <- switch(type, categorical="right", depth="right", index="none", "bottom")
+        } else {
+            if (!position.legend %in% c("right", "bottom", "none")) 
+                stop("Invalid position.legend")	
+        }
         
         # drop.unused.levels
         if (length(drop.unused.levels)!=1 ||

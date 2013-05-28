@@ -18,17 +18,17 @@ data(business)
 #########################################
 
 # index treemap: colors are determined by the index argument
+\dontrun{
+# large example which takes some time...
 treemap(business, 
-       index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
-       vSize="employees", 
-       type="index")
-
-# value treemap: the color variable is directly mapped to the colors
-treemap(business, 
-       index=c("NACE1", "NACE2"), 
-       vSize="employees", 
-       vColor="employees",
-       type="value")
+        index=c("NACE1", "NACE2", "NACE3"), 
+        vSize="turnover", 
+        type="index")
+}
+treemap(business[business$NACE1=="C - Manufacturing",],
+        index=c("NACE2", "NACE3"),
+        vSize=c("employees"),
+        type="index")
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
 treemap(business, 
@@ -41,26 +41,8 @@ treemap(business,
 treemap(business,
 	   index=c("NACE1", "NACE2"), 
 	   vSize="turnover",
-	   vColor="employees",
+	   vColor="employees/1000",
 	   type="dens")
-
-treemap(business,
-	   index=c("NACE1", "NACE2"), 
-	   vSize="employees",
-	   vColor="turnover",
-	   type="dens")
-
-# linked treemaps: objects are linked by color over different treemaps
-treemap(business[business$NACE1=="C - Manufacturing",],
-	   index=c("NACE2", "NACE3"),
-	   vSize=c("employees"),
-	   type="index")
-
-# depth treemap: each aggregation depth has distinct color
-treemap(business,
-	   index=c("NACE1", "NACE2", "NACE3", "NACE4"), 
-	   vSize="employees",
-	   type="depth")
 
 # categorical treemap: colors are determined by a categorical variable
 business <- transform(business, data.available = factor(!is.na(turnover)), 
@@ -75,6 +57,7 @@ treemap(business,
 ### graphical options: control fontsizes
 #########################################
 
+\dontrun{
 # draw labels at fixed fontsize 12 (if they fit)
 treemap(business, 
 	   index=c("NACE1", "NACE2"), 
@@ -142,3 +125,4 @@ treemap(business,
 	   type="value", 
 	   palette="-RdGy", 
 	   range=c(-30000,30000))
+}

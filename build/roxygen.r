@@ -7,9 +7,12 @@ unlink( '../pkg/man', TRUE)
 
 setwd('../pkg')
 
+
+
 roxygenize( '.'
 			, roxygen.dir='.'
 			, copy.package=FALSE
 			, unlink.target=TRUE
 )
+
 setwd('../build')
