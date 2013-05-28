@@ -1,6 +1,6 @@
 \name{tmPlot}
 \alias{tmPlot}
-\title{Create a treemap (deprecated)}
+\title{Treemap (deprecated)}
 \usage{
   tmPlot(...)
 }

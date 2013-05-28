@@ -1,8 +1,7 @@
 \docType{package}
 \name{treemap-package}
 \alias{treemap-package}
-\alias{treemap-treemap}
-\title{Treemap visualization}
+\title{Treemap package}
 \description{
   \tabular{ll}{ Package: \tab treemap\cr Type: \tab
   Package\cr Version: \tab 2.0\cr Date: \tab 2013-05-28\cr

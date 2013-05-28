@@ -10,6 +10,7 @@ version 2.0
 - bug in value-type color assignment fixed
 - color palette mapping improved
 - label overlapping improved: added overlap.labels argument
+- fixed bug in color scaling number
 
 version 1.1-2
 - no dependencies anymore, only imports

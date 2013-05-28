@@ -1,22 +1,15 @@
 #########################################
-### quick example
-###
-### data: Gross national income data
+### quick example with Gross National Income data
 #########################################
 data(GNI2010)
-
-# create treemap
 treemap(GNI2010,
        index=c("continent", "iso3"),
        vSize="population",
        vColor="GNI",
        type="value")
 
-
 #########################################
-### extended examples
-###
-### data: fictive business statistics data
+### extended examples with fictive business statistics data
 #########################################
 data(business)
 
@@ -32,7 +25,7 @@ treemap(business,
 
 # value treemap: the color variable is directly mapped to the colors
 treemap(business, 
-       index=c("NACE1", "NACE2", "NACE3"), 
+       index=c("NACE1", "NACE2"), 
        vSize="employees", 
        vColor="employees",
        type="value")
@@ -48,7 +41,7 @@ treemap(business,
 treemap(business,
 	   index=c("NACE1", "NACE2"), 
 	   vSize="turnover",
-	   vColor="employees*1000",
+	   vColor="employees",
 	   type="dens")
 
 treemap(business,
@@ -69,9 +62,9 @@ treemap(business,
 	   vSize="employees",
 	   type="depth")
 
-
 # categorical treemap: colors are determined by a categorical variable
-business <- transform(business, data.available = factor(!is.na(turnover)), x = 1)
+business <- transform(business, data.available = factor(!is.na(turnover)), 
+                      x = 1)
 treemap(business, 
        index=c("NACE1", "NACE2"), 
 	   vSize="x", 
@@ -79,16 +72,7 @@ treemap(business,
 	   type="categorical")
 
 #########################################
-### layout algorithm
-#########################################
-
-treemap(business, 
-	   index=c("NACE1", "NACE2"), 
-	   vSize="employees", 
-	   algorithm="squarified")
-
-#########################################
-### graphical options: fontsize
+### graphical options: control fontsizes
 #########################################
 
 # draw labels at fixed fontsize 12 (if they fit)
@@ -121,9 +105,8 @@ treemap(business,
 	   force.print.labels=TRUE)
 
 #########################################
-### graphical options: color palette
+### graphical options: color palettes
 #########################################
-
 
 ## for comp and value typed treemaps all diverging brewer palettes can be chosen
 treemap(business, 
@@ -141,7 +124,6 @@ treemap(business,
        type="index",
        palette="HCL",
        palette.HCL.options=palette.HCL.options)
-
 
 # terrain colors
 business$employees.growth <- business$employees - business$employees.prev

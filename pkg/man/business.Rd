@@ -1,6 +1,6 @@
 \name{business}
 \alias{business}
-\title{Business Statistics Data}
+\title{Fictive Business Statistics Data}
 \description{
   Fictive (aggregated) business statistics data. The index
   variables (\code{NACE1} to \code{NACE4}) are derived from

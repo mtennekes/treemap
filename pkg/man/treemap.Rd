@@ -1,6 +1,6 @@
 \name{treemap}
 \alias{treemap}
-\title{Create treemap}
+\title{Treemap}
 \usage{
   treemap(dtf, index, vSize, vColor = NULL, type = "index",
     title = NA, title.legend = NA, algorithm = "pivotSize",
@@ -25,35 +25,35 @@
   name the second-highest aggregation level, and so on.
   Required.}
 
-  \item{vSize}{name of the variable in \code{dtf} that
-  determines the sizes of the rectangles. Required.}
+  \item{vSize}{name of the column in \code{dtf} that
+  specifies the sizes of the rectangles. Required.}
 
-  \item{vColor}{name of the variable that, in combination
+  \item{vColor}{name of the column that, in combination
   with \code{type}, determines the colors of the
   rectangles. The variable can be scaled by the addition of
   "*<scale factor>" or "/<scale factor>".}
 
-  \item{type}{the type of the treemap, which determines how
-  the rectangles are colored: \describe{
+  \item{type}{type of the treemap, which determines how the
+  rectangles are colored: \describe{
   \item{\code{"index"}:}{colors are determined by the
   \code{index} variables. Different branches in the
   hierarchical tree get different colors. For this type,
   \code{vColor} is not needed.} \item{\code{"value"}:}{the
-  \code{vColor}-variable is directly mapped to a color
-  palette.} \item{\code{"comp"}:}{colors indicate change of
-  the \code{vSize}-variable with respect to the
-  \code{vColor}-variable in percentages. Note: the negative
-  scale may be different from the positive scale in order
-  to compensate for the ratio distribution.}
+  numeric \code{vColor}-column is directly mapped to a
+  color palette.} \item{\code{"comp"}:}{colors indicate
+  change of the \code{vSize}-column with respect to the
+  numeric \code{vColor}-column in percentages. Note: the
+  negative scale may be different from the positive scale
+  in order to compensate for the ratio distribution.}
   \item{\code{"dens"}:}{colors indicate density. This is
   analogous to a population density map where
   \code{vSize}-values are area sizes, \code{vColor}-values
   are populations per area, and colors are computed as
   densities (i.e. population per squared km).}
   \item{\code{"depth"}:}{each aggregation level (defined by
-  \code{index}) has a distinct color}
-  \item{\code{"categorical"}:}{\code{vColor} is a
-  categorical variable that determines the color}
+  \code{index}) has a distinct color.}
+  \item{\code{"categorical"}:}{\code{vColor} is a factor
+  column that determines the color.}
   \item{\code{"color"}:}{\code{vColor} is a vector of
   colors in the hexadecimal (#RRGGBB) format}}}
 
@@ -79,9 +79,9 @@
   use "-" in the prefix. By default, large rectangles are
   placed top left.}
 
-  \item{palette}{one of the following: #' \describe{
-  \item{a color palette:}{i.e., a vector of hexadecimal
-  colors (#RRGGBB)} \item{a name of a Brewer palette:}{See
+  \item{palette}{one of the following: \describe{ \item{a
+  color palette:}{i.e., a vector of hexadecimal colors
+  (#RRGGBB)} \item{a name of a Brewer palette:}{See
   \code{RColorBrewer::display.brewer.all()} for the
   options. The palette can be reversed by prefixing with a
   "-". For treemap types "value" and "comp", a diverging
@@ -124,7 +124,9 @@
   \code{chroma+chroma_slope}, for the third-level nodes
   \code{chroma+2*chroma_slope}, etc. (default: 5)}
   \item{\code{luminance_slope}:}{slope value for luminance
-  of the non-first-level nodes (default: -10)}}}
+  of the non-first-level nodes (default: -10)}} For "depth"
+  and "categorical" types, only the first two items are
+  used.}
 
   \item{range}{range of values that determine the colors.
   Only applicable for types "value", "comp", and "dens".
@@ -155,14 +157,14 @@
   fontsize, but it does determine in combination with
   \code{lowerbound.cex.labels} the minimum fontsize.}
 
-  \item{bg.labels}{background of labels of high aggregation
-  levels. Either a color, or a number between 0 and 255
+  \item{bg.labels}{background color of high aggregation
+  labels. Either a color, or a number between 0 and 255
   that determines the transparency of the labels. In the
   latter case, the color itself is determined by the color
   of the underlying rectangle. For "value" and
-  "categorical" treemaps, the default is transparent grey
-  (\code{"#CCCCCCDC"}), and for the other types slightly
-  transparent: \code{220}.}
+  "categorical" treemaps, the default is (slightly)
+  transparent grey (\code{"#CCCCCCDC"}), and for the other
+  types slightly transparent: \code{220}.}
 
   \item{force.print.labels}{logical that determines whether
   data labels are being forced to be printed if they don't
@@ -170,11 +172,12 @@
 
   \item{overlap.labels}{number between 0 and 1 that
   determines the tolerance of the overlap between labels. 0
-  means that labels of lower level are not printed if
+  means that labels of lower levels are not printed if
   higher level labels overlap, 1 means that labels are
-  always printed. The default value is .5, which means that
-  lower level labels are printed if other labels do not
-  overlap with over .5 * their area size.}
+  always printed. In-between values, for instance the
+  default value .5, means that lower level labels are
+  printed if other labels do not overlap with more than .5
+  times their area size.}
 
   \item{position.legend}{position of the legend:
   \code{"bottom"}, \code{"right"}, or \code{"none"}. For
@@ -203,35 +206,28 @@
 }
 \description{
   A treemap is a space-filling visualization of
-  hierarchical structures. This package offers great
+  hierarchical structures. This function offers great
   flexibility to draw treemaps. Required is a data.frame
   (\code{dtf}) that contains one or more hierarchical index
   columns given by \code{index}, a column that determines
   the rectangle area sizes (\code{vSize}), and optionally a
   column that determines the rectangle colors
   (\code{vColor}). The way how rectangles are colored is
-  determined by the argument \code{type}. #'
+  determined by the argument \code{type}.
 }
 \examples{
 #########################################
-### quick example
-###
-### data: Gross national income data
+### quick example with Gross National Income data
 #########################################
 data(GNI2010)
-
-# create treemap
 treemap(GNI2010,
        index=c("continent", "iso3"),
        vSize="population",
        vColor="GNI",
        type="value")
 
-
 #########################################
-### extended examples
-###
-### data: fictive business statistics data
+### extended examples with fictive business statistics data
 #########################################
 data(business)
 
@@ -247,7 +243,7 @@ treemap(business,
 
 # value treemap: the color variable is directly mapped to the colors
 treemap(business, 
-       index=c("NACE1", "NACE2", "NACE3"), 
+       index=c("NACE1", "NACE2"), 
        vSize="employees", 
        vColor="employees",
        type="value")
@@ -263,7 +259,7 @@ treemap(business,
 treemap(business,
 	   index=c("NACE1", "NACE2"), 
 	   vSize="turnover",
-	   vColor="employees*1000",
+	   vColor="employees",
 	   type="dens")
 
 treemap(business,
@@ -284,9 +280,9 @@ treemap(business,
 	   vSize="employees",
 	   type="depth")
 
-
 # categorical treemap: colors are determined by a categorical variable
-business <- transform(business, data.available = factor(!is.na(turnover)), x = 1)
+business <- transform(business, data.available = factor(!is.na(turnover)), 
+                      x = 1)
 treemap(business, 
        index=c("NACE1", "NACE2"), 
 	   vSize="x", 
@@ -294,16 +290,7 @@ treemap(business,
 	   type="categorical")
 
 #########################################
-### layout algorithm
-#########################################
-
-treemap(business, 
-	   index=c("NACE1", "NACE2"), 
-	   vSize="employees", 
-	   algorithm="squarified")
-
-#########################################
-### graphical options: fontsize
+### graphical options: control fontsizes
 #########################################
 
 # draw labels at fixed fontsize 12 (if they fit)
@@ -336,9 +323,8 @@ treemap(business,
 	   force.print.labels=TRUE)
 
 #########################################
-### graphical options: color palette
+### graphical options: color palettes
 #########################################
-
 
 ## for comp and value typed treemaps all diverging brewer palettes can be chosen
 treemap(business, 
@@ -356,7 +342,6 @@ treemap(business,
        type="index",
        palette="HCL",
        palette.HCL.options=palette.HCL.options)
-
 
 # terrain colors
 business$employees.growth <- business$employees - business$employees.prev
