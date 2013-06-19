@@ -71,6 +71,7 @@ treeapply <- function(dat, values, depth=NULL, fun, prepare.dat=FALSE, ...) {
 addRange <- function(x, depth, frc = .5) {
 	LB <- x[[1]][1]
 	UB <- x[[2]][1]
+    REV <- x[[3]][1]
 	
 	nr <- length(x[[1]])
 	#browser()
@@ -79,11 +80,14 @@ addRange <- function(x, depth, frc = .5) {
 	spacer <- (sq[2] - sq[1]) * frc *.5
 
 	s <- spread(nr)
+    if (REV) s <- rev(s)
 	
 	start <- sq[1:nr][s]
 	end <- sq[2:(nr+1)][s]
+    
+    
 
-    list(lb=start+spacer, ub=end-spacer)
+    list(lb=start+spacer, ub=end-spacer, rev=rep(c(F, T), length.out=nr))
 }
 
 ########## method 2: modify fixed colors with hsv space
@@ -116,6 +120,7 @@ spread <- function(n) {
     #for (n in 1:50) {
     if (n<5) {
         s <- 1:n
+        if (n>2) s[2:3] <- 3:2
     } else {
         s.step <- floor(n/(2.5))
         s <- seq(1, by=s.step, length.out=n)
@@ -140,7 +145,8 @@ treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, pr
     k <- ncol(dat)
 	if (method=="HCL") {
 		res <- treeapply(dat, list(lb=palette.HCL.options$hue_start, 
-                                   ub=palette.HCL.options$hue_end), 
+                                   ub=palette.HCL.options$hue_end,
+                                   rev=FALSE), 
                          fun="addRange", frc=palette.HCL.options$hue_fraction,
                          prepare.dat=prepare.dat)
 		
