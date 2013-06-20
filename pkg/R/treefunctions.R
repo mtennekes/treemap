@@ -77,7 +77,7 @@ addRange <- function(x, depth, frc = .5) {
 	#browser()
 	
     sq <- seq(LB, UB, length.out=nr+1)
-	spacer <- (sq[2] - sq[1]) * frc *.5
+	spacer <- (sq[2] - sq[1]) * (1 - frc) *.5
 
 	s <- spread(nr)
     if (REV) s <- rev(s)
@@ -140,37 +140,7 @@ spread <- function(n) {
 
 
 
-treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, prepare.dat=FALSE, ...) {
-    #require(colorspace)
-    k <- ncol(dat)
-	if (method=="HCL") {
-		res <- treeapply(dat, list(lb=palette.HCL.options$hue_start, 
-                                   ub=palette.HCL.options$hue_end,
-                                   rev=FALSE), 
-                         fun="addRange", frc=palette.HCL.options$hue_fraction,
-                         prepare.dat=prepare.dat)
-		
-		point <- with(res, (lb+ub)/2)
-		chr <- palette.HCL.options$chroma + 
-            palette.HCL.options$chroma_slope * (res$l-1)
-        #75 - (k-res$l) * 10
-		lum <- palette.HCL.options$luminance + 
-            palette.HCL.options$luminance_slope * (res$l-1)
-        #lum <- 95 - res$l * 10 #90
-		color <- hcl(point,c=chr, l=lum)
-	} else if (method=="HSV") {
-		nl <- nlevels(dat[[1]])
-		
-        palette <- rep(palette, length.out=nl)
 
-        co <- coords(as(hex2RGB(palette), "HSV"))
-        value <- as.list(as.data.frame(co))
-		
-		res <- treeapply(dat, value, fun="hsvs")
-		color <- with(res, hex(HSV(H, S, V)))
-	}
-	color
-}
 
 
 treeid <- function(dat) {

@@ -1,6 +1,7 @@
 version 2.1
-- modified hierarchical color strategy
-- recover interactive function tmClick
+- make hierarchical color palettes publicly available with the function treepalettes
+- hierarchical color palettes method slightly improved
+- recover interactive functions tmClick and tmLocate. These functions are useful to identify small rectangles in large treemaps
 - add version number of required data.table package to prevent conflicts
 
 version 2.0.1
