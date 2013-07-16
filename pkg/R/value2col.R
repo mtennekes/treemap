@@ -11,7 +11,7 @@ value2col <-
         if (any(is.na(range))) {
             prettyV <- pretty(values, n=8)
             
-            mx <- max(c(values, prettyV))
+            mx <- max(abs(c(values, prettyV)))
             
             value.ids <- round((values_all / mx * 50) + 51)
             prettyV.ids <- round((prettyV / mx * 50) + 51)
