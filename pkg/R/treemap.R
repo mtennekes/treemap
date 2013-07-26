@@ -47,6 +47,7 @@
 #' @param bg.labels background color of high aggregation labels. Either a color, or a number between 0 and 255 that determines the transparency of the labels. In the latter case, the color itself is determined by the color of the underlying rectangle. For "value" and "categorical" treemaps, the default is (slightly) transparent grey (\code{"#CCCCCCDC"}), and for the other types slightly transparent: \code{220}.
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed if they don't fit.
 #' @param overlap.labels number between 0 and 1 that determines the tolerance of the overlap between labels. 0 means that labels of lower levels are not printed if higher level labels overlap, 1 means that labels are always printed. In-between values, for instance the default value .5, means that lower level labels are printed if other labels do not overlap with more than .5 times their area size.
+#' @param lwds thicknesses of lines. Vector of three numbers that specifies the line thickness (width) of 1) the highest aggregation level, 2) the in-between aggregation level, and 3) the lowest aggregation level.
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
@@ -89,6 +90,7 @@ treemap <-
              bg.labels= NULL,
              force.print.labels=FALSE,
              overlap.labels=0.5,
+             lwds=c(3,2,1),
              position.legend=NULL,
              drop.unused.levels = TRUE,
              aspRatio=NA,
@@ -405,7 +407,7 @@ treemap <-
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
         
-        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels)
+        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds)
         
         upViewport(0 + !is.null(vp))
         

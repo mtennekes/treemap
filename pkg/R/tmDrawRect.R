@@ -1,4 +1,4 @@
-tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels) {
+tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds) {
     pushViewport(vps$vpDat, vps$vpDatAsp)
     
     
@@ -16,7 +16,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                filled=TRUE, 
                                label="normal", 
                                labellb=lowerbound.cex.labels, 
-                               lwd = 1,
+                               lwd = lwds[3],
                                inflate.labels=inflate.labels,
                                force.print.labels=force.print.labels,
                                cex_index=cex_indices[1])
@@ -24,15 +24,15 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
         grid.draw(recs_fill$txt)
     } else {
         whichBold <- datlist$l==1
-        lwds <- depth - datlist$l + 1
         whichFill <- datlist$l==depth
-        
+        lwds2 <- lwds[ifelse(whichBold, 1, ifelse(whichFill, 3, 2))]
+
         whichNA <- is.na(datlist$n)
         #browser()
         recs_fill_NA <- createRec(datlist[whichFill & !whichBold & whichNA,], 
                                   filled=TRUE, 
                                   label="", 
-                                  lwd = lwds[whichFill & !whichBold & whichNA], 
+                                  lwd = lwds2[whichFill & !whichBold & whichNA], 
                                   inflate.labels=inflate.labels,
                                   force.print.labels=force.print.labels, 
                                   cex_index=cex_indices[3])
@@ -41,7 +41,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                     filled=TRUE, 
                                     label="normal", 
                                     labellb=lowerbound.cex.labels, 
-                                    lwd = lwds[whichFill & !whichBold &!whichNA], 
+                                    lwd = lwds2[whichFill & !whichBold &!whichNA], 
                                     inflate.labels=inflate.labels,
                                     force.print.labels=force.print.labels, 
                                     cex_index=cex_indices[3])
@@ -55,7 +55,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      label="normal",
                                      labellb=lowerbound.cex.labels, 
                                      bg.labels = bg.labels, 
-                                     lwd = lwds[!whichFill & !whichBold &
+                                     lwd = lwds2[!whichFill & !whichBold &
                                                     !whichNA & datlist$l==r],
                                      inflate.labels=inflate.labels,
                                      force.print.labels=force.print.labels, 
@@ -66,7 +66,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      label="bold", 
                                      labellb=lowerbound.cex.labels, 
                                      bg.labels = bg.labels, 
-                                     lwd = lwds[!whichFill & whichBold], 
+                                     lwd = lwds2[!whichFill & whichBold], 
                                      inflate.labels=inflate.labels,
                                      force.print.labels=force.print.labels, 
                                      cex_index=cex_indices[1]) 
