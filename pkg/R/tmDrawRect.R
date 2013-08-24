@@ -106,4 +106,5 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
         drawRecs(recs_trans_bold)
         
     }
+    upViewport(2)
 }
