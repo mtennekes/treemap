@@ -18,7 +18,6 @@
 #' @param return.parameters should a data.frame with color values and parameter options be returned (\code{TRUE}), or just the vector of color values (\code{FALSE})?
 #' @param prepare.dat data is by default preprocessed, except for interal use
 #' @return Either a vector of colors, or a data.frame is return (see \code{return.parameters}).
-#' @references
 #' @import data.table
 #' @import grid
 #' @import colorspace

@@ -39,3 +39,6 @@ Collate:
     'treefunctions.R'
     'treemap.R'
     'value2col.R'
+    'tmClick.R'
+    'tmLocate.R'
+    'treepalette.R'

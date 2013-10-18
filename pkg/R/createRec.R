@@ -49,7 +49,7 @@ function(datlist, filled, label, bg.labels=220, labellb, lwd, inflate.labels, fo
 		height=unit(datlist$h,"npc"), just=c("left","bottom"), name=datlist$n, gp = gpar(lwd=lwd, lex=1,fill = fill))
 	
 	if (label != "") {
-		light <- apply(txtRgb, MARGIN=2, mean) >= 128
+        light <- apply(txtRgb * c(.299, .587, .114), MARGIN=2, sum) >= 128
 		tCol <- ifelse(light, "black", "white")
 
 		noText <- recs$name == ""
