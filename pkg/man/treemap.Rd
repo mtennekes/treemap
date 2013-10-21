@@ -10,8 +10,8 @@
     fontsize.legend = 12, lowerbound.cex.labels = 0.4,
     inflate.labels = FALSE, bg.labels = NULL,
     force.print.labels = FALSE, overlap.labels = 0.5,
-    position.legend = NULL, drop.unused.levels = TRUE,
-    aspRatio = NA, vp = NULL)
+    lwds = c(3, 2, 1), position.legend = NULL,
+    drop.unused.levels = TRUE, aspRatio = NA, vp = NULL)
 }
 \arguments{
   \item{dtf}{a data.frame. Required.}
@@ -108,9 +108,9 @@
   from \code{hue_start} to \code{hue_end} (default: TRUE)}
   \item{\code{hue_fraction}:}{number between 0 and 1 that
   determines the fraction of the hue circle that is used
-  for recursive color picking: if 0 then the full hue
+  for recursive color picking: if 1 then the full hue
   circle is used, which means that the hue of the colors of
-  lower-level nodes are spread maximally. If 1, then the
+  lower-level nodes are spread maximally. If 0, then the
   hue of the colors of lower-level nodes are identical of
   the hue of their parents. (default: .5)}
   \item{\code{chroma}:}{chroma value of colors of the
@@ -179,6 +179,11 @@
   printed if other labels do not overlap with more than .5
   times their area size.}
 
+  \item{lwds}{thicknesses of lines. Vector of three numbers
+  that specifies the line thickness (width) of 1) the
+  highest aggregation level, 2) the in-between aggregation
+  level, and 3) the lowest aggregation level.}
+
   \item{position.legend}{position of the legend:
   \code{"bottom"}, \code{"right"}, or \code{"none"}. For
   "categorical" and "index" treemaps, \code{"right"} is the
@@ -237,7 +242,7 @@ data(business)
 #########################################
 
 # index treemap: colors are determined by the index argument
-\dontrun{
+\\dontrun{
 # large example which takes some time...
 treemap(business, 
         index=c("NACE1", "NACE2", "NACE3"), 
@@ -276,7 +281,7 @@ treemap(business,
 ### graphical options: control fontsizes
 #########################################
 
-\dontrun{
+\\dontrun{
 # draw labels at fixed fontsize 12 (if they fit)
 treemap(business, 
 	   index=c("NACE1", "NACE2"), 

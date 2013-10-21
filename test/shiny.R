@@ -1,9 +1,9 @@
 
 
-itableplot()
 
-itableplot <- function() {
+itreemap <- function() {
     require(shiny)
+    require(gridBase)
     runApp(list(
         ui = pageWithSidebar(
             headerPanel("Interactive treemap"),
@@ -44,6 +44,7 @@ itableplot <- function() {
         }
     ))
 }
+itreemap()
 
 data(business)
 tab <- treemap(business, 

@@ -26,6 +26,21 @@ treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, re
     #require(colorspace)
     k <- ncol(dat)
     if (method=="HCL") {
+        if (prepare.dat) if (is.data.table(dat)) {
+            dat[, names(dat):=lapply(.SD,as.factor)]
+        } else {
+            dat <- lapply(dat, as.factor)
+            dat <- as.data.table(dat)
+            dats <- list()
+            for (i in 1:(k-1)) {
+                dats[[i]] <- dat[!duplicated(dat[,1:i, with=FALSE]), ]
+                for (j in (i+1):k) dats[[i]][[j]] <- factor(NA, levels=levels(dats[[i]][[j]]))
+            }
+            dat <- rbindlist(c(list(dat), dats))
+            dat <- dat[!duplicated(dat), ]
+            setkeyv(dat, names(dat))
+        }
+        
         res <- treeapply(dat, list(lb=palette.HCL.options$hue_start, 
                                    ub=palette.HCL.options$hue_end,
                                    rev=FALSE), 
@@ -54,6 +69,7 @@ treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, re
     } else if (method=="HSV") {
         nl <- nlevels(dat[[1]])
         
+        palette <- substr(palette, 1, 7) # remove alpha number
         palette <- rep(palette, length.out=nl)
         
         co <- coords(as(hex2RGB(palette), "HSV"))

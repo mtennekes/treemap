@@ -3,20 +3,24 @@ treedepth <- function(data) {
 	apply(data, MARGIN=1, FUN=function(x)k-sum(is.na(x)))
 }
 
+#' Apply to tree structure
+#'
+#' Apply certain function to a tree structure.
+#' 
+#' @param dat a data.frame or data.table that should contain only index variables. Required.
+#' @param values vector with values that apply to the root node
+#' @param depth variable of dat that indicated the node depths
+#' @param fun function to be applied
+#' @param prepare.dat data is by default preprocessed, except for interal use
+#' @return list
+#' @import data.table
+#' @import colorspace
 treeapply <- function(dat, values, depth=NULL, fun, prepare.dat=FALSE, ...) {
     .SD <- NULL
+    k <- ncol(dat)
     
-	if (prepare.dat) if (is.data.table(dat)) {
-		dat[, names(dat):=lapply(.SD,as.factor)]
-	} else {
-		dat <- lapply(dat, as.factor)
-		#require(data.table)
-		dat <- as.data.table(dat)
-	}
 	dt <- dat[!duplicated(dat), ]
 	
-	k <- ncol(dt)
-
     # hierarchical depth
 	if (missing(depth)) {
 		dt[, l:=treedepth(dt)]

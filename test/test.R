@@ -16,6 +16,29 @@ palette.HCL.options <- list(hue_start=30, hue_end=390, hue_spread=TRUE,
 treemap(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees",
        palette.HCL.options=palette.HCL.options, bg.labels=255)
 
+
+treepalette(business[, c("NACE1", "NACE2", "NACE3", "NACE4")],
+        palette.HCL.options=palette.HCL.options,
+        return.parameters=TRUE)
+
+treegraph(business[, c("NACE1", "NACE2", "NACE3", "NACE4")],
+          palette.HCL.options=palette.HCL.options)
+
+treegraph(business[, c("NACE1", "NACE2")],
+          palette.HCL.options=palette.HCL.options,
+          show.labels=TRUE)
+
+
+test <- treepalette(business[, c("NACE1", "NACE2")],
+            palette.HCL.options=palette.HCL.options,
+            return.parameters=TRUE)
+
+
+treemap(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees",
+        palette=rainbow(8),
+        bg.labels=255)
+
+
 treemap(business, index=c("NACE1"), vSize="employees",
        palette.HCL.options=palette.HCL.options, bg.labels=255)
 

@@ -12,6 +12,7 @@ LazyLoad: yes
 Imports:
     colorspace,
     grid,
+    igraph,
     RColorBrewer,
     data.table (>= 1.8.8)
 Collate:
@@ -42,3 +43,4 @@ Collate:
     'tmClick.R'
     'tmLocate.R'
     'treepalette.R'
+    'treegraph.R'
