@@ -23,7 +23,7 @@
 #' @import colorspace
 #' @export
 treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, return.parameters=FALSE, prepare.dat=TRUE) {
-    #require(colorspace)
+    require(data.table)
     k <- ncol(dat)
     if (method=="HCL") {
         if (prepare.dat) if (is.data.table(dat)) {
@@ -56,7 +56,7 @@ treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, re
         #lum <- 95 - res$l * 10 #90
         color <- hcl(point,c=chr, l=lum)
         if (return.parameters) {
-            return(cbind(dat, data.frame(color=color, 
+            return(cbind(dat, data.table(color=color, 
                                          H=point,
                                          C=chr,
                                          L=lum,

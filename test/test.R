@@ -21,6 +21,10 @@ treepalette(business[, c("NACE1", "NACE2", "NACE3", "NACE4")],
         palette.HCL.options=palette.HCL.options,
         return.parameters=TRUE)
 
+treemap(business, index=c("NACE1", "NACE2"), vSize="employees",
+        palette.HCL.options=palette.HCL.options, bg.labels=255)
+
+
 treegraph(business[, c("NACE1", "NACE2", "NACE3", "NACE4")],
           palette.HCL.options=palette.HCL.options)
 
@@ -28,6 +32,20 @@ treegraph(business[, c("NACE1", "NACE2")],
           palette.HCL.options=palette.HCL.options,
           show.labels=TRUE)
 
+treegraph(GNI2010[, c("continent", "iso3")],show.labels=TRUE,
+          palette.HCL.options=palette.HCL.options)
+
+treemap(GNI2010, index=c("continent", "iso3"), vSize="population",
+        palette.HCL.options=palette.HCL.options, bg.labels=255)
+
+
+treegraph(GNI2010[, c("continent", "iso3")], vertex.label.dist=.2, 
+          palette.HCL.options=palette.HCL.options,
+          show.labels=TRUE,
+          stack.labels=FALSE)
+
+
+data(GNI2010)
 
 test <- treepalette(business[, c("NACE1", "NACE2")],
             palette.HCL.options=palette.HCL.options,
