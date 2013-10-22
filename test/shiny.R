@@ -16,78 +16,40 @@ itreemap <- function() {
             ),
             mainPanel(
                 plotOutput("plot", hoverId="hover"),
-                textOutput("caption")
+                tableOutput("record")
             )
         ),
         server = function(input, output){
             data(business)
             
-            tm <- reactive({
-                tm <- treemap(business, 
-                               index=c("NACE1", "NACE2"),
-                               vSize=input$size, vp=vps$plot)
-                tm
+            getRecord <- reactive({
+                x <- input$hover$x
+                y <- input$hover$y
+                
+                x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
+                y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
+                
+                
+                l <- tmLocate(list(x=x, y=y), .tm)
+                l[, 1:(ncol(l)-5)]            
             })
             
+            
             output$plot <- renderPlot({ 
-                plot(1:100)
+                par(mar=c(0,0,0,0), xaxs='i', yaxs='i') 
+                plot(c(0,1), c(0,1),axes=F, col="white")
                 vps <- baseViewports()
                 
-                treemap(business, 
+                .tm <<- treemap(business, 
                         index=c("NACE1", "NACE2"),
                         vSize=input$size, vp=vps$plot)
                 
             })
-            output$caption <- renderText({ 
-                tm <- tm()
-                paste("Clicked:", input$hover, ",", input$hover$y, tm$vSize)})
+            output$record <- renderTable({
+                getRecord()
+            })
         }
     ))
 }
 itreemap()
-
-data(business)
-tab <- treemap(business, 
-                                    index=c("NACE1", "NACE2"),
-                                    vSize="employees")
-locator()
-
-
-
-runApp(list(
-    ui = bootstrapPage(
-        numericInput('range', 'Range', 1.5),
-        plotOutput('plot', hoverId="hov"),
-        textOutput("caption")
-    ),
-    server = function(input, output) {
-        output$plot <- renderPlot({ boxplot(decrease ~ treatment, data=OrchardSprays, range=input$range) })
-        output$caption <- renderText({ paste("Clicked:", input$hov$x, ",", input$hov$y)})
-    }
-))
-
-require(gridBase)
-
-plot(1:100)
-vps <- baseViewports()
-treemap(business, 
-        index=c("NACE1", "NACE2"),
-        vSize="employees", vp=vps$plot)
-
-
-locator()
-
-
-par(oma=rep(1, 4), mfrow=c(1, 2), xpd=NA)
-plot(1:10)
-vps <- baseViewports()
-pushViewport(vps$inner)
-grid.rect(gp=gpar(lwd=3, col="red"))
-pushViewport(vps$figure)
-grid.rect(gp=gpar(lwd=3, col="green"))
-pushViewport(vps$plot)
-grid.rect(gp=gpar(lwd=3, col="blue"))
-grid.points(1:10, 10:1)
-locator()
-
 

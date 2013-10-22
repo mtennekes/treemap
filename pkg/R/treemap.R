@@ -406,7 +406,6 @@ treemap <-
             datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
-        
         tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds)
         
         upViewport(0 + !is.null(vp))
@@ -419,6 +418,8 @@ treemap <-
                        type = type,
                        vSize = vSize,
                        vColor = ifelse(vColor=="vColor.temp", NA, vColor),
-                       algorithm = algorithm)
+                       algorithm = algorithm,
+                       vpCoorX = vps$vpCoorX,
+                       vpCoorY = vps$vpCoorY)
         invisible(tmSave)
     }

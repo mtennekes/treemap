@@ -32,6 +32,8 @@ treegraph(business[, c("NACE1", "NACE2")],
           palette.HCL.options=palette.HCL.options,
           show.labels=TRUE)
 
+data(GNI2010)
+
 treegraph(GNI2010[, c("continent", "iso3")],show.labels=TRUE,
           palette.HCL.options=palette.HCL.options)
 
@@ -45,7 +47,6 @@ treegraph(GNI2010[, c("continent", "iso3")], vertex.label.dist=.2,
           stack.labels=FALSE)
 
 
-data(GNI2010)
 
 test <- treepalette(business[, c("NACE1", "NACE2")],
             palette.HCL.options=palette.HCL.options,

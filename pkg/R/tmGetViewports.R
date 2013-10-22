@@ -119,6 +119,10 @@ tmGetViewports <- function(vp, fontsize.title, fontsize.labels, fontsize.legend,
                        gp=gpar(fontsize=fsData),
                        just = c("centre", "centre"))
     upViewport()
+    vpCoorY <- ((convertY(vpDat$y, unitTo="inch", valueOnly=TRUE) + 
+                    convertHeight(vpDat$height, unitTo="inch", valueOnly=TRUE)/2)  + c(-1, 1) * (datHeight/2)) / height
+    vpCoorX <- ((convertX(vpDat$x, unitTo="inch", valueOnly=TRUE) + 
+                     convertWidth(vpDat$width, unitTo="inch", valueOnly=TRUE)/2)  + c(-1, 1) * (datWidth/2)) / width
     
-    list(vpDat=vpDat, vpDatAsp=vpDatAsp, vpDatTitle=vpDatTitle, vpLeg=vpLeg, vpLegTitle=vpLegTitle, datWidth=datWidth, datHeight=datHeight)
+    list(vpDat=vpDat, vpDatAsp=vpDatAsp, vpDatTitle=vpDatTitle, vpLeg=vpLeg, vpLegTitle=vpLegTitle, datWidth=datWidth, datHeight=datHeight, vpCoorX=vpCoorX, vpCoorY=vpCoorY)
 }
