@@ -32,6 +32,7 @@ treegraph(business[, c("NACE1", "NACE2")],
           palette.HCL.options=palette.HCL.options,
           show.labels=TRUE)
 
+
 data(GNI2010)
 
 treegraph(GNI2010[, c("continent", "iso3")],show.labels=TRUE,
@@ -47,28 +48,16 @@ treegraph(GNI2010[, c("continent", "iso3")], vertex.label.dist=.2,
           stack.labels=FALSE)
 
 
-
-test <- treepalette(business[, c("NACE1", "NACE2")],
-            palette.HCL.options=palette.HCL.options,
-            return.parameters=TRUE)
+library(ggplot2)
+data(diamonds)
 
 
-treemap(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees",
-        palette=rainbow(8),
-        bg.labels=255)
+treemap(diamonds, index=c("carat", "color"), vSize="price")
 
+treemap(diamonds, index=c("cut", "color"), vSize="price")
+treegraph(diamonds, index=c("cut", "color"), show.labels=TRUE)
+treepalette(diamonds, index=c("cut", "color"))
 
-treemap(business, index=c("NACE1"), vSize="employees",
-       palette.HCL.options=palette.HCL.options, bg.labels=255)
-
-treemap(business, index=c("NACE1", "NACE2"), vSize="employees",
-       palette.HCL.options=palette.HCL.options, bg.labels=255)
-
-treemap(business, index=c("NACE1", "NACE2", "NACE3"), vSize="employees",
-       palette.HCL.options=palette.HCL.options, bg.labels=255)
-
-
-data(GNI2010)
 
 # create treemap
 tm <- treemap(GNI2010,

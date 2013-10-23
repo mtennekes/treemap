@@ -2,13 +2,14 @@
 \alias{treepalette}
 \title{Hierarchical color palettes}
 \usage{
-  treepalette(dat, method = "HCL", palette = NULL,
-    palette.HCL.options, return.parameters = FALSE,
-    prepare.dat = TRUE)
+  treepalette(dtf, index = names(dtf), method = "HCL",
+    palette = NULL, palette.HCL.options,
+    return.parameters = TRUE, prepare.dat = TRUE)
 }
 \arguments{
-  \item{dat}{a data.frame that should contain only index
-  variables. Required.}
+  \item{dtf}{a data.frame or data.table. Required.}
+
+  \item{index}{the index variables of dtf}
 
   \item{method}{used method: either \code{"HCL"}
   (recommended), which is based on the HCL color space

@@ -37,6 +37,7 @@ Collate:
     'tmGetViewports.R'
     'tmPlot.R'
     'tmPrintTitles.R'
+    'tmSetHCLoptions.R'
     'treefunctions.R'
     'treemap.R'
     'value2col.R'

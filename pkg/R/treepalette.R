@@ -2,7 +2,8 @@
 #'
 #' Create hierarchical color palettes, either by using the HCL color space model, or by using an existing color palette with the HSV space.
 #' 
-#' @param dat a data.frame that should contain only index variables. Required.
+#' @param dtf a data.frame or data.table. Required.
+#' @param index the index variables of dtf
 #' @param method used method: either \code{"HCL"} (recommended), which is based on the HCL color space model, or \code{"HSV"}, which uses the argument \code{palette}.
 #' @param palette color palette, which is only used for the HSV method
 #' @param palette.HCL.options list of advanced options to pick colors from  the HCL space (when \code{method="HCL"}). This list contains: 
@@ -22,30 +23,33 @@
 #' @import grid
 #' @import colorspace
 #' @export
-treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, return.parameters=FALSE, prepare.dat=TRUE) {
-    require(data.table)
-    k <- ncol(dat)
-    if (method=="HCL") {
-        if (prepare.dat) if (is.data.table(dat)) {
-            dat[, names(dat):=lapply(.SD,as.factor)]
-        } else {
-            dat <- lapply(dat, as.factor)
-            dat <- as.data.table(dat)
-            dats <- list()
-            for (i in 1:(k-1)) {
-                dats[[i]] <- dat[!duplicated(dat[,1:i, with=FALSE]), ]
-                for (j in (i+1):k) dats[[i]][[j]] <- factor(NA, levels=levels(dats[[i]][[j]]))
-            }
-            dat <- rbindlist(c(list(dat), dats))
-            dat <- dat[!duplicated(dat), ]
-            setkeyv(dat, names(dat))
+treepalette <- function(dtf, index=names(dtf), method="HCL", palette=NULL, palette.HCL.options, return.parameters=TRUE, prepare.dat=TRUE) {
+    palette.HCL.options <- tmSetHCLoptions(palette.HCL.options)
+    k <- length(index)
+    dat <- as.data.table(dtf)
+    othercols <- setdiff(names(dat), index)
+    if (length(othercols)) dat[, eval(othercols):=NULL]
+    dat[, names(dat):=lapply(.SD,as.factor)]
+    if (prepare.dat) {
+        dats <- list()
+        for (i in 1:(k-1)) {
+            dats[[i]] <- dat[!duplicated(dat[,1:i, with=FALSE]), ]
+            for (j in (i+1):k) dats[[i]][[j]] <- factor(NA, levels=levels(dats[[i]][[j]]))
         }
-        
+        dat <- rbindlist(c(list(dat), dats))
+        dat <- dat[!duplicated(dat), ]
+
+        # sort dat to be consistent with tmAggregate
+        dep <- treedepth(dat)
+        unikey <- do.call("paste", c(as.list(dat), list(dep, sep="__")))
+        dat <- dat[order(unikey), ]
+    }
+    
+    if (method=="HCL") {
         res <- treeapply(dat, list(lb=palette.HCL.options$hue_start, 
                                    ub=palette.HCL.options$hue_end,
                                    rev=FALSE), 
-                         fun="addRange", frc=palette.HCL.options$hue_fraction,
-                         prepare.dat=prepare.dat)
+                         fun="addRange", frc=palette.HCL.options$hue_fraction)
         
         point <- with(res, (lb+ub)/2)
         chr <- palette.HCL.options$chroma + 
@@ -56,13 +60,12 @@ treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, re
         #lum <- 95 - res$l * 10 #90
         color <- hcl(point,c=chr, l=lum)
         if (return.parameters) {
-            return(cbind(dat, data.table(color=color, 
-                                         H=point,
-                                         C=chr,
-                                         L=lum,
-                                         hue_lb=res$lb, 
-                                         hue_ub=res$ub, 
-                                         stringsAsFactors=FALSE)))
+            return(cbind(as.data.frame(dat), data.table(HCL.color=color, 
+                                         HCL.H=point,
+                                         HCL.C=chr,
+                                         HCL.L=lum,
+                                         HCL.hue_lb=res$lb, 
+                                         HCL.hue_ub=res$ub)))
         } else {
             return(color)
         }
@@ -71,18 +74,16 @@ treepalette <- function(dat, method="HCL", palette=NULL, palette.HCL.options, re
         
         palette <- substr(palette, 1, 7) # remove alpha number
         palette <- rep(palette, length.out=nl)
-        
         co <- coords(as(hex2RGB(palette), "HSV"))
         value <- as.list(as.data.frame(co))
         
-        res <- treeapply(dat, value, fun="hsvs", prepare.dat=prepare.dat)
+        res <- treeapply(dat, value, fun="hsvs")
         color <- with(res, hex(HSV(H, S, V)))
         if (return.parameters) {
-            return(cbind(dat, data.frame(color=color, 
-                                         H=res$H, 
-                                         S=res$S,
-                                         V=res$V,
-                                         stringsAsFactors=FALSE)))
+            return(cbind(as.data.frame(dat), data.frame(HSV.color=color, 
+                                         HSV.H=res$H, 
+                                         HSV.S=res$S,
+                                         HSV.V=res$V)))
         } else {
             return(color)
         }    

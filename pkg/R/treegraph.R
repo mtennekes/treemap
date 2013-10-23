@@ -2,7 +2,8 @@
 #'
 #' Apply certain function to a tree structure.
 #' 
-#' @param dtf a data.frame that should contain only index variables. Required.
+#' @param dtf a data.frame or data.table. Required.
+#' @param index the index variables of dtf
 #' @param palette.HCL.options palette.HCL.options
 #' @param show.labels show.labels
 #' @param stack.labels stack.labels
@@ -16,23 +17,28 @@
 #' @import data.table
 #' @import igraph
 #' @import colorspace
-treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FALSE, stack.labels= TRUE, rootlabel="", vertex.size=3, vertex.label.dist=0.5, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black") {
+treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FALSE, stack.labels= FALSE, rootlabel="", vertex.size=3, vertex.label.dist=0.5, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black") {
+    palette.HCL.options <- tmSetHCLoptions(palette.HCL.options)
+    
+    
+    
     k <- length(index)
-    dat <- treepalette(dtf[, index],
+    dat <- treepalette(dtf, index,
                 palette.HCL.options=palette.HCL.options,
-                return.parameters=TRUE)[, 1:(k+1), with=FALSE]
+                return.parameters=TRUE)[, 1:(k+1)]
     
     #dat$color <- color
     dat <- unique(dat)
-    dat <- cbind(dat, as.data.table(treeid(dat[,1:k, with=FALSE])))
-    vdat <- dat[,c("current", "color"), with=FALSE]
+    dat <- cbind(dat, as.data.table(treeid(dat[,1:k])))
+    vdat <- dat[,c("current", "HCL.color")]
+    setnames(vdat, "HCL.color", "color")
     vdat <- unique(vdat)
     rootname <- dat$parent[which(substr(dat$parent, 1, 2)=="NA")][1]
     vdat <- rbind(list(current=rootname, color=hcl(h=0, c=0, l=palette.HCL.options$luminance-palette.HCL.options$luminance_slope)), vdat)
 
     
     
-    g <- graph.data.frame(dat[,c("current", "parent"), with=FALSE], vertices=vdat, directed=FALSE)
+    g <- graph.data.frame(dat[,c("current", "parent")], vertices=vdat, directed=FALSE)
     #color <- color[match(get.vertex.attribute(g, "name"), dat$current)]
     #V(g)$color <- color[match(get.vertex.attribute(g, "name"), dat$current)]
     

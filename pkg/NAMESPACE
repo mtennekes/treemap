@@ -1,5 +1,4 @@
 export(tmClick)
-export(tmLocate)
 export(tmPlot)
 export(treemap)
 export(treepalette)

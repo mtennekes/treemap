@@ -2,8 +2,7 @@
 \alias{treeapply}
 \title{Apply to tree structure}
 \usage{
-  treeapply(dat, values, depth = NULL, fun,
-    prepare.dat = FALSE, ...)
+  treeapply(dat, values, depth = NULL, fun, ...)
 }
 \arguments{
   \item{dat}{a data.frame or data.table that should contain
@@ -16,9 +15,6 @@
   depths}
 
   \item{fun}{function to be applied}
-
-  \item{prepare.dat}{data is by default preprocessed,
-  except for interal use}
 }
 \value{
   list
