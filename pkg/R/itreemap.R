@@ -50,8 +50,10 @@ itreemap <- function(dtf,
                 uiOutput("type")
             ),
             mainPanel(
-                plotOutput("plot", hoverId="hover"),
-                tableOutput("record")
+                tabsetPanel(
+                    tabPanel("Treemap", plotOutput("plot", hoverId="hover", clickId="click"),
+                        textOutput("summary")),
+                    tabPanel("Data", tableOutput("data")))
             )
         ),
         server = function(input, output){
@@ -60,8 +62,8 @@ itreemap <- function(dtf,
             })
             
             getData <- reactive({
-                x <- input$hover$x
-                y <- input$hover$y
+                x <- input$click$x
+                y <- input$click$y
                 .tm <- get(".tm", .GlobalEnv)
 
                 index <- input$index
@@ -98,6 +100,36 @@ itreemap <- function(dtf,
                     return(dat)
                 }
             })
+
+            getSummary <- reactive({
+                x <- input$hover$x
+                y <- input$hover$y
+                .tm <- get(".tm", .GlobalEnv)
+                
+                index <- input$index
+                size <- input$size
+                color <- input$color
+                #type <- input$type
+                
+                colnames <- c(index, size) #intersect(, names(p))
+                if (!is.null(.tm)) {
+                    
+                    x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
+                    y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
+                    
+                    l <- tmLocate(list(x=x, y=y), .tm)
+                    
+                    ind <- paste(as.vector(as.matrix(l[1, 1:length(index)])), collapse="; ")
+                    siz <- paste0(size, "= ", format(l[1, length(index)+1]))
+                    
+                    if (is.na(l[1,1])) return("")
+                    
+                    return(paste(ind, siz, sep=": "))
+                } else {
+                    return("")
+                }
+            })
+            
             
             output$df <- renderUI({
                 selectInput("df", label="Dataset:", choices=dfs)
@@ -161,7 +193,10 @@ itreemap <- function(dtf,
                     #}                    
                 }
             })
-            output$record <- renderTable({
+            output$summary <- renderText({
+                getSummary()
+            })
+            output$data <- renderTable({
                 getData()
             })
             
