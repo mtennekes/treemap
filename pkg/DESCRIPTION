@@ -11,10 +11,12 @@ License: GPL-3
 LazyLoad: yes
 Imports:
     colorspace,
+    data.table (>= 1.8.8),
     grid,
+    gridBase,
     igraph,
     RColorBrewer,
-    data.table (>= 1.8.8)
+    shiny
 Collate:
     'cat2col.R'
     'comp2col.R'
@@ -24,6 +26,7 @@ Collate:
     'depth2col.R'
     'drawLegend.R'
     'index2col.R'
+    'itreemap.R'
     'linked2col.R'
     'overlap.R'
     'pivotSize.R'
