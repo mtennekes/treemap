@@ -1,20 +1,20 @@
-tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, indexNames, palette.HCL.options) {
+tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, indexNames, palette.HCL.options, border.col, font.legend) {
     if (position.legend!="none") {    
         pushViewport(vps$vpLeg)
     }
     
     if (type == "comp") {
-        datlist$color <- comp2col(datlist, position.legend, palette, range)
+        datlist$color <- comp2col(datlist, position.legend, palette, range, border.col, font.legend)
     } else if (type == "dens") {
-        datlist$color <- dens2col(datlist, position.legend, palette, range) 
+        datlist$color <- dens2col(datlist, position.legend, palette, range, border.col, font.legend) 
     } else if (type == "depth") {
-        datlist$color <- depth2col(datlist, position.legend, palette, indexNames, palette.HCL.options)
+        datlist$color <- depth2col(datlist, position.legend, palette, indexNames, palette.HCL.options, border.col, font.legend)
     } else if (type == "index") {
-        datlist$color <- index2col(datlist, position.legend, palette, levels(datlist$index1), palette.HCL.options)
+        datlist$color <- index2col(datlist, position.legend, palette, levels(datlist$index1), palette.HCL.options, border.col, font.legend)
     } else if (type == "value") {
-        datlist$color <- value2col(datlist, position.legend, palette, range)
+        datlist$color <- value2col(datlist, position.legend, palette, range, border.col, font.legend)
     } else if (type == "categorical") {
-        datlist$color <- cat2col(datlist, position.legend, palette, levels(datlist$c), palette.HCL.options)
+        datlist$color <- cat2col(datlist, position.legend, palette, levels(datlist$c), palette.HCL.options, border.col, font.legend)
     }
     if (position.legend!="none") upViewport()
     

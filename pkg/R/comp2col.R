@@ -1,5 +1,5 @@
 comp2col <-
-function(dat, position.legend, palette, range) {
+function(dat, position.legend, palette, range, border.col, font.legend) {
     
 	color <- colorRampPalette(palette,space="rgb")(99)
 	
@@ -49,7 +49,7 @@ function(dat, position.legend, palette, range) {
 	legCol <- color[round(((legColScale/max_lg) *49)+50)]
 		
 	if (position.legend!="none") drawLegend(paste(prettyP, "%", sep=""), legCol,
-											position.legend=="bottom")
+											position.legend=="bottom", border.col, font.legend)
 	return (color[scale])
 }
 

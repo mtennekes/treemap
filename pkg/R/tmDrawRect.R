@@ -1,4 +1,4 @@
-tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds) {
+tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds, border.col, font.labels) {
     pushViewport(vps$vpDat, vps$vpDatAsp)
     
     
@@ -19,7 +19,9 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                lwd = lwds[3],
                                inflate.labels=inflate.labels,
                                force.print.labels=force.print.labels,
-                               cex_index=cex_indices[1])
+                               cex_index=cex_indices[1],
+                               border.col=border.col,
+                               font.labels=font.labels)
         grid.draw(recs_fill$recs)
         grid.draw(recs_fill$txt)
     } else {
@@ -35,7 +37,9 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                   lwd = lwds2[whichFill & !whichBold & whichNA], 
                                   inflate.labels=inflate.labels,
                                   force.print.labels=force.print.labels, 
-                                  cex_index=cex_indices[3])
+                                  cex_index=cex_indices[3], 
+                                  border.col=border.col,
+                                  font.labels=font.labels)
         
         recs_fill_norm <- createRec(datlist[whichFill & !whichBold &!whichNA,], 
                                     filled=TRUE, 
@@ -44,7 +48,9 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                     lwd = lwds2[whichFill & !whichBold &!whichNA], 
                                     inflate.labels=inflate.labels,
                                     force.print.labels=force.print.labels, 
-                                    cex_index=cex_indices[3])
+                                    cex_index=cex_indices[3],
+                                    border.col=border.col,
+                                    font.labels=font.labels)
         
         #browser()
         
@@ -59,7 +65,9 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                                     !whichNA & datlist$l==r],
                                      inflate.labels=inflate.labels,
                                      force.print.labels=force.print.labels, 
-                                     cex_index=cex_indices[2])) 
+                                     cex_index=cex_indices[2],
+                                     border.col=border.col,
+                                     font.labels=font.labels)) 
         
         recs_trans_bold <- createRec(datlist[!whichFill & whichBold,], 
                                      filled=FALSE, 
@@ -69,7 +77,9 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      lwd = lwds2[!whichFill & whichBold], 
                                      inflate.labels=inflate.labels,
                                      force.print.labels=force.print.labels, 
-                                     cex_index=cex_indices[1]) 
+                                     cex_index=cex_indices[1],
+                                     border.col=border.col,
+                                     font.labels=font.labels) 
         if (overlap.labels < 1) {
             
             anyTransBold <- any(!whichFill & whichBold)

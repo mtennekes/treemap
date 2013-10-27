@@ -1,5 +1,5 @@
 depth2col <-
-function(dat, position.legend, palette, indexNames, palette.HCL.options) {
+function(dat, position.legend, palette, indexNames, palette.HCL.options, border.col, font.legend) {
     
     depth <- length(indexNames)
 
@@ -16,7 +16,7 @@ function(dat, position.legend, palette, indexNames, palette.HCL.options) {
 
     colorl <- rep(color, length.out=depth)
     
-    if (position.legend!="none") drawLegend(indexNames, colorl, position.legend=="bottom")
+    if (position.legend!="none") drawLegend(indexNames, colorl, position.legend=="bottom", border.col, font.legend)
     
     return (colorl[depthID])
 }

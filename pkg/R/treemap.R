@@ -94,7 +94,11 @@ treemap <-
              position.legend=NULL,
              drop.unused.levels = TRUE,
              aspRatio=NA,
-             vp=NULL) {
+             vp=NULL,
+             border.col="black",
+             font.title="serif",
+             font.legend="serif",
+             font.labels="sans") {
         
         vColor.temp <- i <- NULL
         
@@ -400,14 +404,14 @@ treemap <-
         catLabels <- switch(type, categorical=levels(datlist$c), index=levels(datlist$index1), depth=index, NA)
         vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
                               position.legend, type, aspRatio, title.legend, catLabels)
-        tmPrintTitles(vps, title, title.legend, position.legend)
+        tmPrintTitles(vps, title, title.legend, position.legend, font.title, font.legend)
         if (type == "color") {
             datlist$color <- as.character(datlist$c)
         } else {
-            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options)
+            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, font.legend)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
-        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds)
+        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds, border.col, font.labels)
         
         upViewport(0 + !is.null(vp))
         
