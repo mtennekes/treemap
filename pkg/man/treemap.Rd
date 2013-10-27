@@ -13,7 +13,9 @@
     inflate.labels = FALSE, bg.labels = NULL,
     force.print.labels = FALSE, overlap.labels = 0.5,
     lwds = c(3, 2, 1), position.legend = NULL,
-    drop.unused.levels = TRUE, aspRatio = NA, vp = NULL)
+    drop.unused.levels = TRUE, aspRatio = NA, vp = NULL,
+    border.col = "black", font.title = "serif",
+    font.legend = "serif", font.labels = "sans")
 }
 \arguments{
   \item{dtf}{a data.frame. Required.}
