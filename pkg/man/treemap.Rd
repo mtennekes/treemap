@@ -7,7 +7,9 @@
     sortID = "-size", palette = NA,
     palette.HCL.options = NULL, range = NA,
     fontsize.title = 14, fontsize.labels = 11,
-    fontsize.legend = 12, lowerbound.cex.labels = 0.4,
+    fontsize.legend = 12, font.title = "serif",
+    font.labels = "sans", font.legend = "serif",
+    border.col = "black", lowerbound.cex.labels = 0.4,
     inflate.labels = FALSE, bg.labels = NULL,
     force.print.labels = FALSE, overlap.labels = 0.5,
     lwds = c(3, 2, 1), position.legend = NULL,
@@ -136,7 +138,17 @@
   \item{fontsize.title}{(maximum) font size of the title}
 
   \item{fontsize.labels}{font size(s) of the data labels,
-  which can be: \itemize{ \item one number, which specifies
+  which can be:}
+
+  \item{font.title}{ront family of the title.}
+
+  \item{font.labels}{ront family of the labels in each
+  rectangle.}
+
+  \item{font.legend}{font family of the legend.}
+
+  \item{border.col}{colour of borders drawn around each
+  rectangle. \itemize{ \item one number, which specifies
   the font size for all aggregation levels \item vector of
   two numbers, which specific the font sizes for 1) the
   highest and 2) the other aggregation levels \item vector

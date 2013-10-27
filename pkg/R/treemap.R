@@ -37,6 +37,10 @@
 #' @param range range of values that determine the colors. Only applicable for types "value", "comp", and "dens". When omitted, the range of actual values is used. This range is mapped to \code{palette}.
 #' @param fontsize.title (maximum) font size of the title
 #' @param fontsize.labels font size(s) of the data labels, which can be:
+#' @param font.title ront family of the title.
+#' @param font.labels ront family of the labels in each rectangle.
+#' @param font.legend font family of the legend.
+#' @param border.col colour of borders drawn around each rectangle.
 #' \itemize{
 #' \item one number, which specifies the font size for all aggregation levels
 #' \item vector of two numbers, which specific the font sizes for 1) the highest and 2) the other aggregation levels
@@ -85,6 +89,10 @@ treemap <-
              fontsize.title=14, 
              fontsize.labels=11, 
              fontsize.legend=12,
+             font.title="serif",
+             font.labels="sans",
+             font.legend="serif",
+             border.col="black",
              lowerbound.cex.labels=0.4,
              inflate.labels=FALSE,
              bg.labels= NULL,
@@ -400,14 +408,14 @@ treemap <-
         catLabels <- switch(type, categorical=levels(datlist$c), index=levels(datlist$index1), depth=index, NA)
         vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
                               position.legend, type, aspRatio, title.legend, catLabels)
-        tmPrintTitles(vps, title, title.legend, position.legend)
+        tmPrintTitles(vps, title, title.legend, position.legend, font.title, font.legend)
         if (type == "color") {
             datlist$color <- as.character(datlist$c)
         } else {
-            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options)
+            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, font.legend)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
-        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds)
+        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds, border.col, font.labels)
         
         upViewport(0 + !is.null(vp))
         

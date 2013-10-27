@@ -1,6 +1,6 @@
 # Creates graphical rectangle objects out of coordinates
 createRec <-
-function(datlist, filled, label, bg.labels=220, labellb, lwd, inflate.labels, force.print.labels, cex_index) {
+function(datlist, filled, label, bg.labels=220, labellb, lwd, inflate.labels, force.print.labels, cex_index, border.col, font.labels) {
 #browser()
 	if (nrow(datlist)==0) {
 		return(list(recs=NA, txt=NA, txtbg=NA))
@@ -46,7 +46,7 @@ function(datlist, filled, label, bg.labels=220, labellb, lwd, inflate.labels, fo
     
     
 	recs <- rectGrob(x=unit(datlist$x0,"npc"), y=unit(datlist$y0,"npc"), width=unit(datlist$w,"npc"), 
-		height=unit(datlist$h,"npc"), just=c("left","bottom"), name=datlist$n, gp = gpar(lwd=lwd, lex=1,fill = fill))
+		height=unit(datlist$h,"npc"), just=c("left","bottom"), name=datlist$n, gp = gpar(lwd=lwd, lex=1, fill = fill, col=border.col))
 	
 	if (label != "") {
         light <- apply(txtRgb * c(.299, .587, .114), MARGIN=2, sum) >= 128
@@ -56,7 +56,9 @@ function(datlist, filled, label, bg.labels=220, labellb, lwd, inflate.labels, fo
 		recs$name[noText] <- " "
 		txt <- str2rect(recs, fontcol=tCol, fill=txtfill, bold=( label=="bold"), inflate.labels=inflate.labels, cex_index=cex_index)
 		
-		txt$txt$gp$col[noText] <- NA
+        txt$txt$gp$fontfamily <- font.labels
+        
+        txt$txt$gp$col[noText] <- NA
 		txt$bg$gp$fill[noText] <- NA
 		
 		tooSmall <- txt$txt$gp$cex < labellb
