@@ -102,11 +102,7 @@ treemap <-
              position.legend=NULL,
              drop.unused.levels = TRUE,
              aspRatio=NA,
-             vp=NULL,
-             border.col="black",
-             font.title="serif",
-             font.legend="serif",
-             font.labels="sans") {
+             vp=NULL) {
         
         vColor.temp <- i <- NULL
         
