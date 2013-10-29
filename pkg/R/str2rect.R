@@ -57,7 +57,9 @@ function(grb, fontcol, fill, bold, inflate.labels, cex_index) {
 	fontface <- ifelse(bold, "bold", "plain")
 	txtGrb <- textGrob(txt, x=grb$x+0.5*grb$width, y=grb$y+0.5*grb$height, gp=gpar(cex=cex, fontface=fontface, col=fontcol))
 	
-		
+	#just <- c("left", "bottom")
+    #txtGrb <- textGrob(txt, x=grb$x, y=grb$y, just=just, gp=gpar(cex=cex, fontface=fontface, col=fontcol))
+	
 	
 	
 	txtGrbW <- mapply(txt, cex, FUN=function(x,y, fontface){

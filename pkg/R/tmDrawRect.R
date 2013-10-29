@@ -91,7 +91,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
             }
             layers <- c(layers, list(recs_trans_bold$txtbg))
             
-            select <- lapply(layers, function(l)rep(TRUE, length(l$x$arg1)))
+            select <- lapply(layers, function(l)rep(TRUE, length(l$x)))
             for (i in length(layers):2) {
                 for (j in (i-1):1) {
                     cover <- overlap(layers[[j]], layers[[i]], 
