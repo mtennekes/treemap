@@ -55,10 +55,28 @@ function(grb, fontcol, fill, bold, inflate.labels, cex_index) {
 	nlines <- unlist(results[3,])
 	
 	fontface <- ifelse(bold, "bold", "plain")
-	txtGrb <- textGrob(txt, x=grb$x+0.5*grb$width, y=grb$y+0.5*grb$height, gp=gpar(cex=cex, fontface=fontface, col=fontcol))
+	#txtGrb <- textGrob(txt, x=grb$x+0.5*grb$width, y=grb$y+0.5*grb$height, gp=gpar(cex=cex, fontface=fontface, col=fontcol))
 	
-	#just <- c("left", "bottom")
-    #txtGrb <- textGrob(txt, x=grb$x, y=grb$y, just=just, gp=gpar(cex=cex, fontface=fontface, col=fontcol))
+
+	align.labels <- c("left", "bottom")
+    xmod.labels <- 0
+	ymod.labels <- 0
+	
+    x <- grb$x
+	y <- grb$y
+    
+	if (align.labels[1]=="center") {
+        x <- x + 0.5*grb$width
+    } else if(align.labels[1]=="right") {
+        x <- x + grb$width
+    }
+	if (align.labels[2]=="center") {
+	    y <- y + 0.5*grb$height
+	} else if(align.labels[1]=="top") {
+	    y <- y + grb$height
+	}
+	
+    txtGrb <- textGrob(txt, x=x, y=y, just=just, gp=gpar(cex=cex, fontface=fontface, col=fontcol))
 	
 	
 	
