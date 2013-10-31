@@ -59,18 +59,33 @@ treegraph(diamonds, index=c("cut", "color"), show.labels=TRUE)
 treepalette(diamonds, index=c("cut", "color"))
 
 
-# create treemap
+# create windows font mappings
+windowsFonts(
+    A=windowsFont("Arial Black"),
+    B=windowsFont("Bookman Old Style"),
+    C=windowsFont("Comic Sans MS"),
+    D=windowsFont("Symbol")
+)
 tm <- treemap(GNI2010,
        index=c("continent", "iso3"),
        vSize="population",
        vColor="GNI",
-       type="value")
+       type="value",
+       fontfamily.title="C",
+       fontfamily.labels="C",
+       fontfamily.legend="C",
+              fontface.labels=c("bold", "italic"))
 
 treemap(GNI2010,
        index=c("continent", "iso3"),
        vSize="population",
        type="index")
 
+
+treemap(GNI2010,
+        index=c("continent", "iso3"),
+        vSize="population",
+        type="index")
 
 treemap(GNI2010,
         index=c("continent", "iso3"),

@@ -1,4 +1,4 @@
-drawLegend <- function(labels, colors, bottom, border.col, font.legend) {
+drawLegend <- function(labels, colors, bottom, border.col, fontfamily.legend) {
 	n <- length(labels)
 	lineNpc <- convertHeight(unit(0.8,"lines"), "npc", valueOnly = TRUE)
 	
@@ -28,7 +28,7 @@ drawLegend <- function(labels, colors, bottom, border.col, font.legend) {
 		grid.text(labels,
 				  x=unit(leg$X+.5*leg$W, "npc"),
 				  y=unit(0, "npc") + unit(0.5,"lines"),
-				  gp=gpar(cex=0.8, fontfamily=font.legend))	
+				  gp=gpar(cex=0.8, fontfamily=fontfamily.legend))	
 		upViewport()
 	} else {
 		legX <- rep(0.05, n)
@@ -49,6 +49,6 @@ drawLegend <- function(labels, colors, bottom, border.col, font.legend) {
 		grid.text(labels,
 				  x=unit(leg$X+leg$W+0.02, "npc"),
 				  y=unit(leg$Y+.5*leg$H, "npc"),
-				  gp=gpar(cex=1, fontfamily=font.legend), just=c("left", "center"))	
+				  gp=gpar(cex=1, fontfamily=fontfamily.legend), just=c("left", "center"))	
 	}
 }

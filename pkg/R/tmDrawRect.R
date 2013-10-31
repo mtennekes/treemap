@@ -1,5 +1,6 @@
 tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, 
-                       force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, font.labels, 
+                       force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, 
+                       fontface.labels, fontfamily.labels, 
                        align.labels, xmod.labels, ymod.labels) {
     pushViewport(vps$vpDat, vps$vpDatAsp)
     
@@ -16,14 +17,15 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
         whichFill <- rep(TRUE, nrow(datlist))
         recs_fill <- createRec(datlist, 
                                filled=TRUE, 
-                               label="normal", 
+                               label=TRUE, 
                                labellb=lowerbound.cex.labels, 
                                lwd = border.lwds[1],
                                inflate.labels=inflate.labels,
                                force.print.labels=force.print.labels,
                                cex_index=cex_indices[1],
                                border.col=border.col[1],
-                               font.labels=font.labels,
+                               fontface.labels=fontface.labels[1],
+                               fontfamily.labels=fontfamily.labels,
                                align.labels=align.labels[[1]], 
                                xmod.labels=xmod.labels[1], 
                                ymod.labels=ymod.labels[1])
@@ -37,24 +39,26 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
         whichNA <- is.na(datlist$n)
         recs_fill_NA <- createRec(datlist[whichFill & !whichBold & whichNA,], 
                                   filled=TRUE, 
-                                  label="", 
+                                  label=FALSE, 
                                   lwd = border.lwds[depth], 
                                   inflate.labels=inflate.labels,
                                   force.print.labels=force.print.labels, 
                                   cex_index=cex_indices[depth], 
                                   border.col=border.col[depth],
-                                  font.labels=font.labels)
+                                  fontface.labels=fontface.labels[depth],
+                                  fontfamily.labels=fontfamily.labels)
         
         recs_fill_norm <- createRec(datlist[whichFill & !whichBold &!whichNA,], 
                                     filled=TRUE, 
-                                    label="normal", 
+                                    label=TRUE, 
                                     labellb=lowerbound.cex.labels, 
                                     lwd = border.lwds[depth], 
                                     inflate.labels=inflate.labels,
                                     force.print.labels=force.print.labels, 
                                     cex_index=cex_indices[depth],
                                     border.col=border.col[depth],
-                                    font.labels=font.labels,
+                                    fontface.labels=fontface.labels[depth],
+                                    fontfamily.labels=fontfamily.labels,
                                     align.labels=align.labels[[depth]], 
                                     xmod.labels=xmod.labels[depth], 
                                     ymod.labels=ymod.labels[depth])
@@ -65,7 +69,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
         
         recs_trans_norm <- lapply(rng, function(r) createRec(datlist[!whichFill & !whichBold & !whichNA & datlist$l==r,], 
                                      filled=FALSE, 
-                                     label="normal",
+                                     label=TRUE,
                                      labellb=lowerbound.cex.labels, 
                                      bg.labels = bg.labels, 
                                      lwd = border.lwds[r],
@@ -73,14 +77,15 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      force.print.labels=force.print.labels, 
                                      cex_index=cex_indices[r],
                                      border.col=border.col[r],
-                                     font.labels=font.labels,
+                                     fontface.labels=fontface.labels[r],
+                                     fontfamily.labels=fontfamily.labels,
                                      align.labels=align.labels[[r]], 
                                      xmod.labels=xmod.labels[r], 
                                      ymod.labels=ymod.labels[r])) 
         
         recs_trans_bold <- createRec(datlist[!whichFill & whichBold,], 
                                      filled=FALSE, 
-                                     label="bold", 
+                                     label=TRUE, 
                                      labellb=lowerbound.cex.labels, 
                                      bg.labels = bg.labels, 
                                      lwd = border.lwds[1], 
@@ -88,7 +93,8 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      force.print.labels=force.print.labels, 
                                      cex_index=cex_indices[1],
                                      border.col=border.col[1],
-                                     font.labels=font.labels,
+                                     fontface.labels=fontface.labels[1],
+                                     fontfamily.labels=fontfamily.labels,
                                      align.labels=align.labels[[1]], 
                                      xmod.labels=xmod.labels[1], 
                                      ymod.labels=ymod.labels[1]) 

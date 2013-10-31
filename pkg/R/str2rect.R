@@ -8,7 +8,7 @@
 # @param bold logical defining whe the text is bold
 # @param inflate.labels logical defining whether the textsize may exceed \code{cex=1}
 str2rect <-
-function(grb, fontcol, fill, bold, inflate.labels, cex_index, align.labels, xmod.labels, ymod.labels) {
+function(grb, fontcol, fill, fontface, fontfamily, inflate.labels, cex_index, align.labels, xmod.labels, ymod.labels) {
 	# wrap text to 1-5 sentences
 	txtWraps <- lapply(grb$name, FUN=function(txt) {
 		txtWrap <- list(txt)
@@ -54,7 +54,7 @@ function(grb, fontcol, fill, bold, inflate.labels, cex_index, align.labels, xmod
 	cex <- unlist(results[2,]) * cex_index
 	nlines <- unlist(results[3,])
 	
-	fontface <- ifelse(bold, "bold", "plain")
+	#fontface <- ifelse(bold, "bold", "plain")
 	#txtGrb <- textGrob(txt, x=grb$x+0.5*grb$width, y=grb$y+0.5*grb$height, gp=gpar(cex=cex, fontface=fontface, col=fontcol))
 	
 
@@ -82,12 +82,12 @@ function(grb, fontcol, fill, bold, inflate.labels, cex_index, align.labels, xmod
     x <- x + unit(xmod.labels, "inch")
 	y <- y + unit(ymod.labels, "inch")
 	
-    txtGrb <- textGrob(txt, x=x, y=y, just=c(xjust, yjust), gp=gpar(cex=cex, fontface=fontface, col=fontcol))
+    txtGrb <- textGrob(txt, x=x, y=y, just=c(xjust, yjust), gp=gpar(cex=cex, fontface=fontface, fontfamily=fontfamily, col=fontcol))
 	
 	
 	
 	txtGrbW <- mapply(txt, cex, FUN=function(x,y, fontface){
-		convertWidth(grobWidth(textGrob(x, gp=gpar(cex=y, fontface=fontface))),"inches", valueOnly=TRUE)}, fontface, USE.NAMES=FALSE)
+		convertWidth(grobWidth(textGrob(x, gp=gpar(cex=y, fontface=fontface, fontfamily=fontfamily))),"inches", valueOnly=TRUE)}, fontface, USE.NAMES=FALSE)
 		
 	
 	tooLarge <- (txtGrbW > inchesW)
@@ -99,9 +99,9 @@ function(grb, fontcol, fill, bold, inflate.labels, cex_index, align.labels, xmod
 	# background rect, height slightly extended
 
 	bckH <- mapply(txt, txtGrb$gp$cex, nlines, FUN=function(x,y,z, fontface){
-		convertHeight(grobHeight(textGrob(x, gp=gpar(cex=y, fontface=fontface))),"npc", valueOnly=TRUE) * z/(z-0.25)}, fontface, USE.NAMES=FALSE)
+		convertHeight(grobHeight(textGrob(x, gp=gpar(cex=y, fontface=fontface, fontfamily=fontfamily))),"npc", valueOnly=TRUE) * z/(z-0.25)}, fontface, USE.NAMES=FALSE)
 	bckW <- mapply(txt, txtGrb$gp$cex, FUN=function(x,y, fontface){
-		convertWidth(grobWidth(textGrob(x, gp=gpar(cex=y, fontface=fontface))),"npc", valueOnly=TRUE)}, fontface, USE.NAMES=FALSE)
+		convertWidth(grobWidth(textGrob(x, gp=gpar(cex=y, fontface=fontface, fontfamily=fontfamily))),"npc", valueOnly=TRUE)}, fontface, USE.NAMES=FALSE)
 
 	rectx <- txtGrb$x
 	recty <- txtGrb$y

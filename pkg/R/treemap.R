@@ -35,11 +35,13 @@
 #'        \item{\code{chroma_slope}:}{slope value for chroma of the non-first-level nodes. The chroma values for the second-level nodes are \code{chroma+chroma_slope}, for the third-level nodes \code{chroma+2*chroma_slope}, etc. (default: 5)}
 #'        \item{\code{luminance_slope}:}{slope value for luminance of the non-first-level nodes (default: -10)}} For "depth" and "categorical" types, only the first two items are used.
 #' @param range range of values that determine the colors. Only applicable for types "value", "comp", and "dens". When omitted, the range of actual values is used. This range is mapped to \code{palette}.
-#' @param fontsize.title (maximum) font size of the title
+#' @param fontsize.title font size of the title
 #' @param fontsize.labels font size(s) of the data labels, which is either a single number that specifies the font size for all aggregation levels, or a vector that specifies the font size for each aggregation level
-#' @param font.title font family of the title.
-#' @param font.labels font family of the labels in each rectangle.
-#' @param font.legend font family of the legend.
+#' @param fontsize.legend for size for the legend
+#' @param fontface.labels either a single value, or a vector of values one for each aggregation level. Values can be integers  If an integer, following the R base graphics standard: 1 = plain, 2 = bold, 3 = italic, 4 = bold italic, or characters: \code{"plain"}, \code{"bold"}, \code{"italic"}, \code{"oblique"}, and \code{"bold.italic"}.
+#' @param fontfamily.title font family of the title. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
+#' @param fontfamily.labels font family of the labels in each rectangle. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
+#' @param fontfamily.legend font family of the legend. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
 #' @param border.col colour of borders drawn around each rectangle. Either one colour for all rectangles or a vector of colours, one for each aggregation level
 #' @param border.lwds thicknesses of border lines. Either one number specifies the line thicknesses (widths) for all rectangles or a vector of line thicknesses for each aggregation level.
 #' @param fontsize.legend (maximum) font size of the legend
@@ -85,9 +87,10 @@ treemap <-
              fontsize.title=14, 
              fontsize.labels=11, 
              fontsize.legend=12,
-             font.title="serif",
-             font.labels="sans",
-             font.legend="serif",
+             fontface.labels=c("bold", rep("plain", length(index)-1)),
+             fontfamily.title="sans",
+             fontfamily.labels="sans",
+             fontfamily.legend="sans",
              border.col="black",
              border.lwds=c(length(index)+1, (length(index)-1):1),
              lowerbound.cex.labels=0.4,
@@ -296,6 +299,13 @@ treemap <-
                 !is.numeric(fontsize.legend))
             stop("Invalid fontsize.legend")
         
+        
+        # fontface.labels
+        if (length(fontface.labels)!=depth) fontface.labels <- rep_len(fontface.labels, depth)
+        
+        # fontfamily
+        
+        
         # border.col and border.lwds
         if (length(border.col)!=depth) border.col <- rep_len(border.col, depth)
         if (length(border.lwds)!=depth) border.lwds <- rep_len(border.lwds, depth)
@@ -418,14 +428,16 @@ treemap <-
         catLabels <- switch(type, categorical=levels(datlist$c), index=levels(datlist$index1), depth=index, NA)
         vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
                               position.legend, type, aspRatio, title.legend, catLabels)
-        tmPrintTitles(vps, title, title.legend, position.legend, font.title, font.legend)
+        tmPrintTitles(vps, title, title.legend, position.legend, fontfamily.title, fontfamily.legend)
         if (type == "color") {
             datlist$color <- as.character(datlist$c)
         } else {
-            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, font.legend)
+            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
-        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, font.labels, align.labels, xmod.labels, ymod.labels)
+        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, 
+                   force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, 
+                   fontface.labels, fontfamily.labels, align.labels, xmod.labels, ymod.labels)
         
         upViewport(0 + !is.null(vp))
         

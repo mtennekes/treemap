@@ -1,5 +1,5 @@
 value2col <-
-    function(dat, position.legend, palette, range, border.col, font.legend) {
+    function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
         maxlev <- max(dat$l)
         
         #browser()
@@ -35,7 +35,7 @@ value2col <-
             
         colpal <- colorRampPalette(palette)(101)
         
-        if (position.legend!="none") drawLegend(format(prettyV), colpal[prettyV.ids], position.legend=="bottom", border.col, font.legend)
+        if (position.legend!="none") drawLegend(format(prettyV), colpal[prettyV.ids], position.legend=="bottom", border.col, fontfamily.legend)
         
         return (colpal[value.ids])
     }

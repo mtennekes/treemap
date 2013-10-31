@@ -1,5 +1,5 @@
 cat2col <-
-function(dat, position.legend, palette, labels, palette.HCL.options, border.col, font.legend) {
+function(dat, position.legend, palette, labels, palette.HCL.options, border.col, fontfamily.legend) {
     
     l <- length(labels)
     
@@ -13,7 +13,7 @@ function(dat, position.legend, palette, labels, palette.HCL.options, border.col,
     
 	colorl <- rep(color, length.out=l)
 	
-	if (position.legend!="none") drawLegend(labels, colorl, position.legend=="bottom", border.col, font.legend)
+	if (position.legend!="none") drawLegend(labels, colorl, position.legend=="bottom", border.col, fontfamily.legend)
 	
 	return (colorl[dat$c])
 }
