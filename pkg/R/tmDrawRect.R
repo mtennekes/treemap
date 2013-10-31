@@ -1,4 +1,6 @@
-tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds, border.col, font.labels) {
+tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, 
+                       force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, font.labels, 
+                       align.labels, xmod.labels, ymod.labels) {
     pushViewport(vps$vpDat, vps$vpDatAsp)
     
     
@@ -16,41 +18,46 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                filled=TRUE, 
                                label="normal", 
                                labellb=lowerbound.cex.labels, 
-                               lwd = lwds[3],
+                               lwd = border.lwds[1],
                                inflate.labels=inflate.labels,
                                force.print.labels=force.print.labels,
                                cex_index=cex_indices[1],
-                               border.col=border.col,
-                               font.labels=font.labels)
+                               border.col=border.col[1],
+                               font.labels=font.labels,
+                               align.labels=align.labels[[1]], 
+                               xmod.labels=xmod.labels[1], 
+                               ymod.labels=ymod.labels[1])
         grid.draw(recs_fill$recs)
         grid.draw(recs_fill$txt)
     } else {
         whichBold <- datlist$l==1
         whichFill <- datlist$l==depth
-        lwds2 <- lwds[ifelse(whichBold, 1, ifelse(whichFill, 3, 2))]
+        #lwds2 <- lwds[ifelse(whichBold, 1, ifelse(whichFill, 3, 2))]
 
         whichNA <- is.na(datlist$n)
-        #browser()
         recs_fill_NA <- createRec(datlist[whichFill & !whichBold & whichNA,], 
                                   filled=TRUE, 
                                   label="", 
-                                  lwd = lwds2[whichFill & !whichBold & whichNA], 
+                                  lwd = border.lwds[depth], 
                                   inflate.labels=inflate.labels,
                                   force.print.labels=force.print.labels, 
-                                  cex_index=cex_indices[3], 
-                                  border.col=border.col,
+                                  cex_index=cex_indices[depth], 
+                                  border.col=border.col[depth],
                                   font.labels=font.labels)
         
         recs_fill_norm <- createRec(datlist[whichFill & !whichBold &!whichNA,], 
                                     filled=TRUE, 
                                     label="normal", 
                                     labellb=lowerbound.cex.labels, 
-                                    lwd = lwds2[whichFill & !whichBold &!whichNA], 
+                                    lwd = border.lwds[depth], 
                                     inflate.labels=inflate.labels,
                                     force.print.labels=force.print.labels, 
-                                    cex_index=cex_indices[3],
-                                    border.col=border.col,
-                                    font.labels=font.labels)
+                                    cex_index=cex_indices[depth],
+                                    border.col=border.col[depth],
+                                    font.labels=font.labels,
+                                    align.labels=align.labels[[depth]], 
+                                    xmod.labels=xmod.labels[depth], 
+                                    ymod.labels=ymod.labels[depth])
         
         #browser()
         
@@ -61,25 +68,30 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      label="normal",
                                      labellb=lowerbound.cex.labels, 
                                      bg.labels = bg.labels, 
-                                     lwd = lwds2[!whichFill & !whichBold &
-                                                    !whichNA & datlist$l==r],
+                                     lwd = border.lwds[r],
                                      inflate.labels=inflate.labels,
                                      force.print.labels=force.print.labels, 
-                                     cex_index=cex_indices[2],
-                                     border.col=border.col,
-                                     font.labels=font.labels)) 
+                                     cex_index=cex_indices[r],
+                                     border.col=border.col[r],
+                                     font.labels=font.labels,
+                                     align.labels=align.labels[[r]], 
+                                     xmod.labels=xmod.labels[r], 
+                                     ymod.labels=ymod.labels[r])) 
         
         recs_trans_bold <- createRec(datlist[!whichFill & whichBold,], 
                                      filled=FALSE, 
                                      label="bold", 
                                      labellb=lowerbound.cex.labels, 
                                      bg.labels = bg.labels, 
-                                     lwd = lwds2[!whichFill & whichBold], 
+                                     lwd = border.lwds[1], 
                                      inflate.labels=inflate.labels,
                                      force.print.labels=force.print.labels, 
                                      cex_index=cex_indices[1],
-                                     border.col=border.col,
-                                     font.labels=font.labels) 
+                                     border.col=border.col[1],
+                                     font.labels=font.labels,
+                                     align.labels=align.labels[[1]], 
+                                     xmod.labels=xmod.labels[1], 
+                                     ymod.labels=ymod.labels[1]) 
         if (overlap.labels < 1) {
             
             anyTransBold <- any(!whichFill & whichBold)

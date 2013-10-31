@@ -33,8 +33,7 @@ function(rec1, rec2, overlap.labels, select) {
 	
     
 	if (is.vector(results)) results <- matrix(results, nrow=1)
-    results <- results[select, ]
-    
+    results <- results[select, , drop=FALSE]
 	return(apply(results, MARGIN=2, FUN=any))
 }
 

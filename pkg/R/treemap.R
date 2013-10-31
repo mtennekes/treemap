@@ -36,22 +36,18 @@
 #'        \item{\code{luminance_slope}:}{slope value for luminance of the non-first-level nodes (default: -10)}} For "depth" and "categorical" types, only the first two items are used.
 #' @param range range of values that determine the colors. Only applicable for types "value", "comp", and "dens". When omitted, the range of actual values is used. This range is mapped to \code{palette}.
 #' @param fontsize.title (maximum) font size of the title
-#' @param fontsize.labels font size(s) of the data labels, which can be:
-#' @param font.title ront family of the title.
-#' @param font.labels ront family of the labels in each rectangle.
+#' @param fontsize.labels font size(s) of the data labels, which is either a single number that specifies the font size for all aggregation levels, or a vector that specifies the font size for each aggregation level
+#' @param font.title font family of the title.
+#' @param font.labels font family of the labels in each rectangle.
 #' @param font.legend font family of the legend.
-#' @param border.col colour of borders drawn around each rectangle.
-#' \itemize{
-#' \item one number, which specifies the font size for all aggregation levels
-#' \item vector of two numbers, which specific the font sizes for 1) the highest and 2) the other aggregation levels
-#' \item vector of three numbers, which specific the font sizes for 1) the highest, 2) any in-between, and 3) the lowest aggregation level.}
+#' @param border.col colour of borders drawn around each rectangle. Either one colour for all rectangles or a vector of colours, one for each aggregation level
+#' @param border.lwds thicknesses of border lines. Either one number specifies the line thicknesses (widths) for all rectangles or a vector of line thicknesses for each aggregation level.
 #' @param fontsize.legend (maximum) font size of the legend
 #' @param lowerbound.cex.labels multiplier between 0 and 1 that sets the lowerbound for the data label font sizes: 0 means draw all data labels, and 1 means only draw data labels if they fit (given \code{fontsize.labels}).
 #' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles. If TRUE, \code{fontsize.labels} is does not determine the maximum fontsize, but it does determine in combination with  \code{lowerbound.cex.labels} the minimum fontsize.
 #' @param bg.labels background color of high aggregation labels. Either a color, or a number between 0 and 255 that determines the transparency of the labels. In the latter case, the color itself is determined by the color of the underlying rectangle. For "value" and "categorical" treemaps, the default is (slightly) transparent grey (\code{"#CCCCCCDC"}), and for the other types slightly transparent: \code{220}.
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed if they don't fit.
 #' @param overlap.labels number between 0 and 1 that determines the tolerance of the overlap between labels. 0 means that labels of lower levels are not printed if higher level labels overlap, 1 means that labels are always printed. In-between values, for instance the default value .5, means that lower level labels are printed if other labels do not overlap with more than .5 times their area size.
-#' @param lwds thicknesses of lines. Vector of three numbers that specifies the line thickness (width) of 1) the highest aggregation level, 2) the in-between aggregation level, and 3) the lowest aggregation level.
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
@@ -93,12 +89,15 @@ treemap <-
              font.labels="sans",
              font.legend="serif",
              border.col="black",
+             border.lwds=c(length(index)+1, (length(index)-1):1),
              lowerbound.cex.labels=0.4,
              inflate.labels=FALSE,
              bg.labels= NULL,
              force.print.labels=FALSE,
              overlap.labels=0.5,
-             lwds=c(3,2,1),
+             align.labels = c("center", "center"),
+             xmod.labels = 0,
+             ymod.labels = 0,
              position.legend=NULL,
              drop.unused.levels = TRUE,
              aspRatio=NA,
@@ -123,6 +122,8 @@ treemap <-
         
         # index
         if (any(!index %in% names(dtf))) stop("<index> contains invalid column names")
+        
+        depth <- length(index)
         
         # vSize
         if (length(vSize)!=1) stop("vSize should be one column name")
@@ -285,19 +286,19 @@ treemap <-
             stop("Invalid fontsize.title")
         
         # fontsize.labels
-        if (!length(fontsize.labels) %in% 1:3 || 
-                !is.numeric(fontsize.labels))
+        if (!is.numeric(fontsize.labels))
             stop("Invalid fontsize.labels")
-        if (length(fontsize.labels)==1)
-            fontsize.labels <- rep(fontsize.labels, 3)
-        else if (length(fontsize.labels)==2)
-            fontsize.labels <- fontsize.labels[c(1,2,2)]
-        cex_indices <- fontsize.labels / fontsize.labels[1]
+        fontsize.labels <- rep_len(fontsize.labels, depth)
+        cex_indices <- fontsize.labels / min(fontsize.labels)
         
         # fontsize.legend
         if (length(fontsize.legend)!=1 || 
                 !is.numeric(fontsize.legend))
             stop("Invalid fontsize.legend")
+        
+        # border.col and border.lwds
+        if (length(border.col)!=depth) border.col <- rep_len(border.col, depth)
+        if (length(border.lwds)!=depth) border.lwds <- rep_len(border.lwds, depth)
         
         # lowerbound.cex.labels
         if (length(lowerbound.cex.labels)!=1 ||
@@ -334,6 +335,16 @@ treemap <-
             stop("Invalid overlap.labels")
         if (overlap.labels<0 || overlap.labels > 1) stop("overlap.labels should be between 0 and 1")
 
+        #align.labels
+        if (!is.list(align.labels)) align.labels <- list(align.labels)
+        if (length(align.labels) !=depth) align.labels <- rep(align.labels, length.out=depth)
+        lapply(align.labels, function(al) if (!(al[1]%in% c("left", "center", "right") && 
+                                                        al[2]%in% c("top", "center", "bottom"))) stop("incorrect align.labels"))
+        
+        #xmod.labels and ymod.labels
+        if (length(xmod.labels)!=depth) xmod.labels <- rep(xmod.labels, length.out=depth)
+        if (length(ymod.labels)!=depth) ymod.labels <- rep(ymod.labels, length.out=depth)
+        
         # position.legend
         if (missing(position.legend)) {
             position.legend <- switch(type, categorical="right", depth="right", index="none", "bottom")
@@ -369,7 +380,6 @@ treemap <-
             setcolorder(dtfDT, c(1:(ncol(dtfDT)-2), ncol(dtfDT), ncol(dtfDT)-1))
         }
         
-        depth <- length(index)
         indexList <- paste0("index", 1:depth)
         setnames(dtfDT, old=names(dtfDT), new=c(indexList, "s", "c", "i"))
         
@@ -415,7 +425,7 @@ treemap <-
             datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, font.legend)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
-        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, lwds, border.col, font.labels)
+        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, font.labels, align.labels, xmod.labels, ymod.labels)
         
         upViewport(0 + !is.null(vp))
         

@@ -1,10 +1,14 @@
 version 2.1
+- itreemap added, a web-interface (made with shiny) added
 - make hierarchical color palettes publicly available with the function treepalettes
 - hierarchical color palettes method slightly improved
-- recover interactive functions tmClick and tmLocate. These functions are useful to identify small rectangles in large treemaps
+- function treegraph added
 - add version number of required data.table package to prevent conflicts
-- line thickness (lwds) added as parameter to adjust line thickness at variaous agggregation levels
+- border line thickness (border.lwds) added as parameter to adjust line thickness at variaous agggregation levels
 - improved text color decision (black or white) given the background color
+- fontfamily parameters added (thanks to Peter Ellis)
+- border.col parameter added (thanks to Peter Ellis)
+- bug in quantitative scales fixed
 
 version 2.0.1
 - computation time examples shorter (CRAN policy)

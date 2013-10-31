@@ -18,9 +18,9 @@ tmGetViewports <- function(vp, fontsize.title, fontsize.labels, fontsize.legend,
     plotMargin <- unit(0.5,"cm")
     
     # determine fontsizes
-    fsTitle <- min(fontsize.title, (height*3.6), (width*3.6))
-    fsData <- min(fontsize.labels, (height*3.6), (width*3.6))
-    fsLegend <- min(fontsize.legend, (height*3.6), (width*3.6))
+    fsTitle <- fontsize.title#min(fontsize.title, (height*3.6), (width*3.6))
+    fsData <- min(fontsize.labels)#min(fontsize.labels, (height*3.6), (width*3.6))
+    fsLegend <- fontsize.legend#min(fontsize.legend, (height*3.6), (width*3.6))
     
     # Determine legend viewports
     titleSpace <- convertHeight(unit(1.5* (fsTitle/get.gpar()$fontsize),

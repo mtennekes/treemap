@@ -86,3 +86,24 @@ treemap(GNI2010,
        vSize="population",
        vColor="col",
        type="color")
+
+
+
+data(GNI2010)
+treemap(GNI2010,
+        index=c("continent", "iso3"),
+        vSize="population",
+        type="index")
+data(business)
+treemap(business, index=c("NACE1", "NACE2"), vSize="employees")
+treemap(business[as.integer(business$NACE1)==2,], index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees", 
+        align.labels=list(c("center", "center"), c("center", "bottom")), border.col="blue",
+        fontsize.labels=c(40,30,20,10))
+
+treemap(business[as.integer(business$NACE1)==2,], index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees", 
+        align.labels=list(c("center", "center"), c("center", "bottom")), border.col="blue",
+        fontsize.labels=c(40,35,30,25))
+
+treemap(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees", 
+        align.labels=list(c("center", "center"), c("center", "bottom")), border.col=c("blue", "yellow", "red", "green"),
+        fontsize.labels=c(40,35,30,25))
