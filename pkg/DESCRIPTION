@@ -16,7 +16,7 @@ Imports:
     gridBase,
     igraph,
     RColorBrewer,
-    shiny (>= 0.7.0)
+    shiny (>= 0.8.0)
 Collate:
     'cat2col.R'
     'comp2col.R'

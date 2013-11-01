@@ -150,6 +150,7 @@ treemap <-
             return (c(vColorMply, divided))
         }
         
+        if (type %in% c("index", "depth")) vColor <- NULL
         if (!is.null(vColor)) {
             if (length(vColor)!=1) stop("length of vColor should be one")
             vColor2 <- vColorMplySplit(vColor)
@@ -357,7 +358,7 @@ treemap <-
         
         # position.legend
         if (missing(position.legend)) {
-            position.legend <- switch(type, categorical="right", depth="right", index="none", "bottom")
+            position.legend <- switch(type, categorical="right", depth="right", index="none", color="none", "bottom")
         } else {
             if (!position.legend %in% c("right", "bottom", "none")) 
                 stop("Invalid position.legend")	
