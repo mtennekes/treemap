@@ -41,18 +41,20 @@ itreemap <- function(dtf=NULL,
     
     
     .tm <<- NULL
-#     .p <<- ""
-#     .index <<- ""
-#     .size <<- ""
-#     .color <<- ""
-#     .type <<- ""
+    .p <<- ""
+    .index <<- ""
+    .size <<- ""
+    .color <<- ""
+    .type <<- ""
+    .click <- 0
+    .count <- 0
     
     runApp(list(
         ui = pageWithSidebar(
             headerPanel("Interactive treemap"),
             sidebarPanel(
                 uiOutput("df"),
-                uiOutput("filter"),
+#                uiOutput("filter"),
                 uiOutput("index"),
                 conditionalPanel("output.depth > 1",
                     uiOutput("ind1"),
@@ -66,10 +68,11 @@ itreemap <- function(dtf=NULL,
                 uiOutput("color")
             ),
             mainPanel(
+#                plotOutput("plot",height="700px")
                 tabsetPanel(
-                    tabPanel("Treemap", plotOutput("plot", hoverId="hover", clickId="click"),
-                        textOutput("summary")),
-                    tabPanel("Data", dataTableOutput("data")))
+                    tabPanel("Treemap", plotOutput("plot", hoverId="hover", clickId="click", height="400px"),
+                        textOutput("summary")))
+#                     tabPanel("Data", dataTableOutput("data")))
             )
         ),
         server = function(input, output){
@@ -77,100 +80,101 @@ itreemap <- function(dtf=NULL,
                 ifelse(is.null(input$df), dfs[1], input$df)
             })
             
-            getFilter <- reactive({
-                x <- input$click$x
-                y <- input$click$y
-                .tm <- get(".tm", .GlobalEnv)
-                
-                index <- input$index
-                depth <- length(index)
-                size <- input$size
-                color <- input$color
-                #type <- input$type
-                
-                colnames <- c(index, size) #intersect(, names(p))
-                if (!is.null(.tm) && depth > 1) {
-                    
-                    x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
-                    y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
-                    
-                    l <- tmLocate(list(x=x, y=y), .tm)
-                    if (is.na(l[1,1])) return("")
-                    
-                    filter <- paste0(names(l)[2], " == \"", l[1, 2], "\"")
-                    return(filter)
-                } else {
-                    return("")
-                }
-            })
-            
-            getData <- reactive({
-                x <- input$click$x
-                y <- input$click$y
-                .tm <- get(".tm", .GlobalEnv)
-
-                index <- input$index
-                size <- input$size
-                color <- input$color
-                #type <- input$type
-
-                colnames <- c(index, size, color) #intersect(, names(p))
-                if (!is.null(.tm)) {
-                    
-                    x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
-                    y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
-                    
-                    l <- tmLocate(list(x=x, y=y), .tm)
-                    
-                    p <- get(dataset())
-                    
-                    m <- as.matrix(p[, index])
-                    l2 <- as.vector(as.matrix(l[index]))
-                    
-                    res <- apply(m, MARGIN=1, function(x)all(x==l2))
-                    
-                    colnames <- intersect(colnames, names(p))
-                    dat <- p[res, colnames]
-                    
-                    dat <- dat[order(dat[[size]], decreasing=TRUE),]
-                    
-                    if (is.na(l[1,1])) return(dat[1,])
-                    
-                    return(dat)
-                } else {
-                    dat <- as.data.frame(as.list(rep(NA, length(colnames))))
-                    names(dat) <- colnames
-                    return(dat)
-                }
-            })
+#             getFilter <- reactive({
+#                 x <- input$click$x
+#                 y <- input$click$y
+#                 .tm <- get(".tm", .GlobalEnv)
+#                 
+#                 index <- input$index
+#                 depth <- length(index)
+#                 size <- input$size
+#                 color <- input$color
+#                 #type <- input$type
+#                 
+#                 colnames <- c(index, size) #intersect(, names(p))
+#                 if (!is.null(.tm) && depth > 1) {
+#                     
+#                     x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
+#                     y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
+#                     
+#                     l <- tmLocate(list(x=x, y=y), .tm)
+#                     if (is.na(l[1,1])) return("")
+#                     .click <<- .click + 1
+#                     filter <- paste0(names(l)[2], " == \"", l[1, 2], "\"")
+#                     return(filter)
+#                 } else {
+#                     return("")
+#                 }
+#             })
+#             
+#             getData <- reactive({
+#                 x <- input$click$x
+#                 y <- input$click$y
+#                 .tm <- get(".tm", .GlobalEnv)
+# 
+#                 index <- input$index
+#                 size <- input$size
+#                 color <- input$color
+#                 #type <- input$type
+# 
+#                 colnames <- c(index, size, color) #intersect(, names(p))
+#                 
+#                 if (!is.null(.tm)) {
+#                     
+#                     x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
+#                     y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
+#                     
+#                     l <- tmLocate(list(x=x, y=y), .tm)
+#                     
+#                     p <- get(dataset())
+#                     
+#                     m <- as.matrix(p[, index])
+#                     l2 <- as.vector(as.matrix(l[index]))
+#                     
+#                     res <- apply(m, MARGIN=1, function(x)all(x==l2))
+#                     
+#                     colnames <- intersect(colnames, names(p))
+#                     dat <- p[res, colnames]
+#                     
+#                     dat <- dat[order(dat[[size]], decreasing=TRUE),]
+#                     
+#                     if (is.na(l[1,1])) return(dat[1,])
+#                     return(dat)
+#                 } else {
+#                     dat <- as.data.frame(as.list(rep(NA, length(colnames))))
+#                     names(dat) <- colnames
+#                     return(dat)
+#                 }
+#             })
 
             getSummary <- reactive({
                 x <- input$hover$x
                 y <- input$hover$y
-                .tm <- get(".tm", .GlobalEnv)
-                
-                index <- input$index
-                size <- input$size
-                color <- input$color
-                #type <- input$type
-                
-                colnames <- c(index, size) #intersect(, names(p))
-                if (!is.null(.tm)) {
-                    
-                    x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
-                    y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
-                    
-                    l <- tmLocate(list(x=x, y=y), .tm)
-                    
-                    ind <- paste(as.vector(as.matrix(l[1, 1:length(index)])), collapse="; ")
-                    siz <- paste0(size, "= ", format(l[1, length(index)+1]))
-                    
-                    if (is.na(l[1,1])) return("")
-                    
-                    return(paste(ind, siz, sep=": "))
-                } else {
-                    return("")
-                }
+                return(paste(x,y))
+#                 .tm <- get(".tm", .GlobalEnv)
+#                 
+#                 index <- input$index
+#                 size <- input$size
+#                 color <- input$color
+#                 #type <- input$type
+#                 
+#                 colnames <- c(index, size) #intersect(, names(p))
+#                 if (!is.null(.tm)) {
+#                     
+#                     x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
+#                     y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
+#                     
+#                     l <- tmLocate(list(x=x, y=y), .tm)
+#                     
+#                     ind <- paste(as.vector(as.matrix(l[1, 1:length(index)])), collapse="; ")
+#                     siz <- paste0(size, "= ", format(l[1, length(index)+1]))
+#                     
+#                     if (is.na(l[1,1])) return("")
+#                     
+#                     return(paste(ind, siz, sep=": "))
+#                 } else {
+#                     return("")
+#                 }
             })
             
             output$depth <- reactive({
@@ -183,9 +187,9 @@ itreemap <- function(dtf=NULL,
                 selectInput("df", label="Dataset:", choices=dfs, selected=dtfname)
             })
             
-            output$filter <- renderUI({
-                textInput("filter", label="Filter: ", value=getFilter())
-            })
+#             output$filter <- renderUI({
+#                 textInput("filter", label="Filter: ", value=getFilter())
+#             })
             
             output$index <- renderUI({
                 p <- dataset()
@@ -202,17 +206,21 @@ itreemap <- function(dtf=NULL,
             output$ind2 <- renderUI({
                 index <- input$index
                 ind1 <- input$ind1
-                if (!is.null(ind1)) index <- setdiff(index, ind1)
-                if (!is.null(index)) selectInput("ind2", label="Second index variable", choices=index)
+                if (!is.null(index) && !is.null(ind1)) { 
+                    index <- setdiff(index, ind1)
+                    if (length(index)) selectInput("ind2", label="Second index variable", choices=index)
+                }
             })
             
             output$ind3 <- renderUI({
                 index <- input$index
                 ind1 <- input$ind1
                 ind2 <- input$ind2
-                if (!is.null(ind1)) index <- setdiff(index, ind1)
-                if (!is.null(ind2)) index <- setdiff(index, ind2)
-                if (!is.null(index)) selectInput("ind3", label="Third index variable", choices=index)
+                if (!is.null(index) && !is.null(ind1) && !is.null(ind2)) {
+                    index <- setdiff(index, ind1)
+                    index <- setdiff(index, ind2)
+                    if (length(index)) selectInput("ind3", label="Third index variable", choices=index)
+                }
             })
             
             output$ind4 <- renderUI({
@@ -220,10 +228,12 @@ itreemap <- function(dtf=NULL,
                 ind1 <- input$ind1
                 ind2 <- input$ind2
                 ind3 <- input$ind3
-                if (!is.null(ind1)) index <- setdiff(index, ind1)
-                if (!is.null(ind2)) index <- setdiff(index, ind2)
-                if (!is.null(ind3)) index <- setdiff(index, ind3)
-                if (!is.null(index)) selectInput("ind4", label="Fourth index variable", choices=index)
+                if (!is.null(index) && !is.null(ind1) && !is.null(ind2) && !is.null(ind3)) {
+                    index <- setdiff(index, ind1)
+                    index <- setdiff(index, ind2)
+                    index <- setdiff(index, ind3)
+                    if (length(index)) selectInput("ind4", label="Fourth index variable", choices=index)
+                }
             })
             
             output$ind5 <- renderUI({
@@ -232,11 +242,13 @@ itreemap <- function(dtf=NULL,
                 ind2 <- input$ind2
                 ind3 <- input$ind3
                 ind4 <- input$ind4
-                if (!is.null(ind1)) index <- setdiff(index, ind1)
-                if (!is.null(ind2)) index <- setdiff(index, ind2)
-                if (!is.null(ind3)) index <- setdiff(index, ind3)
-                if (!is.null(ind4)) index <- setdiff(index, ind4)
-                if (!is.null(index)) selectInput("ind5", label="Fifth index variable", choices=index)
+                if (!is.null(index) && !is.null(ind1) && !is.null(ind2) && !is.null(ind3) && !is.null(ind4)) {
+                    index <- setdiff(index, ind1)
+                    index <- setdiff(index, ind2)
+                    index <- setdiff(index, ind3)
+                    index <- setdiff(index, ind4)
+                    if (length(index)) selectInput("ind5", label="Fifth index variable", choices=index)
+                }
             })
             
             output$size <- renderUI({
@@ -279,6 +291,7 @@ itreemap <- function(dtf=NULL,
             
             
             output$plot <- renderPlot({ 
+
                 p <- dataset()
                 index <- input$index
                 
@@ -288,14 +301,30 @@ itreemap <- function(dtf=NULL,
                 size <- input$size
                 color <- input$color
                 type <- input$type
-                par(mar=c(0,0,0,0), xaxs='i', yaxs='i') 
-                plot(c(0,1), c(0,1),axes=F, col="white")
-                vps <- baseViewports()
-
-                if (!is.null(p) && !is.null(index) && !is.null(size) && !is.null(color) && !is.null(type) && !type=="<NA>") {
-                    #if (p != .p || index != .index || size != .size || color != .color || type != .type) {
-                    depth <- length(index)
+                
+                ind1 <- input$ind1
+                ind2 <- input$ind2
+                ind3 <- input$ind3
+                
+                .count <<- .count + 1               
+                
+                nm <- names(input)
+                cat("draw", .count, "\n")
+                for (n in nm) {
+                    cat(n, ": ", unlist(input[[n]]), "\n")
+                }
+                
+                indnames <- paste0("ind", 1:length(index))
+                inds <- sapply(indnames, function(x)input[[x]])
+                
+                
+                if (!is.null(index)) if (all(indnames %in% nm)) if (setequal(index, inds)) {
+                    #cat("yes\n")
+                
+#                     filter <- input$filter
+#                     if (is.null(filter)) filter <- ""
                     
+                    depth <- length(index)
                     if (depth>1) {
                         for (d in 1:depth) {
                             ind <- input[[paste0("ind", d)]]
@@ -303,36 +332,50 @@ itreemap <- function(dtf=NULL,
                         }
                     }
                     
-                    cat("draw:", p, index, size, color, type, "\n")
                     
-                    dat <- get(p)
+                    cat("plot: ", p, index, size, color, type, filter, "\n")
                     
-                    
-                    if (filter!="") {
-                        selection <- eval(parse(text=filter), dat, parent.frame())
-                        dat <- dat[selection,]
-                    }
-                    
-                    .tm <<- treemap(dat, 
-                            index=index,
-                            vSize=size, 
-                            vColor=color,
-                            type=type,
-                            vp=vps$plot)
-                    .p <<- p
-                    .index <<- index
-                    .size <<- size
-                    .color <<- color
-                    .type <<- type
-                    #}                    
+                    #if (!is.null(p) && !is.null(index) && !is.null(size) && !is.null(color) && !is.null(type) && !type=="<NA>") {
+                    #    if ((p != .p || !identical(index, .index) || size != .size || color != .color || type != .type) && !anyDuplicated(index))  {
+                            
+                            par(mar=c(0,0,0,0), xaxs='i', yaxs='i') 
+                            plot(c(0,1), c(0,1),axes=F, col="white")
+                            vps <- baseViewports()
+                            
+                            
+                            if (.click!=0) index <- index[-(1:.click)]
+                            
+                            cat("draw.\n")
+                            
+                            dat <- get(p)
+                            
+                            
+                            if (filter!="") {
+                                selection <- eval(parse(text=filter), dat, parent.frame())
+                                dat <- dat[selection,]
+                            }
+                            
+                            .tm <<- treemap(dat, 
+                                    index=index,
+                                    vSize=size, 
+                                    vColor=color,
+                                    type=type,
+                                    vp=vps$plot)
+                            .p <<- p
+                            .index <<- index
+                            .size <<- size
+                            .color <<- color
+                            .type <<- type
+                    #        }                    
+                    #}
                 }
             })
             output$summary <- renderText({
                 getSummary()
             })
-            output$data <- renderDataTable({
-                getData()
-            })
+#             output$data <- renderDataTable({
+#                 getData()
+#             })
             
         }
     ))
