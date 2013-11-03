@@ -1,7 +1,7 @@
 
 
 
-itreemap <- function() {
+itm <- function() {
     require(shiny)
     require(gridBase)
     runApp(list(
@@ -36,6 +36,7 @@ itreemap <- function() {
             
             
             output$plot <- renderPlot({ 
+                #cat(input$hover$x, "\n")
                 par(mar=c(0,0,0,0), xaxs='i', yaxs='i') 
                 plot(c(0,1), c(0,1),axes=F, col="white")
                 vps <- baseViewports()
@@ -51,5 +52,5 @@ itreemap <- function() {
         }
     ))
 }
-itreemap()
+itm()
 
