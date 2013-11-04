@@ -46,9 +46,10 @@ itreemap <- function(dtf=NULL,
     .size <<- ""
     .color <<- ""
     .type <<- ""
-    .click <- 0
     .count <- 0
     .back <- 0
+    .filters <- NULL
+    
     
     runApp(list(
         ui = pageWithSidebar(
@@ -136,23 +137,19 @@ itreemap <- function(dtf=NULL,
             
             getFilter <- reactive({
                 back <- input$back
-                cat("back:", back, "\n")
+                #cat("back:", back, "\n")
                 
                 l <- getClickID()
                 if (back == .back) {
-    
                     if (!is.null(l)) {
-                        .click <<- .click + 1
                         filter <- paste0(names(l)[1], " == \"", l[[1]], "\"")
-                        return(filter)
-                    } else {
-                        return("")
+                        .filters <<- c(.filters, filter)
                     }
                 } else {
-                    .click <<- max(0, .click - 1)
+                    if (!is.null(.filters)) .filters <<- .filters[-(length(.filters))]
                     .back <<- back
-                    return("")
                 }
+                return(paste(.filters, collapse=" & "))
             })
             
             getData <- reactive({
@@ -329,15 +326,18 @@ itreemap <- function(dtf=NULL,
                 
                 nm <- names(input)
                 
+                
+                
+                
                 indnames <- paste0("ind", 1:length(index))
                 inds <- sapply(indnames, function(x)input[[x]])
                 
+                cat("back:", input$back, "filter", filter, "\n")
                 
                 if (!is.null(index)) if (all(indnames %in% nm)) if (setequal(index, inds)) {
-                    #cat("yes\n")
-                
-#                     filter <- input$filter
-#                     if (is.null(filter)) filter <- ""
+                    cat("yes\n")
+                    filter <- input$filter
+                    if (is.null(filter)) filter <- ""
                     
                     depth <- length(index)
                     if (depth>1) {
@@ -348,7 +348,7 @@ itreemap <- function(dtf=NULL,
                     }
                     
                     
-                    cat("plot: ", p, index, size, color, type, filter, .click, "\n")
+                    #cat("plot: ", p, index, size, color, type, filter, "\n")
                     
                             
                     par(mar=c(0,0,0,0), xaxs='i', yaxs='i') 
@@ -356,9 +356,9 @@ itreemap <- function(dtf=NULL,
                     vps <- baseViewports()
                     
                     
-                    if (.click!=0) index <- index[-(1:.click)]
+                    if (filter!="") index <- index[-(1:min(length(.filters), length(index)-1))]
                     
-                    cat("draw.\n")
+                    #cat("draw.", filter, "\n")
                     
                     dat <- get(p)
                     
@@ -379,6 +379,8 @@ itreemap <- function(dtf=NULL,
                     .size <<- size
                     .color <<- color
                     .type <<- type
+                } else {
+                    cat("wait\n")
                 }
             })
             output$summary <- renderText({
