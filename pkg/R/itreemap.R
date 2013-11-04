@@ -48,6 +48,7 @@ itreemap <- function(dtf=NULL,
     .type <<- ""
     .click <- 0
     .count <- 0
+    .back <- 0
     
     runApp(list(
         ui = pageWithSidebar(
@@ -81,52 +82,84 @@ itreemap <- function(dtf=NULL,
                 ifelse(is.null(input$df), dfs[1], input$df)
             })
             
-            getFilter <- reactive({
-                cat("back:", input$back, "\n")
-                x <- input$click$x
-                y <- input$click$y
+            
+            getHoverID <- reactive({
+                x <- input$hover$x
+                y <- input$hover$y
                 .tm <- get(".tm", .GlobalEnv)
                 
                 index <- input$index
-                depth <- length(index)
                 size <- input$size
                 color <- input$color
                 #type <- input$type
                 
                 colnames <- c(index, size) #intersect(, names(p))
-                if (!is.null(.tm) && depth > 1) {
-                    
-                    x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
-                    y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
-                    
-                    l <- tmLocate(list(x=x, y=y), .tm)
-                    if (is.na(l[1,1])) return("")
-                    .click <<- .click + 1
-                    filter <- paste0(names(l)[2], " == \"", l[1, 2], "\"")
-                    return(filter)
-                } else {
-                    return("")
-                }
-            })
-            
-            getData <- reactive({
-                x <- input$click$x
-                y <- input$click$y
-                .tm <- get(".tm", .GlobalEnv)
-
-                index <- input$index
-                size <- input$size
-                color <- input$color
-                #type <- input$type
-
-                colnames <- c(index, size, color) #intersect(, names(p))
-                
                 if (!is.null(.tm)) {
                     
                     x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
                     y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
                     
                     l <- tmLocate(list(x=x, y=y), .tm)
+                    if (is.na(l[1,1])) {
+                        return(NULL)
+                    } else return(as.list(l[1,]))
+                } else {
+                    return(NULL)
+                }
+            })
+
+            getClickID <- reactive({
+                x <- input$click$x
+                y <- input$click$y
+                .tm <- get(".tm", .GlobalEnv)
+                
+                index <- input$index
+                size <- input$size
+                color <- input$color
+                #type <- input$type
+                
+                colnames <- c(index, size) #intersect(, names(p))
+                if (!is.null(.tm)) {
+                    
+                    x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
+                    y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
+                    
+                    l <- tmLocate(list(x=x, y=y), .tm)
+                    if (is.na(l[1,1])) {
+                        return(NULL)
+                    } else return(as.list(l[1,]))
+                } else {
+                    return(NULL)
+                }
+            })
+            
+            
+            getFilter <- reactive({
+                back <- input$back
+                cat("back:", back, "\n")
+                
+                l <- getClickID()
+                if (back == .back) {
+    
+                    if (!is.null(l)) {
+                        .click <<- .click + 1
+                        filter <- paste0(names(l)[1], " == \"", l[[1]], "\"")
+                        return(filter)
+                    } else {
+                        return("")
+                    }
+                } else {
+                    .click <<- max(0, .click - 1)
+                    .back <<- back
+                    return("")
+                }
+            })
+            
+            getData <- reactive({
+                l <- getClickID()
+                
+                if (!is.null(l)) {
+                    index <- input$index
                     
                     p <- get(dataset())
                     
@@ -150,29 +183,13 @@ itreemap <- function(dtf=NULL,
             })
 
             getSummary <- reactive({
-                x <- input$hover$x
-                y <- input$hover$y
-                #return(paste(x,y))
-                .tm <- get(".tm", .GlobalEnv)
+                l <- getHoverID()
                 
-                index <- input$index
-                size <- input$size
-                color <- input$color
-                #type <- input$type
-                
-                colnames <- c(index, size) #intersect(, names(p))
-                if (!is.null(.tm)) {
-                    
-                    x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
-                    y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
-                    
-                    l <- tmLocate(list(x=x, y=y), .tm)
-                    
-                    ind <- paste(as.vector(as.matrix(l[1, 1:length(index)])), collapse="; ")
-                    siz <- paste0(size, "= ", format(l[1, length(index)+1]))
-                    
-                    if (is.na(l[1,1])) return("")
-                    
+                if (!is.null(l)) {
+                    index <- input$index
+                    size <- input$size
+                    ind <- paste(unlist(l[1:length(index)]), collapse="; ")
+                    siz <- paste0(size, "= ", format(l[[length(index)+1]]))
                     return(paste(ind, siz, sep=": "))
                 } else {
                     return("")
