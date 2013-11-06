@@ -109,6 +109,8 @@ tmGetViewports <- function(vp, fontsize.title, fontsize.labels, fontsize.legend,
         } else if (aspRatio > aspWindow) {
             datHeight <- datWidth / aspRatio
         }
+    } else {
+        aspRatio <- datWidth / datHeight
     }
     
     vpDatAsp <- viewport(name = "data_asp", 
@@ -124,5 +126,5 @@ tmGetViewports <- function(vp, fontsize.title, fontsize.labels, fontsize.legend,
     vpCoorX <- ((convertX(vpDat$x, unitTo="inch", valueOnly=TRUE) + 
                      convertWidth(vpDat$width, unitTo="inch", valueOnly=TRUE)/2)  + c(-1, 1) * (datWidth/2)) / width
     
-    list(vpDat=vpDat, vpDatAsp=vpDatAsp, vpDatTitle=vpDatTitle, vpLeg=vpLeg, vpLegTitle=vpLegTitle, datWidth=datWidth, datHeight=datHeight, vpCoorX=vpCoorX, vpCoorY=vpCoorY)
+    list(vpDat=vpDat, vpDatAsp=vpDatAsp, vpDatTitle=vpDatTitle, vpLeg=vpLeg, vpLegTitle=vpLegTitle, datWidth=datWidth, datHeight=datHeight, aspRatio=aspRatio, vpCoorX=vpCoorX, vpCoorY=vpCoorY)
 }

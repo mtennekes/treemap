@@ -452,6 +452,7 @@ treemap <-
                        vColor = ifelse(vColor=="vColor.temp", NA, vColor),
                        algorithm = algorithm,
                        vpCoorX = vps$vpCoorX,
-                       vpCoorY = vps$vpCoorY)
+                       vpCoorY = vps$vpCoorY,
+                       aspRatio = vps$aspRatio)
         invisible(tmSave)
     }

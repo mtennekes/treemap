@@ -49,7 +49,9 @@ itreemap <- function(dtf=NULL,
     .count <- 0
     .back <- 0
     .filters <- NULL
-    .hue <- list(c(hue_start=30, hue_end=390))
+    .asp <<- NULL
+    .hcl <- list(tmSetHCLoptions())
+    
     runApp(list(
         ui = pageWithSidebar(
             headerPanel("Interactive treemap"),
@@ -138,22 +140,44 @@ itreemap <- function(dtf=NULL,
                     if (!is.null(l)) if (!(l$x0==0 && l$y0==0 && l$w==1 && l$y==1))  {
                         filter <- as.character(l[[1]])
                         
-                        cols <- .tm$tm$color[.tm$tm[[1]] == filter]
+                        sel <- .tm$tm[[1]] == filter
+                        
+                        cols <- .tm$tm$color[sel]
                         cols <- substr(cols, 1L, 7L)
                         cols <- hex2RGB(cols)
                         cols <- as(cols, "polarLUV")
                         hues <- cols@coords[,3]
+                        hcl <- .hcl[[length(.hcl)]]
+                        hcl$hue_start <- min(hues)
+                        hcl$hue_end <- max(hues)
+                        if (length(l)>8) {
+                            hcl$chroma <- hcl$chroma + hcl$chroma_slope
+                            hcl$luminance <- hcl$luminance + hcl$luminance_slope
+                        }
+                        .hcl <<- c(.hcl, list(hcl))
                         
-                        .hue <<- c(.hue, list(c(hue_start=min(hues), hue_end=max(hues))))
+                        x0 <- .tm$tm$x0[sel]
+                        x1 <- x0 + .tm$tm$w[sel]
+                        y0 <- .tm$tm$y0[sel]
+                        y1 <- y0 + .tm$tm$h[sel]
+                        
+                        w <- max(x1) - min(x0)
+                        h <- max(y1) - min(y0)
+                        asp <- .tm$aspRatio
+                        
+                        .asp <<- if (is.null(.asp)) c(asp, asp*(w/h)) else c(.asp, asp*(w/h))
+                        
                         .filters <<- unique(c(.filters, filter))
                     }
                 } else {
                     if (!is.null(.filters)) if (length(.filters)) {
                         .filters <<- .filters[-(length(.filters))]
-                        .hue <<- .hue[-(length(.hue))]
+                        .hcl <<- .hcl[-(length(.hcl))]
+                        .asp <<- .asp[-(length(.asp))]
                     }
                     .back <<- back
                 }
+                
                 .filters
             })
             
@@ -334,7 +358,7 @@ itreemap <- function(dtf=NULL,
                 cat("type:", type, "\n")
                 cat("index:", index, "\n")
                 cat("filters:", filters, "\n")
-                cat("hue:", unlist(.hue), "\n")
+                cat("hcl:", unlist(.hcl), "\n")
                 cat("zoomLevel:", zoomLevel, "\n")
                 
                 
@@ -358,12 +382,18 @@ itreemap <- function(dtf=NULL,
                         selection <- eval(parse(text=filterString), dat, parent.frame())
                         dat <- dat[selection,]
                         index <- index[-(1:min(zoomLevel, length(index)-1))]
+                        aspRatio <- .asp[length(.asp)]
+                    } else {
+                        aspRatio <- NA
                     }
+                    
+                    
+                    
 #                     if (filter!="") {
 #                         selection <- eval(parse(text=filter), dat, parent.frame())
 #                         dat <- dat[selection,]
 #                     }
-                    hue <- as.list(.hue[[zoomLevel+1]])
+                    hcl <- as.list(.hcl[[zoomLevel+1]])
                     require(data.table)
                     .tm <<- treemap(dat, 
                             index=index,
@@ -371,7 +401,11 @@ itreemap <- function(dtf=NULL,
                             vColor=color,
                             type=type,
                             vp=vps$plot,
-                            palette.HCL.options=hue)
+                            palette.HCL.options=hcl,
+                            aspRatio=aspRatio)
+                    
+                    
+                    
                 }
                 
                 
