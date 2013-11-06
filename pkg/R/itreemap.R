@@ -49,23 +49,18 @@ itreemap <- function(dtf=NULL,
     .count <- 0
     .back <- 0
     .filters <- NULL
-    
-    
+    .hue <- list(c(hue_start=30, hue_end=390))
     runApp(list(
         ui = pageWithSidebar(
             headerPanel("Interactive treemap"),
             sidebarPanel(
                 uiOutput("df"),
-               uiOutput("filter"),
+               #uiOutput("filter"),
                 actionButton("back", "Zoom out"),
-                uiOutput("index"),
-                conditionalPanel("output.depth > 1",
-                    uiOutput("ind1"),
-                    uiOutput("ind2")
-                ),
-                conditionalPanel("output.depth == 3", uiOutput("ind3")),
-                conditionalPanel("output.depth == 4", uiOutput("ind4")),
-                conditionalPanel("output.depth > 4", uiOutput("ind5")),
+                uiOutput("ind1"),
+                uiOutput("ind2"),
+                uiOutput("ind3"),
+                uiOutput("ind4"),
                 uiOutput("size"),
                 uiOutput("type"),
                 uiOutput("color")
@@ -99,7 +94,6 @@ itreemap <- function(dtf=NULL,
                     
                     x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
                     y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
-                    
                     l <- tmLocate(list(x=x, y=y), .tm)
                     if (is.na(l[1,1])) {
                         return(NULL)
@@ -141,15 +135,26 @@ itreemap <- function(dtf=NULL,
                 
                 l <- getClickID()
                 if (back == .back) {
-                    if (!is.null(l)) {
-                        filter <- paste0(names(l)[1], " == \"", l[[1]], "\"")
-                        .filters <<- c(.filters, filter)
+                    if (!is.null(l)) if (!(l$x0==0 && l$y0==0 && l$w==1 && l$y==1))  {
+                        filter <- as.character(l[[1]])
+                        
+                        cols <- .tm$tm$color[.tm$tm[[1]] == filter]
+                        cols <- substr(cols, 1L, 7L)
+                        cols <- hex2RGB(cols)
+                        cols <- as(cols, "polarLUV")
+                        hues <- cols@coords[,3]
+                        
+                        .hue <<- c(.hue, list(c(hue_start=min(hues), hue_end=max(hues))))
+                        .filters <<- unique(c(.filters, filter))
                     }
                 } else {
-                    if (!is.null(.filters)) .filters <<- .filters[-(length(.filters))]
+                    if (!is.null(.filters)) if (length(.filters)) {
+                        .filters <<- .filters[-(length(.filters))]
+                        .hue <<- .hue[-(length(.hue))]
+                    }
                     .back <<- back
                 }
-                return(paste(.filters, collapse=" & "))
+                .filters
             })
             
             getData <- reactive({
@@ -193,19 +198,14 @@ itreemap <- function(dtf=NULL,
                 }
             })
             
-            output$depth <- reactive({
-                index <- input$index
-                if (is.null(index)) 0 else length(index)
-            })
-            outputOptions(output, "depth", suspendWhenHidden=FALSE)
             
             output$df <- renderUI({
                 selectInput("df", label="Dataset:", choices=dfs, selected=dtfname)
             })
             
-            output$filter <- renderUI({
-                textInput("filter", label="Filter: ", value=getFilter())
-            })
+#             output$filter <- reactive({
+#                 getFilter()
+#             })
             
             output$index <- renderUI({
                 p <- dataset()
@@ -215,58 +215,53 @@ itreemap <- function(dtf=NULL,
             
 
             output$ind1 <- renderUI({
-                index <- input$index
-                if (!is.null(index)) selectInput("ind1", label="First index variable", choices=index)
+                p <- dataset()
+                vars <- dfcat[[p]]
+                selectInput("ind1", label="First index variable", choices=vars)
             })
             
             output$ind2 <- renderUI({
-                index <- input$index
+                p <- dataset()
+                vars <- c("<NA>", dfcat[[p]])
                 ind1 <- input$ind1
-                if (!is.null(index) && !is.null(ind1)) { 
-                    index <- setdiff(index, ind1)
-                    if (length(index)) selectInput("ind2", label="Second index variable", choices=index)
+                if (!is.null(ind1)) { 
+                    vars <- setdiff(vars, ind1)
+                    selectInput("ind2", label="Second index variable", choices=vars)
                 }
             })
             
             output$ind3 <- renderUI({
-                index <- input$index
+                p <- dataset()
+                vars <- c("<NA>", dfcat[[p]])
                 ind1 <- input$ind1
                 ind2 <- input$ind2
-                if (!is.null(index) && !is.null(ind1) && !is.null(ind2)) {
-                    index <- setdiff(index, ind1)
-                    index <- setdiff(index, ind2)
-                    if (length(index)) selectInput("ind3", label="Third index variable", choices=index)
+                if (!is.null(ind1) && !is.null(ind2)) {
+                    if (ind2=="<NA>") {
+                        vars <- "<NA>"
+                    } else {
+                        vars <- setdiff(vars, c(ind1, ind2))
+                    }
+                    selectInput("ind3", label="Third index variable", choices=vars)
                 }
             })
             
             output$ind4 <- renderUI({
-                index <- input$index
+                p <- dataset()
+                vars <- c("<NA>", dfcat[[p]])
                 ind1 <- input$ind1
                 ind2 <- input$ind2
                 ind3 <- input$ind3
-                if (!is.null(index) && !is.null(ind1) && !is.null(ind2) && !is.null(ind3)) {
-                    index <- setdiff(index, ind1)
-                    index <- setdiff(index, ind2)
-                    index <- setdiff(index, ind3)
-                    if (length(index)) selectInput("ind4", label="Fourth index variable", choices=index)
+                if (!is.null(ind1) && !is.null(ind2) && !is.null(ind3)) {
+                    if (ind3=="<NA>") {
+                        vars <- "<NA>"
+                    } else {
+                        vars <- setdiff(vars, c(ind1, ind2, ind3))
+                    }
+                    selectInput("ind4", label="Fourth index variable", choices=vars)
                 }
             })
             
-            output$ind5 <- renderUI({
-                index <- input$index
-                ind1 <- input$ind1
-                ind2 <- input$ind2
-                ind3 <- input$ind3
-                ind4 <- input$ind4
-                if (!is.null(index) && !is.null(ind1) && !is.null(ind2) && !is.null(ind3) && !is.null(ind4)) {
-                    index <- setdiff(index, ind1)
-                    index <- setdiff(index, ind2)
-                    index <- setdiff(index, ind3)
-                    index <- setdiff(index, ind4)
-                    if (length(index)) selectInput("ind5", label="Fifth index variable", choices=index)
-                }
-            })
-            
+
             output$size <- renderUI({
                 p <- dataset()
                 vars <- dfnum[[p]]
@@ -299,8 +294,8 @@ itreemap <- function(dtf=NULL,
             })
 
             output$type <- renderUI({
-                p <- dataset()
-                vars <- dfvars[[p]]
+                #p <- dataset()
+                #vars <- dfvars[[p]]
                 selectInput("type", label="Type", choices=c("index", "value", "comp", "dens", 
                                                                      "depth", "categorical", "color"))
             })
@@ -309,79 +304,141 @@ itreemap <- function(dtf=NULL,
             output$plot <- renderPlot({ 
 
                 p <- dataset()
-                index <- input$index
-                
-                filter <- input$filter
-                if (is.null(filter)) filter <- ""
                 
                 size <- input$size
                 color <- input$color
                 type <- input$type
+
                 
                 ind1 <- input$ind1
                 ind2 <- input$ind2
                 ind3 <- input$ind3
+                ind4 <- input$ind4
+                
+                if (is.null(size) || is.null(color) || is.null(type) || 
+                        is.null(ind1) || is.null(ind2) || is.null(ind3) || is.null(ind4)) return(NULL)
+                        
+                        
+                
+                index <- c(ind1, ind2, ind3, ind4)
+                index <- index[index!="<NA>"]
+                filters <- getFilter()
+                
+                zoomLevel <- if (is.null(filters)) 0 else length(filters)
                 
                 .count <<- .count + 1               
+                cat("DRAW", .count, "\n")
+
+                cat("size:", size, "\n")
+                cat("color:", color, "\n")
+                cat("type:", type, "\n")
+                cat("index:", index, "\n")
+                cat("filters:", filters, "\n")
+                cat("hue:", unlist(.hue), "\n")
+                cat("zoomLevel:", zoomLevel, "\n")
                 
-                nm <- names(input)
                 
-                
-                
-                
-                indnames <- paste0("ind", 1:length(index))
-                inds <- sapply(indnames, function(x)input[[x]])
-                
-                cat("back:", input$back, "filter", filter, "\n")
-                
-                if (!is.null(index)) if (all(indnames %in% nm)) if (setequal(index, inds)) {
-                    cat("yes\n")
-                    filter <- input$filter
-                    if (is.null(filter)) filter <- ""
+                if (anyDuplicated(index) 
+                    || (color=="<not needed>" && !(type %in% c("index", "depth")))
+                    || ((color %in% dfnum[[p]]) && !(type %in% c("value", "comp", "dens")))
+                    || ((color %in% dfcat[[p]]) && !(color %in% dfcolor[[p]]) && (type != "categorical"))
+                    || (!(color %in% dfcat[[p]]) && (color %in% dfcolor[[p]]) && (type != "color"))
+                    || ((color %in% dfcat[[p]]) && (color %in% dfcolor[[p]]) && !(type %in% c("categorical", "color")))) {
+                    cat("wait...\n")
+                } else {
+                    cat("go!\n")
                     
-                    depth <- length(index)
-                    if (depth>1) {
-                        for (d in 1:depth) {
-                            ind <- input[[paste0("ind", d)]]
-                            if (!is.null(ind)) index[d] <- ind
-                        }
-                    }
-                    
-                    
-                    #cat("plot: ", p, index, size, color, type, filter, "\n")
-                    
-                            
                     par(mar=c(0,0,0,0), xaxs='i', yaxs='i') 
                     plot(c(0,1), c(0,1),axes=F, col="white")
                     vps <- baseViewports()
                     
-                    
-                    if (filter!="") index <- index[-(1:min(length(.filters), length(index)-1))]
-                    
-                    #cat("draw.", filter, "\n")
-                    
                     dat <- get(p)
-                    
-                    
-                    if (filter!="") {
-                        selection <- eval(parse(text=filter), dat, parent.frame())
+                    if (zoomLevel>0) {
+                        filterString <- paste(paste(index[1:zoomLevel], paste("\"", filters, "\"", sep=""), sep=" == "), collapse=" & ")
+                        selection <- eval(parse(text=filterString), dat, parent.frame())
                         dat <- dat[selection,]
+                        index <- index[-(1:min(zoomLevel, length(index)-1))]
                     }
-                    
+#                     if (filter!="") {
+#                         selection <- eval(parse(text=filter), dat, parent.frame())
+#                         dat <- dat[selection,]
+#                     }
+                    hue <- as.list(.hue[[zoomLevel+1]])
+                    require(data.table)
                     .tm <<- treemap(dat, 
                             index=index,
                             vSize=size, 
                             vColor=color,
                             type=type,
-                            vp=vps$plot)
-                    .p <<- p
-                    .index <<- index
-                    .size <<- size
-                    .color <<- color
-                    .type <<- type
-                } else {
-                    cat("wait\n")
+                            vp=vps$plot,
+                            palette.HCL.options=hue)
                 }
+                
+                
+                
+#                 
+#                 
+#                 nm <- names(input)
+#                 
+#                 
+#                 
+#                 
+#                 indnames <- paste0("ind", 1:length(index))
+#                 inds <- sapply(indnames, function(x)input[[x]])
+#                 
+#                 cat("back:", input$back, "filter", filter, "\n")
+#                 
+#                 if (!is.null(index)) if (all(indnames %in% nm)) if (setequal(index, inds)) {
+#                     cat("yes\n")
+#                     
+#                     depth <- length(index)
+#                     if (depth>1) {
+#                         for (d in 1:depth) {
+#                             ind <- input[[paste0("ind", d)]]
+#                             if (!is.null(ind)) index[d] <- ind
+#                         }
+#                     }
+#                     
+#                     
+#                     #cat("plot: ", p, index, size, color, type, filter, "\n")
+#                     
+#                             
+#                     par(mar=c(0,0,0,0), xaxs='i', yaxs='i') 
+#                     plot(c(0,1), c(0,1),axes=F, col="white")
+#                     vps <- baseViewports()
+#                     
+#                     
+#                     zoomLevel <- if (is.null(.filters)) 0 else length(.filters)
+# 
+#                     if (zoomLevel>0) index <- index[-(1:min(zoomLevel, length(index)-1))]
+#                     hue <- as.list(.hue[[zoomLevel+1]])
+#                     
+#                     
+#                     cat("draw.", names(.hue), unlist(.hue), "\n")
+#                     
+#                     dat <- get(p)
+#                     
+#                     
+#                     if (filter!="") {
+#                         selection <- eval(parse(text=filter), dat, parent.frame())
+#                         dat <- dat[selection,]
+#                     }
+#                     
+#                     .tm <<- treemap(dat, 
+#                             index=index,
+#                             vSize=size, 
+#                             vColor=color,
+#                             type=type,
+#                             vp=vps$plot,
+#                             palette.HCL.options=hue)
+#                     .p <<- p
+#                     .index <<- index
+#                     .size <<- size
+#                     .color <<- color
+#                     .type <<- type
+#                 } else {
+#                     cat("wait\n")
+#                 }
             })
             output$summary <- renderText({
                getSummary()
