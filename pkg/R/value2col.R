@@ -37,5 +37,5 @@ value2col <-
         
         if (position.legend!="none") drawLegend(format(prettyV), colpal[prettyV.ids], position.legend=="bottom", border.col, fontfamily.legend)
         
-        return (colpal[value.ids])
+        return (list(colpal[value.ids], range(prettyV)))
     }

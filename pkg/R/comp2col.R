@@ -1,8 +1,6 @@
 comp2col <-
 function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
-    
 	color <- colorRampPalette(palette,space="rgb")(99)
-	
 	
 	perc <-((dat$s - dat$c)/dat$c) * 100
 	
@@ -34,15 +32,16 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
     
     prettyP <- prettyP[prettyP > -100]
     
-	n <- length(prettyP)	
-
-	max_lg <- max(abs(log.growth))
+    perc2lg <- function(p) log((100+p)/100)
+    legColScale <- perc2lg(prettyP)
+    
+    if (!any(is.na(range))) {
+        max_lg <- max(abs(legColScale))
+    } else {
+        max_lg <- max(abs(log.growth))
+    }
+    
 	scale <- round(((log.growth/max_lg) *49)+50)
-	
-	perc2lg <- function(p) log((100+p)/100)
-	
-	
-	legColScale <- perc2lg(prettyP)
 	legColScale[legColScale < -max_lg] <- -max_lg
 	legColScale[legColScale > max_lg] <- max_lg
 	
@@ -50,6 +49,6 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 		
 	if (position.legend!="none") drawLegend(paste(prettyP, "%", sep=""), legCol,
 											position.legend=="bottom", border.col, fontfamily.legend)
-	return (color[scale])
+	return (list(color[scale], range(prettyP)))
 }
 

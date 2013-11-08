@@ -34,6 +34,6 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 	    warning("Values found that are higher than the maximum of range")
 	    scale[scale>99] <- 99
 	}
-	return (color[scale])
+	return (list(color[scale], range(prettyP)))
 }
 

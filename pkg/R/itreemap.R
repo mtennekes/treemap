@@ -46,11 +46,13 @@ itreemap <- function(dtf=NULL,
     .size <<- ""
     .color <<- ""
     .type <<- ""
-    .count <- 0
-    .back <- 0
-    .filters <- NULL
+    .count <<- 0
+    .back <<- 0
+    .filters <<- NULL
+    .zoom <<- FALSE
     .asp <<- NULL
-    .hcl <- list(tmSetHCLoptions())
+    .range <<- NA
+    .hcl <<- list(tmSetHCLoptions())
     
     runApp(list(
         ui = pageWithSidebar(
@@ -110,6 +112,7 @@ itreemap <- function(dtf=NULL,
                 y <- input$click$y
                 .tm <- get(".tm", .GlobalEnv)
                 
+                
                 index <- input$index
                 size <- input$size
                 color <- input$color
@@ -133,9 +136,10 @@ itreemap <- function(dtf=NULL,
             
             getFilter <- reactive({
                 back <- input$back
-                #cat("back:", back, "\n")
-                
+                cat("getFilter\n")
                 l <- getClickID()
+                .range <<- NA
+                
                 if (back == .back) {
                     if (!is.null(l)) if (!(l$x0==0 && l$y0==0 && l$w==1 && l$y==1))  {
                         filter <- as.character(l[[1]])
@@ -166,7 +170,9 @@ itreemap <- function(dtf=NULL,
                         asp <- .tm$aspRatio
                         
                         .asp <<- if (is.null(.asp)) c(asp, asp*(w/h)) else c(.asp, asp*(w/h))
-                        
+                        cat("setRange\n")
+                        .range <<- .tm$range
+                        .zoom <<- TRUE
                         .filters <<- unique(c(.filters, filter))
                     }
                 } else {
@@ -174,6 +180,8 @@ itreemap <- function(dtf=NULL,
                         .filters <<- .filters[-(length(.filters))]
                         .hcl <<- .hcl[-(length(.hcl))]
                         .asp <<- .asp[-(length(.asp))]
+                        .range <<- .tm$range
+                        .zoom <<- TRUE
                     }
                     .back <<- back
                 }
@@ -320,8 +328,10 @@ itreemap <- function(dtf=NULL,
             output$type <- renderUI({
                 #p <- dataset()
                 #vars <- dfvars[[p]]
+                
                 selectInput("type", label="Type", choices=c("index", "value", "comp", "dens", 
                                                                      "depth", "categorical", "color"))
+                
             })
             
             
@@ -349,6 +359,8 @@ itreemap <- function(dtf=NULL,
                 filters <- getFilter()
                 
                 zoomLevel <- if (is.null(filters)) 0 else length(filters)
+
+               
                 
                 .count <<- .count + 1               
                 cat("DRAW", .count, "\n")
@@ -360,6 +372,7 @@ itreemap <- function(dtf=NULL,
                 cat("filters:", filters, "\n")
                 cat("hcl:", unlist(.hcl), "\n")
                 cat("zoomLevel:", zoomLevel, "\n")
+                
                 
                 
                 if (anyDuplicated(index) 
@@ -387,7 +400,13 @@ itreemap <- function(dtf=NULL,
                         aspRatio <- NA
                     }
                     
+                    if (.zoom) {
+                        .zoom <<- FALSE
+                    } else {
+                        .range <<- NA
+                    }
                     
+                    cat("range", .range, "\n")
                     
 #                     if (filter!="") {
 #                         selection <- eval(parse(text=filter), dat, parent.frame())
@@ -402,7 +421,8 @@ itreemap <- function(dtf=NULL,
                             type=type,
                             vp=vps$plot,
                             palette.HCL.options=hcl,
-                            aspRatio=aspRatio)
+                            aspRatio=aspRatio,
+                            range=.range)
                     
                     
                     

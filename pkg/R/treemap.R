@@ -433,6 +433,7 @@ treemap <-
         if (type == "color") {
             datlist$color <- as.character(datlist$c)
         } else {
+            attr(datlist, "range") <- 1:2
             datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
@@ -453,6 +454,7 @@ treemap <-
                        algorithm = algorithm,
                        vpCoorX = vps$vpCoorX,
                        vpCoorY = vps$vpCoorY,
-                       aspRatio = vps$aspRatio)
+                       aspRatio = vps$aspRatio,
+                       range = range)
         invisible(tmSave)
     }

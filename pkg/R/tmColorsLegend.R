@@ -3,20 +3,30 @@ tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, 
         pushViewport(vps$vpLeg)
     }
     
-    if (type == "comp") {
-        datlist$color <- comp2col(datlist, position.legend, palette, range, border.col, fontfamily.legend)
+    res <- if (type == "comp") {
+        comp2col(datlist, position.legend, palette, range, border.col, fontfamily.legend)
     } else if (type == "dens") {
-        datlist$color <- dens2col(datlist, position.legend, palette, range, border.col, fontfamily.legend) 
+        dens2col(datlist, position.legend, palette, range, border.col, fontfamily.legend) 
     } else if (type == "depth") {
-        datlist$color <- depth2col(datlist, position.legend, palette, indexNames, palette.HCL.options, border.col, fontfamily.legend)
+        depth2col(datlist, position.legend, palette, indexNames, palette.HCL.options, border.col, fontfamily.legend)
     } else if (type == "index") {
-        datlist$color <- index2col(datlist, position.legend, palette, levels(datlist$index1), palette.HCL.options, border.col, fontfamily.legend)
+        index2col(datlist, position.legend, palette, levels(datlist$index1), palette.HCL.options, border.col, fontfamily.legend)
     } else if (type == "value") {
-        datlist$color <- value2col(datlist, position.legend, palette, range, border.col, fontfamily.legend)
+        value2col(datlist, position.legend, palette, range, border.col, fontfamily.legend)
     } else if (type == "categorical") {
-        datlist$color <- cat2col(datlist, position.legend, palette, levels(datlist$c), palette.HCL.options, border.col, fontfamily.legend)
+        cat2col(datlist, position.legend, palette, levels(datlist$c), palette.HCL.options, border.col, fontfamily.legend)
     }
-    if (position.legend!="none") upViewport()
+
+    if (type %in% c("comp", "dens", "value")) {
+        datlist$color <- res[[1]]
+        range <- res[[2]]
+    } else {
+        #datlist[, color:=res]
+        datlist$color <- res
+        range <- NA
+    }
     
+    if (position.legend!="none") upViewport()
+    assign("range", range, envir=parent.frame()) # trick to prevent internal data.table copy on return
     datlist
 }

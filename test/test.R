@@ -124,5 +124,8 @@ treemap(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees"
         fontsize.labels=c(40,35,30,25))
 
 tm <- treemap(business, index=c("NACE1", "NACE2", "NACE3"), vSize="employees")
-tm <- treemap(business, index=c("NACE1", "NACE2", "NACE3"), vSize="employees", vColor="employees.prev", type="comp")
+tm <- treemap(business, index=c("NACE1", "NACE2", "NACE3"), vSize="employees", vColor="employees.prev", type="comp", range=c(-100, 2000))
+
+
+tm <- treemap(business[business$NACE1=="C - Manufacturing" & business$NACE2=="19 - Manufacture of coke and refined petroleum products",], index=c("NACE2"), vSize="turnover", vColor="turnover.prev", type="comp", range=c(-80, 100))
 
