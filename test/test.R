@@ -129,3 +129,10 @@ tm <- treemap(business, index=c("NACE1", "NACE2", "NACE3"), vSize="employees", v
 
 tm <- treemap(business[business$NACE1=="C - Manufacturing" & business$NACE2=="19 - Manufacture of coke and refined petroleum products",], index=c("NACE2"), vSize="turnover", vColor="turnover.prev", type="comp", range=c(-80, 100))
 
+tm <- treemap(business[business$NACE1=="C - Manufacturing",], index=c("NACE2"), vSize="turnover", vColor="turnover", type="value", range=c(0, 5.5e7))
+
+tm <- treemap(business[business$NACE1=="C - Manufacturing",], index=c("NACE2"), vSize="turnover", vColor="turnover", type="manual", range=c(0, 5.5e7), palette="RdYlGn")
+
+itreemap(business)
+
+itreemap()

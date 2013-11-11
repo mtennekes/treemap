@@ -9,12 +9,13 @@
 #' @param type type of the treemap, which determines how the rectangles are colored:
 #' \describe{
 #'    	\item{\code{"index"}:}{colors are determined by the \code{index} variables. Different branches in the hierarchical tree get different colors. For this type, \code{vColor} is not needed.}
-#'    	\item{\code{"value"}:}{the numeric \code{vColor}-column is directly mapped to a color palette.}
+#'    	\item{\code{"value"}:}{the numeric \code{vColor}-column is directly mapped to a color palette. This palette is diverging, so that values of 0 are assigned to the mid color (white or yellow), and negative and positive values are assigned to color based on two different hues colors (by default reds for negative and greens for positive values). For more freedom, see \code{"manual"}.}
 #'		\item{\code{"comp"}:}{colors indicate change of the \code{vSize}-column with respect to the numeric \code{vColor}-column in percentages. Note: the negative scale may be different from the positive scale in order to compensate for the ratio distribution.}
 #'		\item{\code{"dens"}:}{colors indicate density. This is analogous to a population density map where \code{vSize}-values are area sizes, \code{vColor}-values are populations per area, and colors are computed as densities (i.e. population per squared km).}
 #'		\item{\code{"depth"}:}{each aggregation level (defined by \code{index}) has a distinct color. For this type, \code{vColor} is not needed.}
 #'    	\item{\code{"categorical"}:}{\code{vColor} is a factor column that determines the color.}
-#'      \item{\code{"color"}:}{\code{vColor} is a vector of colors in the hexadecimal (#RRGGBB) format}}
+#'      \item{\code{"color"}:}{\code{vColor} is a vector of colors in the hexadecimal (#RRGGBB) format}
+#'      \item{\code{"manual"}:}{The numeric \code{vColor}-column is directly mapped to a color palette. Both palette and range should be provided. The palette is mapped linearly to the range.}}
 #' @param title title of the treemap.
 #' @param title.legend title of the legend.
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
@@ -163,7 +164,7 @@ treemap <-
         }	
         
         # type
-        if (!type %in% c("value", "categorical", "comp", "dens", "index", "depth", "color")) 
+        if (!type %in% c("value", "categorical", "comp", "dens", "index", "depth", "color", "manual")) 
             stop("Invalid type")
         
         # title	
@@ -245,6 +246,8 @@ treemap <-
                 palette <- brewer.pal(11,"RdYlGn")
             } else if (type == "categorical") {
                 palette <- "HCL"
+            } else if (type == "manual") {
+                stop("For \"manual\" treemaps, a palette should be provided.")
             }
         } else {
             reverse <- (substr(palette[1], 1, 1)=="-")
@@ -277,6 +280,8 @@ treemap <-
                 stop("length range is not 2")
             if (!is.numeric(range))
                 stop("range is not numeric")
+        } else if (type=="manual") {
+            stop("For \"manual\" treemaps, a palette should be provided.")
         }
         
         # fontsize.title
@@ -444,8 +449,8 @@ treemap <-
         upViewport(0 + !is.null(vp))
         
         # return treemap info
-        tm <- datlist[, c(indexList, "s", "l", "x0", "y0", "w", "h", "color"), with=FALSE]
-        setnames(tm, c(index, "size", "level", "x0", "y0", "w", "h", "color"))
+        tm <- datlist[, c(indexList, "s", "colorvalue", "l", "x0", "y0", "w", "h", "color"), with=FALSE]
+        setnames(tm, c(index, "size", "colorvalue", "level", "x0", "y0", "w", "h", "color"))
         
         tmSave <- list(tm = as.data.frame(tm),
                        type = type,

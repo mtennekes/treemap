@@ -49,6 +49,6 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 		
 	if (position.legend!="none") drawLegend(paste(prettyP, "%", sep=""), legCol,
 											position.legend=="bottom", border.col, fontfamily.legend)
-	return (list(color[scale], range(prettyP)))
+	return (list(color[scale], range(prettyP), perc))
 }
 

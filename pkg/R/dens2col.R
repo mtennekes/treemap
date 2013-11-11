@@ -2,8 +2,10 @@ dens2col <-
 function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 	color <- colorRampPalette(palette,space="rgb")(99)
 
+    values <- dat$c
+    
     if (any(is.na(range))) {
-	    prettyP <- pretty(dat$c,n=8)
+	    prettyP <- pretty(values,n=8)
     } else {
         prettyP <- pretty(range,n=8)
     }
@@ -25,7 +27,7 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 	if (position.legend!="none") drawLegend(prettyT, legCol,
 											position.legend=="bottom", border.col, fontfamily.legend)
 
-	scale <- floor((dat$c - minP) / (maxP - minP) * 98) + 1
+	scale <- floor((values - minP) / (maxP - minP) * 98) + 1
 	if (any(scale<1)) {
 	    warning("Values found that are lower than the minimum of range")
 	    scale[scale<1] <- 1
@@ -34,6 +36,6 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 	    warning("Values found that are higher than the maximum of range")
 	    scale[scale>99] <- 99
 	}
-	return (list(color[scale], range(prettyP)))
+	return (list(color[scale], range(prettyP), values))
 }
 
