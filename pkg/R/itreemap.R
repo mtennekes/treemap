@@ -42,12 +42,18 @@ itreemap <- function(dtf=NULL) {
     .tm <<- NULL
     .back <<- 0
     .filters <<- NULL
-    .zoom <<- FALSE
     .asp <<- NULL
     .range <<- NA
     .hcl <<- list(tmSetHCLoptions())
     .x <<- 0
     .y <<- 0
+    .count <<- 0
+    
+    
+    .size <<- ""
+    .color <<- ""
+    .type <<- ""
+    .index <<- rep("", 4)
     
     runApp(list(
         ui = pageWithSidebar(
@@ -136,7 +142,7 @@ itreemap <- function(dtf=NULL) {
             getFilter <- reactive({
                 back <- input$back
                 l <- getClickID()
-                .range <<- NA
+                #.range <<- NA
                 
                 if (back == .back) {
                     if (!is.null(l)) if (!(l$x0==0 && l$y0==0 && l$w==1 && l$y==1))  {
@@ -169,7 +175,7 @@ itreemap <- function(dtf=NULL) {
                         
                         .asp <<- if (is.null(.asp)) c(asp, asp*(w/h)) else c(.asp, asp*(w/h))
                         .range <<- .tm$range
-                        .zoom <<- TRUE
+                        cat("zoom in:", .range, "\n")
                         .filters <<- unique(c(.filters, filter))
                     }
                 } else {
@@ -178,7 +184,7 @@ itreemap <- function(dtf=NULL) {
                         .hcl <<- .hcl[-(length(.hcl))]
                         .asp <<- .asp[-(length(.asp))]
                         .range <<- .tm$range
-                        .zoom <<- TRUE
+                        cat("zoom out:", .range, "\n")
                     }
                     .back <<- back
                 }
@@ -187,43 +193,73 @@ itreemap <- function(dtf=NULL) {
             })
             
             getData <- reactive({
-                l <- getClickID()
+                #l <- getClickID()
+                size <- input$size
+                color <- input$color
+                type <- input$type
                 
-                if (!is.null(l)) {
-                    index <- input$index
-                    
-                    p <- get(dataset())
-                    
-                    m <- as.matrix(p[, index])
-                    l2 <- as.vector(as.matrix(l[index]))
-                    
-                    res <- apply(m, MARGIN=1, function(x)all(x==l2))
-                    
-                    colnames <- intersect(colnames, names(p))
-                    dat <- p[res, colnames]
-                    
-                    dat <- dat[order(dat[[size]], decreasing=TRUE),]
-                    
-                    if (is.na(l[1,1])) return(dat[1,])
-                    return(dat)
+                ind1 <- input$ind1
+                ind2 <- input$ind2
+                ind3 <- input$ind3
+                ind4 <- input$ind4
+                
+                asp <- input$fixasp
+                scales <- input$fixscales
+                
+                # check if all parameters are ready
+                if (is.null(size) || is.null(color) || is.null(type) || 
+                        is.null(ind1) || is.null(ind2) || is.null(ind3) || is.null(ind4) || is.null(asp) || is.null(scales)) return(NULL)
+                
+                if (!is.null(.tm)) {
+                    cat("refresh\n")
+                    return(.tm$tm)
                 } else {
-                    dat <- as.data.frame(as.list(rep(NA, length(colnames))))
-                    names(dat) <- colnames
-                    return(dat)
+                    return(null)
                 }
+                
+#                 if (!is.null(l)) {
+#                     index <- input$index
+#                     
+#                     p <- get(dataset())
+#                     
+#                     m <- as.matrix(p[, index])
+#                     l2 <- as.vector(as.matrix(l[index]))
+#                     
+#                     res <- apply(m, MARGIN=1, function(x)all(x==l2))
+#                     
+#                     colnames <- intersect(colnames, names(p))
+#                     dat <- p[res, colnames]
+#                     
+#                     dat <- dat[order(dat[[size]], decreasing=TRUE),]
+#                     
+#                     if (is.na(l[1,1])) return(dat[1,])
+#                     return(dat)
+#                 } else {
+#                     dat <- as.data.frame(as.list(rep(NA, length(colnames))))
+#                     names(dat) <- colnames
+#                     return(dat)
+#                 }
             })
 
             getSummary <- reactive({
                 l <- getHoverID()
-                
                 if (!is.null(l)) {
                     sizeID <- which(names(l)=="size")
                     colorID <- which(names(l)=="colorvalue")
                     l <- if (is.na(l[[colorID]])) l[1:sizeID] else l[1:(sizeID+1)]
-                        
-                    return(as.data.frame(l))
+                    #return(iris[1,])
+                    
+                    dt <- as.data.frame(l)
+                    row.names(dt) <- ""
+                    
+                    return(as.data.frame(dt))
                 } else {
-                    return(data.frame())
+                    
+                    dt <- data.frame('...'="")
+                    row.names(dt) <- ""
+                    
+                    return(dt)
+                    #return(NULL)#data.frame())
                 }
             })
             
@@ -290,6 +326,7 @@ itreemap <- function(dtf=NULL) {
                 }
             })
             
+    
 
             output$size <- renderUI({
                 p <- dataset()
@@ -355,12 +392,26 @@ itreemap <- function(dtf=NULL) {
                 
                 # create index vector and get filter
                 index <- c(ind1, ind2, ind3, ind4)
-                index <- index[index!="<NA>"]
+                
                 filters <- getFilter()
+                if (all(index==.index) && size ==.size && color==.color && type == .type) {
+                    #cat("same variables\n")
+                    #return(NULL)
+                } else {
+                    .range <<- NA
+                }
+                
+                .size <<- size
+                .color <<- color
+                .type <<- type
+                .index <<- index
+                
+
+                index <- index[index!="<NA>"]
                 
                 # determine zoom level
                 zoomLevel <- if (is.null(filters)) 0 else length(filters)
-
+                
                 # check parameters                
                 if (!(anyDuplicated(index) 
                     || (color=="<not needed>" && !(type %in% c("index", "depth")))
@@ -368,6 +419,7 @@ itreemap <- function(dtf=NULL) {
                     || ((color %in% dfcat[[p]]) && !(color %in% dfcolor[[p]]) && (type != "categorical"))
                     || (!(color %in% dfcat[[p]]) && (color %in% dfcolor[[p]]) && (type != "color"))
                     || ((color %in% dfcat[[p]]) && (color %in% dfcolor[[p]]) && !(type %in% c("categorical", "color"))))) {
+                    
                     
                     # create empty base R plot to obtain hover and click info
                     par(mar=c(0,0,0,0), xaxs='i', yaxs='i') 
@@ -387,14 +439,11 @@ itreemap <- function(dtf=NULL) {
                     }
                     
                     # reset range if treemap is changed
-                    if (.zoom) {
-                        .zoom <<- FALSE
-                    } else {
-                        .range <<- NA
-                    }
+                    .count <<- .count + 1
+                    cat("draw", .count, " range", .range,"\n")
                     
                     # get range and hcl info
-                    range <- if(scales) .range else NA
+                    .range <<- if(scales) .range else NA
                     hcl <- if(scales) as.list(.hcl[[zoomLevel+1]]) else .hcl[[1]]
                     
                     #require(data.table)
@@ -406,7 +455,7 @@ itreemap <- function(dtf=NULL) {
                             vp=vps$plot,
                             palette.HCL.options=hcl,
                             aspRatio=aspRatio,
-                            range=range)
+                            range=.range)
                 }
                 
             })
