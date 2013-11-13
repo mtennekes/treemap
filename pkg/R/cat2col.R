@@ -15,6 +15,6 @@ function(dat, position.legend, palette, labels, palette.HCL.options, border.col,
 	
 	if (position.legend!="none") drawLegend(labels, colorl, position.legend=="bottom", border.col, fontfamily.legend)
 	
-	return (colorl[dat$c])
+	return (list(colorl[dat$c], NA, dat$c))
 }
 

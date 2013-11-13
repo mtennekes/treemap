@@ -19,7 +19,7 @@ tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, 
         cat2col(datlist, position.legend, palette, levels(datlist$c), palette.HCL.options, border.col, fontfamily.legend)
     }
 
-    if (type %in% c("comp", "dens", "value", "manual")) {
+    if (type %in% c("comp", "dens", "value", "manual", "categorical")) {
         datlist$color <- res[[1]]
         range <- res[[2]]
         datlist$colorvalue <- res[[3]]

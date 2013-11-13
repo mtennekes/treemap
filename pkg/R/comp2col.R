@@ -1,7 +1,6 @@
 comp2col <-
 function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 	color <- colorRampPalette(palette,space="rgb")(99)
-	
 	perc <-((dat$s - dat$c)/dat$c) * 100
 	
 	growth <- (dat$s / dat$c)
@@ -13,8 +12,12 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 	log.growth <- log(growth)
 	
 	# edit perc
-	perc[perc==Inf] <- max(900, c(perc[perc!=Inf]))
-	perc[perc==0] <- min(-90, c(perc[perc!=0]))
+	perc.orig <- perc
+	
+    perc[perc==Inf] <- max(900, c(perc[perc!=Inf]))
+ 	perc[perc==-100] <- min(-90, c(perc[perc!=-100]))
+#   perc[perc > 900] <- 900
+# 	perc[perc < -90] <- -90
 	
 	range_lg <- range(log.growth)
 	
@@ -49,6 +52,6 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 		
 	if (position.legend!="none") drawLegend(paste(prettyP, "%", sep=""), legCol,
 											position.legend=="bottom", border.col, fontfamily.legend)
-	return (list(color[scale], range(prettyP), perc))
+	return (list(color[scale], range(prettyP), perc.orig))
 }
 

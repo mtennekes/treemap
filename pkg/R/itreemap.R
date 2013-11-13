@@ -77,10 +77,15 @@ itreemap <- function(dtf=NULL) {
                 tabsetPanel(
                     tabPanel("Treemap", plotOutput("plot", hoverId="hover", clickId="click", height="700px"),
                              tableOutput("summary")),
-                    tabPanel("Data", dataTableOutput("data")))
-            )
+                    tabPanel("Data", dataTableOutput("data")),
+                    tabPanel("Microdata", dataTableOutput("microdata")))
+        )
         ),
-        server = function(input, output){
+        server = function(input, output, session){
+            
+            values <- reactiveValues()
+            values$update <- FALSE
+            
             dataset <- reactive({
                 ifelse(is.null(input$df), dfs[1], input$df)
             })
@@ -91,12 +96,6 @@ itreemap <- function(dtf=NULL) {
                 y <- input$hover$y
                 .tm <- get(".tm", .GlobalEnv)
                 
-                index <- input$index
-                size <- input$size
-                color <- input$color
-                #type <- input$type
-                
-                colnames <- c(index, size) #intersect(, names(p))
                 if (!is.null(.tm)) {
                     
                     x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
@@ -119,12 +118,6 @@ itreemap <- function(dtf=NULL) {
                 .x <<- x
                 .y <<- y
                 
-                index <- input$index
-                size <- input$size
-                color <- input$color
-                #type <- input$type
-                
-                colnames <- c(index, size) #intersect(, names(p))
                 if (!is.null(.tm)) {
                     x <- (x - .tm$vpCoorX[1]) / (.tm$vpCoorX[2] - .tm$vpCoorX[1])
                     y <- (y - .tm$vpCoorY[1]) / (.tm$vpCoorY[2] - .tm$vpCoorY[1])
@@ -149,7 +142,6 @@ itreemap <- function(dtf=NULL) {
                         filter <- as.character(l[[1]])
                         
                         sel <- .tm$tm[[1]] == filter
-                        
                         cols <- .tm$tm$color[sel]
                         cols <- substr(cols, 1L, 7L)
                         cols <- hex2RGB(cols)
@@ -158,7 +150,7 @@ itreemap <- function(dtf=NULL) {
                         hcl <- .hcl[[length(.hcl)]]
                         hcl$hue_start <- min(hues)
                         hcl$hue_end <- max(hues)
-                        if (length(l)>8) {
+                        if (length(l)>9) {
                             hcl$chroma <- hcl$chroma + hcl$chroma_slope
                             hcl$luminance <- hcl$luminance + hcl$luminance_slope
                         }
@@ -175,7 +167,7 @@ itreemap <- function(dtf=NULL) {
                         
                         .asp <<- if (is.null(.asp)) c(asp, asp*(w/h)) else c(.asp, asp*(w/h))
                         .range <<- .tm$range
-                        cat("zoom in:", .range, "\n")
+                        #cat("zoom in:", .range, "\n")
                         .filters <<- unique(c(.filters, filter))
                     }
                 } else {
@@ -184,7 +176,7 @@ itreemap <- function(dtf=NULL) {
                         .hcl <<- .hcl[-(length(.hcl))]
                         .asp <<- .asp[-(length(.asp))]
                         .range <<- .tm$range
-                        cat("zoom out:", .range, "\n")
+                        #cat("zoom out:", .range, "\n")
                     }
                     .back <<- back
                 }
@@ -192,62 +184,21 @@ itreemap <- function(dtf=NULL) {
                 .filters
             })
             
-            getData <- reactive({
-                #l <- getClickID()
-                size <- input$size
-                color <- input$color
-                type <- input$type
-                
-                ind1 <- input$ind1
-                ind2 <- input$ind2
-                ind3 <- input$ind3
-                ind4 <- input$ind4
-                
-                asp <- input$fixasp
-                scales <- input$fixscales
-                
-                # check if all parameters are ready
-                if (is.null(size) || is.null(color) || is.null(type) || 
-                        is.null(ind1) || is.null(ind2) || is.null(ind3) || is.null(ind4) || is.null(asp) || is.null(scales)) return(NULL)
-                
-                if (!is.null(.tm)) {
-                    cat("refresh\n")
-                    return(.tm$tm)
-                } else {
-                    return(null)
-                }
-                
-#                 if (!is.null(l)) {
-#                     index <- input$index
-#                     
-#                     p <- get(dataset())
-#                     
-#                     m <- as.matrix(p[, index])
-#                     l2 <- as.vector(as.matrix(l[index]))
-#                     
-#                     res <- apply(m, MARGIN=1, function(x)all(x==l2))
-#                     
-#                     colnames <- intersect(colnames, names(p))
-#                     dat <- p[res, colnames]
-#                     
-#                     dat <- dat[order(dat[[size]], decreasing=TRUE),]
-#                     
-#                     if (is.na(l[1,1])) return(dat[1,])
-#                     return(dat)
-#                 } else {
-#                     dat <- as.data.frame(as.list(rep(NA, length(colnames))))
-#                     names(dat) <- colnames
-#                     return(dat)
-#                 }
-            })
-
-            getSummary <- reactive({
+           getSummary <- reactive({
                 l <- getHoverID()
                 if (!is.null(l)) {
                     sizeID <- which(names(l)=="size")
                     colorID <- which(names(l)=="colorvalue")
                     l <- if (is.na(l[[colorID]])) l[1:sizeID] else l[1:(sizeID+1)]
-                    #return(iris[1,])
+                    names(l)[sizeID] <- .size
+                    if (.type=="comp") {
+                        names(l)[colorID] <- paste("compared to", .color, "(in %)")
+                    } else if (.type=="dens") {
+                        names(l)[colorID] <- paste(.color, "per", .size)
+                    } else if (.type %in% c("value", "categorical")) {
+                        names(l)[colorID] <- .color
+                    }
+                    
                     
                     dt <- as.data.frame(l)
                     row.names(dt) <- ""
@@ -360,12 +311,8 @@ itreemap <- function(dtf=NULL) {
             })
 
             output$type <- renderUI({
-                #p <- dataset()
-                #vars <- dfvars[[p]]
-                
                 selectInput("type", label="Type", choices=c("index", "value", "comp", "dens", 
                                                                      "depth", "categorical", "color"))
-                
             })
             
             
@@ -440,13 +387,16 @@ itreemap <- function(dtf=NULL) {
                     
                     # reset range if treemap is changed
                     .count <<- .count + 1
-                    cat("draw", .count, " range", .range,"\n")
+                    #cat("draw", .count, " range", .range,"\n")
                     
                     # get range and hcl info
                     .range <<- if(scales) .range else NA
+
+                    
                     hcl <- if(scales) as.list(.hcl[[zoomLevel+1]]) else .hcl[[1]]
                     
                     #require(data.table)
+                    values$update <- TRUE
                     .tm <<- treemap(dat, 
                             index=index,
                             vSize=size, 
@@ -456,18 +406,81 @@ itreemap <- function(dtf=NULL) {
                             palette.HCL.options=hcl,
                             aspRatio=aspRatio,
                             range=.range)
+                    values$update <- FALSE
                 }
                 
             })
+            
             output$summary <- renderTable({
-               getSummary()
+           getSummary()
             })
+
+            output$microdata <- renderDataTable({
+                p <- dataset()
+                size <- input$size
+                color <- input$color
+                type <- input$type
+                
+                ind1 <- input$ind1
+                ind2 <- input$ind2
+                ind3 <- input$ind3
+                ind4 <- input$ind4
+                
+                asp <- input$fixasp
+                scales <- input$fixscales
+                update <- values$update
+                
+                
+                dat <- get(p)
+                
+                index <- c(ind1, ind2, ind3, ind4)
+                filters <- getFilter()
+                zoomLevel <- if (is.null(filters)) 0 else length(filters)
+                if (zoomLevel>0) {
+                    filterString <- paste(paste(index[1:zoomLevel], paste("\"", filters, "\"", sep=""), sep=" == "), collapse=" & ")
+                    selection <- eval(parse(text=filterString), dat, parent.frame())
+                    dat <- dat[selection,]
+                }
+                dat
+            })
+            
             output$data <- renderDataTable({
-               getData()
+                p <- dataset()
+                
+                size <- input$size
+                color <- input$color
+                type <- input$type
+                
+                ind1 <- input$ind1
+                ind2 <- input$ind2
+                ind3 <- input$ind3
+                ind4 <- input$ind4
+                
+                asp <- input$fixasp
+                scales <- input$fixscales
+                update <- values$update
+                tm <- .tm$tm
+                
+                lvls <- tm$level
+                dat <- tm[lvls==max(lvls), 1:(ncol(tm)-6)]
+                
+                sizeID <- which(names(dat)=="size")
+                colorID <- which(names(dat)=="colorvalue")
+                names(dat)[sizeID] <- size
+                if (type=="comp") {
+                    names(dat)[colorID] <- paste("compared to", color, "(in %)")
+                } else if (type=="dens") {
+                    names(dat)[colorID] <- paste(color, "per", size)
+                } else if (type %in% c("value", "categorical")) {
+                    names(dat)[colorID] <- color
+                } else {
+                    dat <- dat[,-colorID]
+                }
+                
+                dat
             })
             
         }
     ))
 }
-#data(business); itreemap()
 
