@@ -449,8 +449,8 @@ treemap <-
         upViewport(0 + !is.null(vp))
         
         # return treemap info
-        tm <- datlist[, c(indexList, "s", "colorvalue", "l", "x0", "y0", "w", "h", "color"), with=FALSE]
-        setnames(tm, c(index, "size", "colorvalue", "level", "x0", "y0", "w", "h", "color"))
+        tm <- datlist[, c(indexList, "s", "c", "colorvalue", "l", "x0", "y0", "w", "h", "color"), with=FALSE]
+        setnames(tm, c(index, "vSize", "vColor", "vColorValue", "level", "x0", "y0", "w", "h", "color"))
         
         tmSave <- list(tm = as.data.frame(tm),
                        type = type,

@@ -3,12 +3,13 @@
 #' A treemap is a space-filling visualization of hierarchical structures. This function offers great flexibility to draw treemaps. Required is a data.frame (\code{dtf}) that contains one or more hierarchical index columns given by \code{index}, a column that determines the rectangle area sizes (\code{vSize}), and optionally a column that determines the rectangle colors (\code{vColor}). The way how rectangles are colored is determined by the argument \code{type}.
 #' 
 #' @param dtf a data.frame (\code{\link{treemap}) If not provided, then all data.frames in the global workspace are given as options in the drop-down list, with the first one loaded.
+#' @param height height of the plotted treemap in pixels
 #' @import data.table
 #' @import grid
 #' @import gridBase
 #' @import shiny
 #' @export
-itreemap <- function(dtf=NULL) {
+itreemap <- function(dtf=NULL, height=NULL) {
     
     # get data.frame(s)
     obs <- ls(envir=.GlobalEnv)
@@ -55,6 +56,17 @@ itreemap <- function(dtf=NULL) {
     .type <<- ""
     .index <<- rep("", 4)
     
+    # set plotheight: quick and dirty method
+    if (missing(height)) {
+        if (Sys.info()[['sysname']]=="Windows") {
+            (scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE))
+            scr_height <- as.numeric(scr_height[-c(1, length(scr_height))])
+            height <- scr_height - 300
+        } else {
+            height <- 800
+        }
+    }
+    
     runApp(list(
         ui = pageWithSidebar(
             headerPanel("Interactive treemap"),
@@ -75,7 +87,7 @@ itreemap <- function(dtf=NULL) {
             mainPanel(
                 #plotOutput("plot",hoverId="hover",height="700px")
                 tabsetPanel(
-                    tabPanel("Treemap", plotOutput("plot", hoverId="hover", clickId="click", height="700px"),
+                    tabPanel("Treemap", plotOutput("plot", hoverId="hover", clickId="click", height=paste0(height, "px")),
                              tableOutput("summary")),
                     tabPanel("Data", dataTableOutput("data")),
                     tabPanel("Microdata", dataTableOutput("microdata")))
@@ -187,18 +199,28 @@ itreemap <- function(dtf=NULL) {
            getSummary <- reactive({
                 l <- getHoverID()
                 if (!is.null(l)) {
-                    sizeID <- which(names(l)=="size")
-                    colorID <- which(names(l)=="colorvalue")
-                    l <- if (is.na(l[[colorID]])) l[1:sizeID] else l[1:(sizeID+1)]
-                    names(l)[sizeID] <- .size
-                    if (.type=="comp") {
-                        names(l)[colorID] <- paste("compared to", .color, "(in %)")
-                    } else if (.type=="dens") {
-                        names(l)[colorID] <- paste(.color, "per", .size)
-                    } else if (.type %in% c("value", "categorical")) {
-                        names(l)[colorID] <- .color
-                    }
+                    sizeID <- which(names(l)=="vSize")
                     
+                    
+                    id <- switch(.type,
+                                 comp=sizeID+2,
+                                 dens=sizeID+2,
+                                 value=sizeID+1,
+                                 index=sizeID,
+                                 categorical=sizeID+1,
+                                 depth=sizeID)
+
+                
+                    l <- l[1:id]
+                    names(l)[sizeID] <- .size
+                    
+                    if (!(.type %in% c("index", "depth"))) names(l)[sizeID+1] <- .color
+                
+                    if (.type=="comp") {
+                        names(l)[sizeID+2] <- paste("compared to", .color, "(in %)")
+                    } else if (.type=="dens") {
+                        names(l)[sizeID+2] <- paste(.color, "per", .size)
+                    }                    
                     
                     dt <- as.data.frame(l)
                     row.names(dt) <- ""
