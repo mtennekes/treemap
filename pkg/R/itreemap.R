@@ -40,6 +40,8 @@ itreemap <- function(dtf=NULL, height=NULL) {
     dtfname <- if (!missing(dtf)) deparse(substitute(dtf)) else NULL
     
     # global parameters to be used in the shiny app: not the most elegant solution, but it works
+    .tm <- .back <- .filters <- .asp <- .range <- .hcl <- .x <- .y <- .count <- .size <- .color <- .type <- .index <- NULL
+    
     .tm <<- NULL
     .back <<- 0
     .filters <<- NULL
@@ -60,7 +62,7 @@ itreemap <- function(dtf=NULL, height=NULL) {
         if (Sys.info()[['sysname']]=="Windows") {
             (scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE))
             scr_height <- as.numeric(scr_height[2])
-            height <- scr_height - 375
+            height <- scr_height - 350
         } else {
             height <- 800
         }
@@ -124,6 +126,7 @@ itreemap <- function(dtf=NULL, height=NULL) {
                 
                 if (is.null(x) || is.null(y)) return(NULL)
                 if (x==.x && y==.y) return(NULL)
+                .x <- .y <- NULL
                 .x <<- x
                 .y <<- y
                 
@@ -145,9 +148,11 @@ itreemap <- function(dtf=NULL, height=NULL) {
                 back <- input$back
                 l <- getClickID()
                 #.range <<- NA
+                .tm <- .filters <- .asp <- .range <- .hcl <- NULL
                 
                 if (back == .back) {
                     if (!is.null(l)) if (!(l$x0==0 && l$y0==0 && l$w==1 && l$y==1))  {
+                        
                         # mouse click on treemap
                         filter <- as.character(l[[1]])
                         
@@ -329,7 +334,8 @@ itreemap <- function(dtf=NULL, height=NULL) {
             })
             
             output$plot <- renderPlot({ 
-
+                .tm <- .range <- .count <- .size <- .color <- .type <- .index <- NULL
+                
                 # get input parameters
                 p <- dataset()
 

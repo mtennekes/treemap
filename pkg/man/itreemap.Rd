@@ -2,30 +2,15 @@
 \alias{itreemap}
 \title{Interactieve versie van treemap}
 \usage{
-  itreemap(dtf, index, vSize, vColor = NULL,
-    type = "index")
+  itreemap(dtf = NULL, height = NULL)
 }
 \arguments{
-  \item{dtf}{a data.frame. Required.}
+  \item{dtf}{a data.frame (\code{\link{treemap}) If not
+  provided, then all data.frames in the global workspace
+  are given as options in the drop-down list, with the
+  first one loaded.}
 
-  \item{index}{vector of column names in \code{dtf} that
-  specify the aggregation indices. It could contain only
-  one column name, which results in a treemap without
-  hierarchy. If multiple column names are provided, the
-  first name is the highest aggregation level, the second
-  name the second-highest aggregation level, and so on.
-  Required.}
-
-  \item{vSize}{name of the column in \code{dtf} that
-  specifies the sizes of the rectangles. Required.}
-
-  \item{vColor}{name of the column that, in combination
-  with \code{type}, determines the colors of the
-  rectangles. The variable can be scaled by the addition of
-  "*<scale factor>" or "/<scale factor>".}
-
-  \item{type}{type of the treemap. See
-  \code{\link{treemap}}}
+  \item{height}{height of the plotted treemap in pixels}
 }
 \description{
   A treemap is a space-filling visualization of

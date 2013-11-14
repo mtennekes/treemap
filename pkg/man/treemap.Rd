@@ -7,15 +7,17 @@
     sortID = "-size", palette = NA,
     palette.HCL.options = NULL, range = NA,
     fontsize.title = 14, fontsize.labels = 11,
-    fontsize.legend = 12, font.title = "serif",
-    font.labels = "sans", font.legend = "serif",
-    border.col = "black", lowerbound.cex.labels = 0.4,
-    inflate.labels = FALSE, bg.labels = NULL,
-    force.print.labels = FALSE, overlap.labels = 0.5,
-    lwds = c(3, 2, 1), position.legend = NULL,
-    drop.unused.levels = TRUE, aspRatio = NA, vp = NULL,
-    border.col = "black", font.title = "serif",
-    font.legend = "serif", font.labels = "sans")
+    fontsize.legend = 12,
+    fontface.labels = c("bold", rep("plain", length(index) - 1)),
+    fontfamily.title = "sans", fontfamily.labels = "sans",
+    fontfamily.legend = "sans", border.col = "black",
+    border.lwds = c(length(index) + 1, (length(index) - 1):1),
+    lowerbound.cex.labels = 0.4, inflate.labels = FALSE,
+    bg.labels = NULL, force.print.labels = FALSE,
+    overlap.labels = 0.5,
+    align.labels = c("center", "center"), xmod.labels = 0,
+    ymod.labels = 0, position.legend = NULL,
+    drop.unused.levels = TRUE, aspRatio = NA, vp = NULL)
 }
 \arguments{
   \item{dtf}{a data.frame. Required.}
@@ -43,11 +45,17 @@
   hierarchical tree get different colors. For this type,
   \code{vColor} is not needed.} \item{\code{"value"}:}{the
   numeric \code{vColor}-column is directly mapped to a
-  color palette.} \item{\code{"comp"}:}{colors indicate
-  change of the \code{vSize}-column with respect to the
-  numeric \code{vColor}-column in percentages. Note: the
-  negative scale may be different from the positive scale
-  in order to compensate for the ratio distribution.}
+  color palette. This palette is diverging, so that values
+  of 0 are assigned to the mid color (white or yellow), and
+  negative and positive values are assigned to color based
+  on two different hues colors (by default reds for
+  negative and greens for positive values). For more
+  freedom, see \code{"manual"}.}
+  \item{\code{"comp"}:}{colors indicate change of the
+  \code{vSize}-column with respect to the numeric
+  \code{vColor}-column in percentages. Note: the negative
+  scale may be different from the positive scale in order
+  to compensate for the ratio distribution.}
   \item{\code{"dens"}:}{colors indicate density. This is
   analogous to a population density map where
   \code{vSize}-values are area sizes, \code{vColor}-values
@@ -59,7 +67,11 @@
   \item{\code{"categorical"}:}{\code{vColor} is a factor
   column that determines the color.}
   \item{\code{"color"}:}{\code{vColor} is a vector of
-  colors in the hexadecimal (#RRGGBB) format}}}
+  colors in the hexadecimal (#RRGGBB) format}
+  \item{\code{"manual"}:}{The numeric \code{vColor}-column
+  is directly mapped to a color palette. Both palette and
+  range should be provided. The palette is mapped linearly
+  to the range.}}}
 
   \item{title}{title of the treemap.}
 
@@ -137,26 +149,43 @@
   When omitted, the range of actual values is used. This
   range is mapped to \code{palette}.}
 
-  \item{fontsize.title}{(maximum) font size of the title}
+  \item{fontsize.title}{font size of the title}
 
   \item{fontsize.labels}{font size(s) of the data labels,
-  which can be:}
+  which is either a single number that specifies the font
+  size for all aggregation levels, or a vector that
+  specifies the font size for each aggregation level}
 
-  \item{font.title}{ront family of the title.}
+  \item{fontsize.legend}{for size for the legend}
 
-  \item{font.labels}{ront family of the labels in each
-  rectangle.}
+  \item{fontface.labels}{either a single value, or a vector
+  of values one for each aggregation level. Values can be
+  integers If an integer, following the R base graphics
+  standard: 1 = plain, 2 = bold, 3 = italic, 4 = bold
+  italic, or characters: \code{"plain"}, \code{"bold"},
+  \code{"italic"}, \code{"oblique"}, and
+  \code{"bold.italic"}.}
 
-  \item{font.legend}{font family of the legend.}
+  \item{fontfamily.title}{font family of the title.
+  Standard values are "serif", "sans", "mono", "symbol".
+  Mapping is device dependent.}
+
+  \item{fontfamily.labels}{font family of the labels in
+  each rectangle. Standard values are "serif", "sans",
+  "mono", "symbol". Mapping is device dependent.}
+
+  \item{fontfamily.legend}{font family of the legend.
+  Standard values are "serif", "sans", "mono", "symbol".
+  Mapping is device dependent.}
 
   \item{border.col}{colour of borders drawn around each
-  rectangle. \itemize{ \item one number, which specifies
-  the font size for all aggregation levels \item vector of
-  two numbers, which specific the font sizes for 1) the
-  highest and 2) the other aggregation levels \item vector
-  of three numbers, which specific the font sizes for 1)
-  the highest, 2) any in-between, and 3) the lowest
-  aggregation level.}}
+  rectangle. Either one colour for all rectangles or a
+  vector of colours, one for each aggregation level}
+
+  \item{border.lwds}{thicknesses of border lines. Either
+  one number specifies the line thicknesses (widths) for
+  all rectangles or a vector of line thicknesses for each
+  aggregation level.}
 
   \item{fontsize.legend}{(maximum) font size of the legend}
 
@@ -192,11 +221,6 @@
   default value .5, means that lower level labels are
   printed if other labels do not overlap with more than .5
   times their area size.}
-
-  \item{lwds}{thicknesses of lines. Vector of three numbers
-  that specifies the line thickness (width) of 1) the
-  highest aggregation level, 2) the in-between aggregation
-  level, and 3) the lowest aggregation level.}
 
   \item{position.legend}{position of the legend:
   \code{"bottom"}, \code{"right"}, or \code{"none"}. For
