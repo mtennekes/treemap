@@ -39,7 +39,7 @@ itreemap <- function(dtf=NULL, height=NULL) {
     
     dtfname <- if (!missing(dtf)) deparse(substitute(dtf)) else NULL
     
-    
+    # global parameters to be used in the shiny app: not the most elegant solution, but it works
     .tm <<- NULL
     .back <<- 0
     .filters <<- NULL
@@ -49,8 +49,7 @@ itreemap <- function(dtf=NULL, height=NULL) {
     .x <<- 0
     .y <<- 0
     .count <<- 0
-    
-    
+
     .size <<- ""
     .color <<- ""
     .type <<- ""
@@ -60,8 +59,8 @@ itreemap <- function(dtf=NULL, height=NULL) {
     if (missing(height)) {
         if (Sys.info()[['sysname']]=="Windows") {
             (scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE))
-            scr_height <- as.numeric(scr_height[-c(1, length(scr_height))])
-            height <- scr_height - 300
+            scr_height <- as.numeric(scr_height[2])
+            height <- scr_height - 400
         } else {
             height <- 800
         }
@@ -85,13 +84,11 @@ itreemap <- function(dtf=NULL, height=NULL) {
                 actionButton("back", "Zoom out")
             ),
             mainPanel(
-                #plotOutput("plot",hoverId="hover",height="700px")
                 tabsetPanel(
                     tabPanel("Treemap", plotOutput("plot", hoverId="hover", clickId="click", height=paste0(height, "px")),
                              tableOutput("summary")),
                     tabPanel("Data", dataTableOutput("data")),
-                    tabPanel("Microdata", dataTableOutput("microdata")))
-        )
+                    tabPanel("Microdata", dataTableOutput("microdata"))))
         ),
         server = function(input, output, session){
             
@@ -151,9 +148,13 @@ itreemap <- function(dtf=NULL, height=NULL) {
                 
                 if (back == .back) {
                     if (!is.null(l)) if (!(l$x0==0 && l$y0==0 && l$w==1 && l$y==1))  {
+                        # mouse click on treemap
                         filter <- as.character(l[[1]])
                         
+                        # select all rectangles inside clicked rectangle
                         sel <- .tm$tm[[1]] == filter
+                        
+                        # create hcl options
                         cols <- .tm$tm$color[sel]
                         cols <- substr(cols, 1L, 7L)
                         cols <- hex2RGB(cols)
@@ -162,88 +163,80 @@ itreemap <- function(dtf=NULL, height=NULL) {
                         hcl <- .hcl[[length(.hcl)]]
                         hcl$hue_start <- min(hues)
                         hcl$hue_end <- max(hues)
-                        if (length(l)>9) {
+                        if (length(l)>10) {
                             hcl$chroma <- hcl$chroma + hcl$chroma_slope
                             hcl$luminance <- hcl$luminance + hcl$luminance_slope
                         }
                         .hcl <<- c(.hcl, list(hcl))
                         
+                        # set aspect ratio
                         x0 <- .tm$tm$x0[sel]
                         x1 <- x0 + .tm$tm$w[sel]
                         y0 <- .tm$tm$y0[sel]
                         y1 <- y0 + .tm$tm$h[sel]
-                        
                         w <- max(x1) - min(x0)
                         h <- max(y1) - min(y0)
                         asp <- .tm$aspRatio
-                        
                         .asp <<- if (is.null(.asp)) c(asp, asp*(w/h)) else c(.asp, asp*(w/h))
+                        
+                        # get range
                         .range <<- .tm$range
-                        #cat("zoom in:", .range, "\n")
+                        
+                        # add filter
                         .filters <<- unique(c(.filters, filter))
                     }
                 } else {
                     if (!is.null(.filters)) if (length(.filters)) {
+                        # click on zoom out button
                         .filters <<- .filters[-(length(.filters))]
                         .hcl <<- .hcl[-(length(.hcl))]
                         .asp <<- .asp[-(length(.asp))]
                         .range <<- .tm$range
-                        #cat("zoom out:", .range, "\n")
                     }
                     .back <<- back
                 }
-                
                 .filters
             })
             
            getSummary <- reactive({
                 l <- getHoverID()
                 if (!is.null(l)) {
+                    # create summary line on hover                    
                     sizeID <- which(names(l)=="vSize")
-                    
-                    
+
                     id <- switch(.type,
                                  comp=sizeID+2,
                                  dens=sizeID+2,
                                  value=sizeID+1,
                                  index=sizeID,
                                  categorical=sizeID+1,
-                                 depth=sizeID)
+                                 depth=sizeID,
+                                 color=sizeID)
 
-                
                     l <- l[1:id]
                     names(l)[sizeID] <- .size
                     
-                    if (!(.type %in% c("index", "depth"))) names(l)[sizeID+1] <- .color
+                    if (!(.type %in% c("index", "depth", "color"))) names(l)[sizeID+1] <- .color
                 
                     if (.type=="comp") {
                         names(l)[sizeID+2] <- paste("compared to", .color, "(in %)")
                     } else if (.type=="dens") {
                         names(l)[sizeID+2] <- paste(.color, "per", .size)
                     }                    
-                    
                     dt <- as.data.frame(l)
                     row.names(dt) <- ""
-                    
                     return(as.data.frame(dt))
                 } else {
-                    
                     dt <- data.frame('...'="")
                     row.names(dt) <- ""
-                    
                     return(dt)
-                    #return(NULL)#data.frame())
                 }
             })
-            
             
             output$df <- renderUI({
                 selectInput("df", label="Dataset:", choices=dfs, selected=dtfname)
             })
             
-#             output$filter <- reactive({
-#                 getFilter()
-#             })
             
             output$index <- renderUI({
                 p <- dataset()
@@ -299,8 +292,6 @@ itreemap <- function(dtf=NULL, height=NULL) {
                 }
             })
             
-    
-
             output$size <- renderUI({
                 p <- dataset()
                 vars <- dfnum[[p]]
@@ -336,7 +327,6 @@ itreemap <- function(dtf=NULL, height=NULL) {
                 selectInput("type", label="Type", choices=c("index", "value", "comp", "dens", 
                                                                      "depth", "categorical", "color"))
             })
-            
             
             output$plot <- renderPlot({ 
 
@@ -375,7 +365,6 @@ itreemap <- function(dtf=NULL, height=NULL) {
                 .type <<- type
                 .index <<- index
                 
-
                 index <- index[index!="<NA>"]
                 
                 # determine zoom level
@@ -434,10 +423,11 @@ itreemap <- function(dtf=NULL, height=NULL) {
             })
             
             output$summary <- renderTable({
-           getSummary()
+                getSummary()
             })
 
             output$microdata <- renderDataTable({
+                # get input parameters (to get attention)
                 p <- dataset()
                 size <- input$size
                 color <- input$color
@@ -459,6 +449,7 @@ itreemap <- function(dtf=NULL, height=NULL) {
                 filters <- getFilter()
                 zoomLevel <- if (is.null(filters)) 0 else length(filters)
                 if (zoomLevel>0) {
+                    # subset data
                     filterString <- paste(paste(index[1:zoomLevel], paste("\"", filters, "\"", sep=""), sep=" == "), collapse=" & ")
                     selection <- eval(parse(text=filterString), dat, parent.frame())
                     dat <- dat[selection,]
@@ -467,6 +458,7 @@ itreemap <- function(dtf=NULL, height=NULL) {
             })
             
             output$data <- renderDataTable({
+                # get input parameters (to get attention)
                 p <- dataset()
                 
                 size <- input$size
@@ -485,19 +477,29 @@ itreemap <- function(dtf=NULL, height=NULL) {
                 
                 lvls <- tm$level
                 dat <- tm[lvls==max(lvls), 1:(ncol(tm)-6)]
+
+                sizeID <- which(names(dat)=="vSize")
                 
-                sizeID <- which(names(dat)=="size")
-                colorID <- which(names(dat)=="colorvalue")
-                names(dat)[sizeID] <- size
-                if (type=="comp") {
-                    names(dat)[colorID] <- paste("compared to", color, "(in %)")
-                } else if (type=="dens") {
-                    names(dat)[colorID] <- paste(color, "per", size)
-                } else if (type %in% c("value", "categorical")) {
-                    names(dat)[colorID] <- color
-                } else {
-                    dat <- dat[,-colorID]
-                }
+                id <- switch(.type,
+                             comp=sizeID+2,
+                             dens=sizeID+2,
+                             value=sizeID+1,
+                             index=sizeID,
+                             categorical=sizeID+1,
+                             depth=sizeID,
+                             color=sizeID)
+                
+                
+                dat <- dat[, 1:id]
+                names(dat)[sizeID] <- .size
+                
+                if (!(.type %in% c("index", "depth", "color"))) names(dat)[sizeID+1] <- .color
+                
+                if (.type=="comp") {
+                    names(dat)[sizeID+2] <- paste("compared to", .color, "(in %)")
+                } else if (.type=="dens") {
+                    names(dat)[sizeID+2] <- paste(.color, "per", .size)
+                }                    
                 
                 dat
             })

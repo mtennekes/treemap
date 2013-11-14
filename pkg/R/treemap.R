@@ -437,6 +437,7 @@ treemap <-
         tmPrintTitles(vps, title, title.legend, position.legend, fontfamily.title, fontfamily.legend)
         if (type == "color") {
             datlist$color <- as.character(datlist$c)
+            datlist$colorvalue <- NA
         } else {
             attr(datlist, "range") <- 1:2
             datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend)
@@ -450,6 +451,10 @@ treemap <-
         
         # return treemap info
         tm <- datlist[, c(indexList, "s", "c", "colorvalue", "l", "x0", "y0", "w", "h", "color"), with=FALSE]
+        
+        # recover original color values from densities
+        if (type=="dens") tm[,c:=c*s]
+        
         setnames(tm, c(index, "vSize", "vColor", "vColorValue", "level", "x0", "y0", "w", "h", "color"))
         
         tmSave <- list(tm = as.data.frame(tm),
