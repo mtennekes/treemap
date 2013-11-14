@@ -14,10 +14,9 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 	# edit perc
 	perc.orig <- perc
 	
-    perc[perc==Inf] <- max(900, c(perc[perc!=Inf]))
- 	perc[perc==-100] <- min(-90, c(perc[perc!=-100]))
-#   perc[perc > 900] <- 900
-# 	perc[perc < -90] <- -90
+    largeSign <- any(perc>1000) #to prevent legend scales > 1000
+    perc[perc > 900] <- 900
+ 	perc[perc < -90] <- -90
 	
 	range_lg <- range(log.growth)
 	
@@ -50,8 +49,16 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 	
 	legCol <- color[round(((legColScale/max_lg) *49)+50)]
 		
-	if (position.legend!="none") drawLegend(paste(prettyP, "%", sep=""), legCol,
+	if (position.legend!="none") {
+        prettyString <- paste(prettyP, "%", sep="")
+        if (largeSign) {
+            lp <- prettyString[length(prettyString)]
+            prettyString[length(prettyString)] <- paste(">", lp)
+        }
+        
+        drawLegend(prettyString, legCol,
 											position.legend=="bottom", border.col, fontfamily.legend)
+	}
 	return (list(color[scale], range(prettyP), perc.orig))
 }
 
