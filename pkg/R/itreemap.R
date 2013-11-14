@@ -60,7 +60,7 @@ itreemap <- function(dtf=NULL, height=NULL) {
         if (Sys.info()[['sysname']]=="Windows") {
             (scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE))
             scr_height <- as.numeric(scr_height[2])
-            height <- scr_height - 400
+            height <- scr_height - 375
         } else {
             height <- 800
         }
@@ -68,7 +68,7 @@ itreemap <- function(dtf=NULL, height=NULL) {
     
     runApp(list(
         ui = pageWithSidebar(
-            headerPanel("Interactive treemap"),
+            headerPanel("", windowTitle="Interactive Treemap"),
             sidebarPanel(
                 uiOutput("df"),
                #uiOutput("filter"),
@@ -416,7 +416,8 @@ itreemap <- function(dtf=NULL, height=NULL) {
                             vp=vps$plot,
                             palette.HCL.options=hcl,
                             aspRatio=aspRatio,
-                            range=.range)
+                            range=.range,
+                            title="")
                     values$update <- FALSE
                 }
                 

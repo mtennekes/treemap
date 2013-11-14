@@ -139,7 +139,7 @@ itreemap()
 
 
 tm <- treemap(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="turnover", vColor="turnover.prev", type="comp")
-tm <- treemap(business, index=c("NACE1"), vSize="turnover", vColor="turnover.prev", type="comp")
+tm <- treemap(business, index=c("NACE1"), vSize="turnover", vColor="turnover.prev", type="comp", title="")
 
 
 tm <- treemap(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="turnover", vColor="employees", type="dens")

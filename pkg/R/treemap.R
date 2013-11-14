@@ -288,6 +288,8 @@ treemap <-
         if (length(fontsize.title)!=1 || 
                 !is.numeric(fontsize.title))
             stop("Invalid fontsize.title")
+        if (title=="") fontsize.title <- 0
+        
         
         # fontsize.title
         if (length(fontsize.title)!=1 || 
