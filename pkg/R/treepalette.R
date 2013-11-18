@@ -24,6 +24,8 @@
 #' @import colorspace
 #' @export
 treepalette <- function(dtf, index=names(dtf), method="HCL", palette=NULL, palette.HCL.options, return.parameters=TRUE, prepare.dat=TRUE) {
+    .SD <- NULL #for CMD check
+    
     palette.HCL.options <- tmSetHCLoptions(palette.HCL.options)
     k <- length(index)
     dat <- as.data.table(dtf)

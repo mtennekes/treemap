@@ -156,7 +156,7 @@
   size for all aggregation levels, or a vector that
   specifies the font size for each aggregation level}
 
-  \item{fontsize.legend}{for size for the legend}
+  \item{fontsize.legend}{font size for the legend}
 
   \item{fontface.labels}{either a single value, or a vector
   of values one for each aggregation level. Values can be
@@ -180,14 +180,12 @@
 
   \item{border.col}{colour of borders drawn around each
   rectangle. Either one colour for all rectangles or a
-  vector of colours, one for each aggregation level}
+  vector of colours, or one for each aggregation level}
 
   \item{border.lwds}{thicknesses of border lines. Either
   one number specifies the line thicknesses (widths) for
   all rectangles or a vector of line thicknesses for each
   aggregation level.}
-
-  \item{fontsize.legend}{(maximum) font size of the legend}
 
   \item{lowerbound.cex.labels}{multiplier between 0 and 1
   that sets the lowerbound for the data label font sizes: 0
@@ -221,6 +219,24 @@
   default value .5, means that lower level labels are
   printed if other labels do not overlap with more than .5
   times their area size.}
+
+  \item{align.labels}{object that specifies the alignment
+  of the labels. Either a character vector of two values
+  specifying the horizontal alignment (\code{"left"},
+  \code{"center"}, \code{"right"}) and the vertical
+  alignment (\code{"top"}, \code{"center"},
+  \code{"bottom"}), or a list of sush character vectors,
+  one for each aggregation level.}
+
+  \item{xmod.labels}{the horizontal position modification
+  of the labels in inches. Either a single value, or a
+  vector that specifies the modifitaion for each
+  aggregation level.}
+
+  \item{ymod.labels}{the vertical position modification of
+  the labels in inches. Either a single value, or a vector
+  that specifies the modifitaion for each aggregation
+  level.}
 
   \item{position.legend}{position of the legend:
   \code{"bottom"}, \code{"right"}, or \code{"none"}. For
@@ -280,7 +296,7 @@ data(business)
 #########################################
 
 # index treemap: colors are determined by the index argument
-\\dontrun{
+\dontrun{
 # large example which takes some time...
 treemap(business, 
         index=c("NACE1", "NACE2", "NACE3"), 
@@ -319,7 +335,7 @@ treemap(business,
 ### graphical options: control fontsizes
 #########################################
 
-\\dontrun{
+\dontrun{
 # draw labels at fixed fontsize 12 (if they fit)
 treemap(business, 
 	   index=c("NACE1", "NACE2"), 

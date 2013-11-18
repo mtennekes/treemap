@@ -5,7 +5,7 @@
   itreemap(dtf = NULL, height = NULL)
 }
 \arguments{
-  \item{dtf}{a data.frame (\code{\link{treemap}) If not
+  \item{dtf}{a data.frame (\code{\link{treemap}}) If not
   provided, then all data.frames in the global workspace
   are given as options in the drop-down list, with the
   first one loaded.}

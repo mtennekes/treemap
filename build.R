@@ -6,6 +6,9 @@ source("roxygen.R")
 setwd("../pkg")
 
 
+
+
+
 ## check
 check(doc_clean=FALSE) 
 

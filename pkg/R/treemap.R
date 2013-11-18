@@ -38,19 +38,21 @@
 #' @param range range of values that determine the colors. Only applicable for types "value", "comp", and "dens". When omitted, the range of actual values is used. This range is mapped to \code{palette}.
 #' @param fontsize.title font size of the title
 #' @param fontsize.labels font size(s) of the data labels, which is either a single number that specifies the font size for all aggregation levels, or a vector that specifies the font size for each aggregation level
-#' @param fontsize.legend for size for the legend
+#' @param fontsize.legend font size for the legend
 #' @param fontface.labels either a single value, or a vector of values one for each aggregation level. Values can be integers  If an integer, following the R base graphics standard: 1 = plain, 2 = bold, 3 = italic, 4 = bold italic, or characters: \code{"plain"}, \code{"bold"}, \code{"italic"}, \code{"oblique"}, and \code{"bold.italic"}.
 #' @param fontfamily.title font family of the title. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
 #' @param fontfamily.labels font family of the labels in each rectangle. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
 #' @param fontfamily.legend font family of the legend. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
-#' @param border.col colour of borders drawn around each rectangle. Either one colour for all rectangles or a vector of colours, one for each aggregation level
+#' @param border.col colour of borders drawn around each rectangle. Either one colour for all rectangles or a vector of colours, or one for each aggregation level
 #' @param border.lwds thicknesses of border lines. Either one number specifies the line thicknesses (widths) for all rectangles or a vector of line thicknesses for each aggregation level.
-#' @param fontsize.legend (maximum) font size of the legend
 #' @param lowerbound.cex.labels multiplier between 0 and 1 that sets the lowerbound for the data label font sizes: 0 means draw all data labels, and 1 means only draw data labels if they fit (given \code{fontsize.labels}).
 #' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles. If TRUE, \code{fontsize.labels} is does not determine the maximum fontsize, but it does determine in combination with  \code{lowerbound.cex.labels} the minimum fontsize.
 #' @param bg.labels background color of high aggregation labels. Either a color, or a number between 0 and 255 that determines the transparency of the labels. In the latter case, the color itself is determined by the color of the underlying rectangle. For "value" and "categorical" treemaps, the default is (slightly) transparent grey (\code{"#CCCCCCDC"}), and for the other types slightly transparent: \code{220}.
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed if they don't fit.
 #' @param overlap.labels number between 0 and 1 that determines the tolerance of the overlap between labels. 0 means that labels of lower levels are not printed if higher level labels overlap, 1 means that labels are always printed. In-between values, for instance the default value .5, means that lower level labels are printed if other labels do not overlap with more than .5 times their area size.
+#' @param align.labels object that specifies the alignment of the labels. Either a character vector of two values specifying the horizontal alignment (\code{"left"}, \code{"center"}, \code{"right"}) and the vertical alignment (\code{"top"}, \code{"center"}, \code{"bottom"}), or a list of sush character vectors, one for each aggregation level.
+#' @param xmod.labels the horizontal position modification of the labels in inches. Either a single value, or a vector that specifies the modifitaion for each aggregation level.
+#' @param ymod.labels the vertical position modification of the labels in inches. Either a single value, or a vector that specifies the modifitaion for each aggregation level.
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
@@ -106,6 +108,7 @@ treemap <-
              drop.unused.levels = TRUE,
              aspRatio=NA,
              vp=NULL) {
+        s <- NULL #for CMD check
         
         vColor.temp <- i <- NULL
         
@@ -356,8 +359,8 @@ treemap <-
         #align.labels
         if (!is.list(align.labels)) align.labels <- list(align.labels)
         if (length(align.labels) !=depth) align.labels <- rep(align.labels, length.out=depth)
-        lapply(align.labels, function(al) if (!(al[1]%in% c("left", "center", "right") && 
-                                                        al[2]%in% c("top", "center", "bottom"))) stop("incorrect align.labels"))
+        lapply(align.labels, function(al) if (!(al[1]%in% c("left", "center", "centre", "right") && 
+                                                        al[2]%in% c("top", "center", "centre", "bottom"))) stop("incorrect align.labels"))
         
         #xmod.labels and ymod.labels
         if (length(xmod.labels)!=depth) xmod.labels <- rep(xmod.labels, length.out=depth)

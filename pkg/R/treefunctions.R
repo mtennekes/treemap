@@ -11,6 +11,7 @@ treedepth <- function(data) {
 #' @param values vector with values that apply to the root node
 #' @param depth variable of dat that indicated the node depths
 #' @param fun function to be applied
+#' @param ... passed arguments
 #' @return list
 #' @import data.table
 #' @import colorspace

@@ -15,6 +15,8 @@
   depths}
 
   \item{fun}{function to be applied}
+
+  \item{...}{passed arguments}
 }
 \value{
   list

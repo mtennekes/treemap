@@ -58,7 +58,7 @@ function(grb, fontcol, fill, fontface, fontfamily, inflate.labels, cex_index, al
 	#txtGrb <- textGrob(txt, x=grb$x+0.5*grb$width, y=grb$y+0.5*grb$height, gp=gpar(cex=cex, fontface=fontface, col=fontcol))
 	
 
-	if (align.labels[1]=="center") {
+	if (align.labels[1]%in%c("center", "centre")) {
         x <- grb$x + 0.5*grb$width
         xjust <- .5
 	} else if(align.labels[1]=="left") {
@@ -68,7 +68,7 @@ function(grb, fontcol, fill, fontface, fontfamily, inflate.labels, cex_index, al
         x <- grb$x + grb$width -  unit(.25, "lines")
         xjust <- 1
     }
-	if (align.labels[2]=="center") {
+	if (align.labels[2]%in%c("center", "centre")) {
 	    y <- grb$y + 0.5*grb$height
 	    yjust <- .5
 	} else if(align.labels[2]=="top") {
