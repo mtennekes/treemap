@@ -12,25 +12,24 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
     }
     
     depth <- length(indexList)
-    
     if (depth==1) {
         whichFill <- rep(TRUE, nrow(datlist))
         recs_fill <- createRec(datlist, 
                                filled=TRUE, 
-                               label=TRUE, 
+                               label=cex_indices!=0, 
                                labellb=lowerbound.cex.labels, 
-                               lwd = border.lwds[1],
+                               lwd = border.lwds,
                                inflate.labels=inflate.labels,
                                force.print.labels=force.print.labels,
-                               cex_index=cex_indices[1],
-                               border.col=border.col[1],
-                               fontface.labels=fontface.labels[1],
+                               cex_index=cex_indices,
+                               border.col=border.col,
+                               fontface.labels=fontface.labels,
                                fontfamily.labels=fontfamily.labels,
                                align.labels=align.labels[[1]], 
-                               xmod.labels=xmod.labels[1], 
-                               ymod.labels=ymod.labels[1])
+                               xmod.labels=xmod.labels, 
+                               ymod.labels=ymod.labels)
         grid.draw(recs_fill$recs)
-        grid.draw(recs_fill$txt)
+        if (cex_indices!=0) grid.draw(recs_fill$txt)
     } else {
         whichBold <- datlist$l==1
         whichFill <- datlist$l==depth
@@ -62,8 +61,6 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                     align.labels=align.labels[[depth]], 
                                     xmod.labels=xmod.labels[depth], 
                                     ymod.labels=ymod.labels[depth])
-        
-        #browser()
         
         rng <- rev(sort(unique(datlist$l[!whichFill & !whichBold & !whichNA])))
         

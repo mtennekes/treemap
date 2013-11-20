@@ -25,12 +25,8 @@ treemap(business, index=c("NACE1", "NACE2"), vSize="employees",
         palette.HCL.options=palette.HCL.options, bg.labels=255)
 
 
-treegraph(business[, c("NACE1", "NACE2", "NACE3", "NACE4")],
-          palette.HCL.options=palette.HCL.options)
 
-treegraph(business[, c("NACE1", "NACE2")],
-          palette.HCL.options=palette.HCL.options,
-          show.labels=TRUE)
+treegraph(business[business$NACE1=="F - Construction",], index=c("NACE2", "NACE3", "NACE4"), show.labels=TRUE, truncate=2)
 
 
 data(GNI2010)
@@ -122,6 +118,17 @@ treemap(business[as.integer(business$NACE1)==2,], index=c("NACE1", "NACE2", "NAC
 treemap(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), vSize="employees", 
         align.labels=list(c("center", "center"), c("center", "bottom")), border.col=c("blue", "yellow", "red", "green"),
         fontsize.labels=c(40,35,30,25))
+
+
+treemap(business, index=c("NACE1", "NACE2", "NACE3"), vSize="employees", 
+        align.labels=list(c("center", "center"), c("center", "bottom"), c("left", "top")), border.col=c("blue", "yellow", "red"),
+        fontsize.labels=c(20, 0, 10))
+
+
+
+
+
+
 
 tm <- treemap(business, index=c("NACE1", "NACE2", "NACE3"), vSize="employees")
 tm <- treemap(business, index=c("NACE1", "NACE2", "NACE3"), vSize="employees", vColor="employees.prev", type="comp", range=c(-100, 2000))

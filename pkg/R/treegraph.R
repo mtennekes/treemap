@@ -27,9 +27,8 @@ treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FA
                 palette.HCL.options=palette.HCL.options,
                 return.parameters=TRUE)[, 1:(k+1)]
     
-    #dat$color <- color
     dat <- unique(dat)
-    dat <- cbind(dat, as.data.table(treeid(dat[,1:k])))
+    dat <- cbind(dat, as.data.table(treeid(dat[,1:k, drop=FALSE])))
     vdat <- dat[,c("current", "HCL.color")]
     setnames(vdat, "HCL.color", "color")
     vdat <- unique(vdat)

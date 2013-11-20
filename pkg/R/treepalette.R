@@ -33,12 +33,14 @@ treepalette <- function(dtf, index=names(dtf), method="HCL", palette=NULL, palet
     if (length(othercols)) dat[, eval(othercols):=NULL]
     dat[, names(dat):=lapply(.SD,as.factor)]
     if (prepare.dat) {
-        dats <- list()
-        for (i in 1:(k-1)) {
-            dats[[i]] <- dat[!duplicated(dat[,1:i, with=FALSE]), ]
-            for (j in (i+1):k) dats[[i]][[j]] <- factor(NA, levels=levels(dats[[i]][[j]]))
-        }
-        dat <- rbindlist(c(list(dat), dats))
+        if (k>1) {
+            dats <- list()
+            for (i in 1:(k-1)) {
+                dats[[i]] <- dat[!duplicated(dat[,1:i, with=FALSE]), ]
+                for (j in (i+1):k) dats[[i]][[j]] <- factor(NA, levels=levels(dats[[i]][[j]]))
+            }
+            dat <- rbindlist(c(list(dat), dats))
+        }        
         dat <- dat[!duplicated(dat), ]
 
         # sort dat to be consistent with tmAggregate

@@ -3,13 +3,23 @@
 #' A treemap is a space-filling visualization of hierarchical structures. This function offers great flexibility to draw treemaps. Required is a data.frame (\code{dtf}) that contains one or more hierarchical index columns given by \code{index}, a column that determines the rectangle area sizes (\code{vSize}), and optionally a column that determines the rectangle colors (\code{vColor}). The way how rectangles are colored is determined by the argument \code{type}.
 #' 
 #' @param dtf a data.frame (\code{\link{treemap}}) If not provided, then the first data.frame in the global workspace is loaded.
+#' @param index index variables (up to four). See \code{\link{treemap}}.
+#' @param vSize name of the variable that determine the rectangle sizes.
+#' @param vColor name of the variable that determine the rectangle colors. See \code{\link{treemap}}.
+#' @param type treemap type. See \code{\link{treemap}}.
 #' @param height height of the plotted treemap in pixels
+#' @param command.line.output if \code{TRUE}, the command line output of the generated treemaps are provided in the console.
+#' @examples
+#' \dontrun{
+#' data(business)
+#' itreemap(business)
+#' }
 #' @import data.table
 #' @import grid
 #' @import gridBase
 #' @import shiny
 #' @export
-itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, height=NULL) {
+itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, height=NULL, command.line.output=TRUE) {
     # get data.frame(s)
     obs <- ls(envir=.GlobalEnv)
     if (!length(obs)) stop("No data.frames loaded")
@@ -444,12 +454,14 @@ itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, h
                             title="")
                     values$update <- FALSE
                     assign("tm", tm, envir=e)
-                    tmString <- paste0("treemap(", p, ", index=", 
-                                       if(length(index.new)==1) paste0("\"", index.new, "\"")
-                                       else paste0("c(", paste(paste0("\"", index.new, "\""),
-                                                               collapse=", "), ")"), 
-                                       ", vSize=\"", size.new, "\"", if (color.new!="<not needed>") paste0(", vColor=\"", color.new, "\""), ", type=\"", type.new, "\")")
-                    cat(tmString, "\n")
+                    tmString <- 
+                        paste0("treemap(", 
+                               ifelse(zoomLevel==0, p, paste0("subset(", p, ", subset=", filterString, ")")), 
+                               ", index=", if(length(index.new)==1) paste0("\"", index.new, "\"") else paste0("c(", paste(paste0("\"", index.new, "\""), collapse=", "), ")"),
+                               ", vSize=\"", size.new, "\"", 
+                               if (color.new!="<not needed>") paste0(", vColor=\"", color.new, "\""), 
+                               ", type=\"", type.new, "\")")
+                    if (command.line.output) cat(tmString, "\n")
                 }
                 
             })

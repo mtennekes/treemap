@@ -2,13 +2,25 @@
 \alias{itreemap}
 \title{Interactieve versie van treemap}
 \usage{
-  itreemap(dtf = NULL, height = NULL)
+  itreemap(dtf = NULL, index = NULL, vSize = NULL,
+    vColor = NULL, type = NULL, height = NULL,
+    command.line.output = TRUE)
 }
 \arguments{
   \item{dtf}{a data.frame (\code{\link{treemap}}) If not
-  provided, then all data.frames in the global workspace
-  are given as options in the drop-down list, with the
-  first one loaded.}
+  provided, then the first data.frame in the global
+  workspace is loaded.}
+
+  \item{index}{index variables (up to four). See
+  \code{\link{treemap}}.}
+
+  \item{vSize}{name of the variable that determine the
+  rectangle sizes.}
+
+  \item{vColor}{name of the variable that determine the
+  rectangle colors. See \code{\link{treemap}}.}
+
+  \item{type}{treemap type. See \code{\link{treemap}}.}
 
   \item{height}{height of the plotted treemap in pixels}
 }
@@ -22,5 +34,11 @@
   column that determines the rectangle colors
   (\code{vColor}). The way how rectangles are colored is
   determined by the argument \code{type}.
+}
+\examples{
+\dontrun{
+data(business)
+itreemap(business)
+}
 }
 

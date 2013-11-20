@@ -148,12 +148,16 @@ spread <- function(n) {
 
 treeid <- function(dat) {
 	current <- apply(dat, MARGIN=1, paste, collapse=".")
-	parent <- apply(dat, MARGIN=1, function(x){
-		n <- length(x)-sum(is.na(x))-1
-		y <- rep(NA, length(x))
-		if (n>0) y[1:n] <- x[1:n]
-		paste(y,collapse=".")
-	})
+    if (ncol(dat)==1) {
+        parent <- rep.int("NA", length(current))
+    } else {
+    	parent <- apply(dat, MARGIN=1, function(x){
+    		n <- length(x)-sum(is.na(x))-1
+    		y <- rep(NA, length(x))
+    		if (n>0) y[1:n] <- x[1:n]
+    		paste(y,collapse=".")
+    	})
+    }
 	list(current=current, parent=parent)
 }
 

@@ -5,7 +5,7 @@
 #' @param dtf a data.frame. Required.
 #' @param index    vector of column names in \code{dtf} that specify the aggregation indices. It could contain only one column name, which results in a treemap without hierarchy. If multiple column names are provided, the first name is the highest aggregation level, the second name the second-highest aggregation level, and so on. Required. 
 #' @param vSize name of the column in \code{dtf} that specifies the sizes of the rectangles. Required.
-#' @param vColor name of the column that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". 
+#' @param vColor name of the column that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". When omitted, a contant value of 1 is taken.
 #' @param type type of the treemap, which determines how the rectangles are colored:
 #' \describe{
 #'    	\item{\code{"index"}:}{colors are determined by the \code{index} variables. Different branches in the hierarchical tree get different colors. For this type, \code{vColor} is not needed.}
@@ -37,7 +37,7 @@
 #'        \item{\code{luminance_slope}:}{slope value for luminance of the non-first-level nodes (default: -10)}} For "depth" and "categorical" types, only the first two items are used.
 #' @param range range of values that determine the colors. Only applicable for types "value", "comp", and "dens". When omitted, the range of actual values is used. This range is mapped to \code{palette}.
 #' @param fontsize.title font size of the title
-#' @param fontsize.labels font size(s) of the data labels, which is either a single number that specifies the font size for all aggregation levels, or a vector that specifies the font size for each aggregation level
+#' @param fontsize.labels font size(s) of the data labels, which is either a single number that specifies the font size for all aggregation levels, or a vector that specifies the font size for each aggregation level. Use value \code{0} to omit the labels for the corresponding aggregation level. 
 #' @param fontsize.legend font size for the legend
 #' @param fontface.labels either a single value, or a vector of values one for each aggregation level. Values can be integers  If an integer, following the R base graphics standard: 1 = plain, 2 = bold, 3 = italic, 4 = bold italic, or characters: \code{"plain"}, \code{"bold"}, \code{"italic"}, \code{"oblique"}, and \code{"bold.italic"}.
 #' @param fontfamily.title font family of the title. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
@@ -126,6 +126,8 @@ treemap <-
         
         # dtf
         if (!inherits(dtf, "data.frame")) stop("Object <dtf> is not a data.frame")
+        
+        if (nrow(dtf)==0) stop("data.frame doesn't have any rows")
         
         # index
         if (any(!index %in% names(dtf))) stop("<index> contains invalid column names")
@@ -284,7 +286,7 @@ treemap <-
             if (!is.numeric(range))
                 stop("range is not numeric")
         } else if (type=="manual") {
-            stop("For \"manual\" treemaps, a palette should be provided.")
+            stop("For \"manual\" treemaps, a range should be provided.")
         }
         
         # fontsize.title
@@ -293,17 +295,11 @@ treemap <-
             stop("Invalid fontsize.title")
         if (title=="") fontsize.title <- 0
         
-        
-        # fontsize.title
-        if (length(fontsize.title)!=1 || 
-                !is.numeric(fontsize.title))
-            stop("Invalid fontsize.title")
-        
         # fontsize.labels
         if (!is.numeric(fontsize.labels))
             stop("Invalid fontsize.labels")
         fontsize.labels <- rep_len(fontsize.labels, depth)
-        cex_indices <- fontsize.labels / min(fontsize.labels)
+        cex_indices <- fontsize.labels / max(min(fontsize.labels), 1)
         
         # fontsize.legend
         if (length(fontsize.legend)!=1 || 

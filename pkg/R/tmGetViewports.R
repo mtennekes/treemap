@@ -19,7 +19,7 @@ tmGetViewports <- function(vp, fontsize.title, fontsize.labels, fontsize.legend,
     
     # determine fontsizes
     fsTitle <- fontsize.title#min(fontsize.title, (height*3.6), (width*3.6))
-    fsData <- min(fontsize.labels)#min(fontsize.labels, (height*3.6), (width*3.6))
+    fsData <- max(min(fontsize.labels), 1)#min(fontsize.labels, (height*3.6), (width*3.6))
     fsLegend <- fontsize.legend#min(fontsize.legend, (height*3.6), (width*3.6))
     
     # Determine legend viewports
