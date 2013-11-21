@@ -30,7 +30,8 @@ treemap(business[business$NACE1=="C - Manufacturing",],
         vSize=c("employees"),
         type="index")
 
-# value treemap: colors are derived from a numeric variable given by vColor (which is assumed to be 1 in the following example)
+# value treemap: colors are derived from a numeric variable given by vColor 
+# (when omited, all values are set to 1 as in the following example)
 treemap(business,
         index=c("NACE1", "NACE2"),
         vSize="employees",
@@ -38,18 +39,18 @@ treemap(business,
         type="value")
 
 # comparisson treemaps: colors indicate change of vSize with respect to vColor
-treemap(business, 
-	   index=c("NACE1", "NACE2"), 
-	   vSize="employees", 
-	   vColor="employees.prev",
-	   type="comp")
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        vColor="employees.prev",
+        type="comp")
 
 # density treemaps: colors indicate density (like a population density map)
 treemap(business,
-	   index=c("NACE1", "NACE2"), 
-	   vSize="turnover",
-	   vColor="employees/1000",
-	   type="dens")
+        index=c("NACE1", "NACE2"),
+        vSize="turnover",
+        vColor="employees/1000",
+        type="dens")
 
 \dontrun{
 # depth treemap: show depth
@@ -60,13 +61,12 @@ treemap(business,
 }
 
 # categorical treemap: colors are determined by a categorical variable
-business <- transform(business, data.available = factor(!is.na(turnover)),
-                      x = 1)
-treemap(business, 
-       index=c("NACE1", "NACE2"), 
-	   vSize="x", 
-	   vColor="data.available",
-	   type="categorical")
+business <- transform(business, data.available = factor(!is.na(turnover)), x = 1)
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="x",
+        vColor="data.available",
+        type="categorical")
 
 \dontrun{
 # color treemap
@@ -93,7 +93,8 @@ treemap(business,
 #########################################
 
 \dontrun{
-# draw labels of first index at fontsize 12 at the center, and labels of second index at fontsize 8 top left
+# draw labels of first index at fontsize 12 at the center, 
+# and labels of second index at fontsize 8 top left
 treemap(business, 
         index=c("NACE1", "NACE2"), 
         vSize="employees", 
@@ -103,69 +104,69 @@ treemap(business,
     
     
 # draw all labels at fontsize 12 (only if they fit)
-treemap(business, 
-	   index=c("NACE1", "NACE2"), 
-	   vSize="employees", 
-	   fontsize.labels=12, 
-	   lowerbound.cex.labels=1)
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        fontsize.labels=12,
+        lowerbound.cex.labels=1)
 
 # draw all labels at fontsize 12, and if they don't fit, reduce to a minimum of .6*12
-treemap(business, 
-       index=c("NACE1", "NACE2"), 
-       vSize="employees", 
-       fontsize.labels=12, 
-	   lowerbound.cex.labels=.6)
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        fontsize.labels=12,
+        lowerbound.cex.labels=.6)
 
 # draw all labels at maximal fontsize
-treemap(business, 
-       index=c("NACE1", "NACE2"), 
-       vSize="employees", 
-	   lowerbound.cex.labels=0, 
-	   inflate.labels = TRUE)
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        lowerbound.cex.labels=0,
+        inflate.labels = TRUE)
 
 # draw all labels at fixed fontsize, even if they don't fit
-treemap(business, 
-       index=c("NACE1", "NACE2"), 
-       vSize="employees", 
-       fontsize.labels=10, 
-	   lowerbound.cex.labels=1, 
-	   force.print.labels=TRUE)
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        fontsize.labels=10,
+        lowerbound.cex.labels=1,
+        force.print.labels=TRUE)
 
 #########################################
 ### graphical options: color palettes
 #########################################
 
 ## for comp and value typed treemaps all diverging brewer palettes can be chosen
-treemap(business, 
-       index=c("NACE1", "NACE2"), 
-       vSize="employees", 
-       vColor="employees.prev",
-       type="comp",
-       palette="RdBu")
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        vColor="employees.prev",
+        type="comp",
+        palette="RdBu")
 
 ## draw warm-colored index treemap
 palette.HCL.options <- list(hue_start=270, hue_end=360+150)
 treemap(business, 
-       index=c("NACE1", "NACE2"), 
-       vSize="employees", 
-       type="index",
-       palette.HCL.options=palette.HCL.options)
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        type="index",
+        palette.HCL.options=palette.HCL.options)
 
 # terrain colors
 business$employees.growth <- business$employees - business$employees.prev
-treemap(business, 
-       index=c("NACE1", "NACE2"), 
-       vSize="employees", 
-       vColor="employees.growth", 
-	   type="value", 
-	   palette=terrain.colors(10))
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        vColor="employees.growth",
+        type="value",
+        palette=terrain.colors(10))
 
 # Brewer's Red-White-Grey palette reversed with predefined range
-treemap(business, 
-       index=c("NACE1", "NACE2"), 
-       vSize="employees", 
-       vColor="employees.growth", 
-	   type="value", 
-	   palette="-RdGy", 
-	   range=c(-30000,30000))
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        vColor="employees.growth",
+        type="value",
+        palette="-RdGy",
+        range=c(-30000,30000))
 }

@@ -1,9 +1,3 @@
-#' Return info about clicked rectangle
-#'
-#' Return information about the rectangle the user clicked on. Useful to identify small rectangles in large treemaps. 
-#' @param coor mouse click in npc coordinates
-#' @param tmSave treemap information: value returned by \code{\link{treemap}}
-#' @import grid
 tmLocate <-
     function(coor, tmSave) {
         tm <- tmSave$tm

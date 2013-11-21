@@ -1,6 +1,8 @@
 require(devtools)
 
 ## Create palletes, vignette and documentation...
+
+
 setwd("../build")
 source("roxygen.R")
 setwd("../pkg")

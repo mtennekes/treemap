@@ -18,7 +18,8 @@
 #' @examples
 #' data(business)
 #' treegraph(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), show.labels=FALSE)
-#' treegraph(business[business$NACE1=="F - Construction",], index=c("NACE2", "NACE3", "NACE4"), show.labels=TRUE, truncate=c(2,4,6))
+#' treegraph(business[business$NACE1=="F - Construction",], 
+#'     index=c("NACE2", "NACE3", "NACE4"), show.labels=TRUE, truncate=c(2,4,6))
 #' @import data.table
 #' @import igraph
 #' @import colorspace
