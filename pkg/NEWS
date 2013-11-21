@@ -1,17 +1,18 @@
 version 2.1
 - itreemap added, a web-interface (made with shiny) added
-- make hierarchical color palettes publicly available with the function treepalettes
-- hierarchical color palettes method slightly improved
-- function treegraph added
-- add version number of required data.table package to prevent conflicts
+- treepalettes added, to make hierarchical color palettes directly available
+- treegraph added, to draw a radial tree with colors from treepalettes
+- hierarchical color palettes method slightly improved (brighter)
 - border line thickness (border.lwds) added as parameter to adjust line thickness at variaous agggregation levels
 - improved text color decision (black or white) given the background color
 - fontfamily parameters added (thanks to Peter Ellis)
 - border.col parameter added (thanks to Peter Ellis)
+- type "value" has evolved into two options: "value", which is now focused on diverging color palettes, and "manual" in which a palette is directly mapped to the provided range. 
+- bug in type "comp" fixed
 - bug in quantitative scales fixed
 - enhanced treemap output: added columns colorvalue and color, aspect ratio, and range
 - improved business test data set (removed redundant colums)
-- type "value" has evolved into two options: "value", which is now focused on diverging color palettes, and "manual" in which a palette is directly mapped to the provided range. 
+- add version number of required data.table package to prevent conflicts
 
 version 2.0.1
 - computation time examples shorter (CRAN policy)

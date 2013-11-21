@@ -1,6 +1,6 @@
 comp2col <-
 function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
-	color <- colorRampPalette(palette,space="rgb")(99)
+    color <- colorRampPalette(palette,space="rgb")(99)
 	perc <-((dat$s - dat$c)/dat$c) * 100
 	
 	growth <- (dat$s / dat$c)
@@ -41,6 +41,7 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
         max_lg <- max(abs(legColScale))
     } else {
         max_lg <- max(abs(log.growth))
+        if (max_lg==0) max_lg <- max(abs(legColScale))
     }
     
 	scale <- round(((log.growth/max_lg) *49)+50)

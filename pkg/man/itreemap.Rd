@@ -1,9 +1,9 @@
 \name{itreemap}
 \alias{itreemap}
-\title{Interactieve versie van treemap}
+\title{Interactive user interface of treemap}
 \usage{
   itreemap(dtf = NULL, index = NULL, vSize = NULL,
-    vColor = NULL, type = NULL, height = NULL,
+    vColor = NULL, type = NULL, height = 700,
     command.line.output = TRUE)
 }
 \arguments{
@@ -22,18 +22,22 @@
 
   \item{type}{treemap type. See \code{\link{treemap}}.}
 
-  \item{height}{height of the plotted treemap in pixels}
+  \item{height}{height of the plotted treemap in pixels.
+  Tip: decrease this number if the treemap doesn't fit
+  conveniently.}
+
+  \item{command.line.output}{if \code{TRUE}, the command
+  line output of the generated treemaps are provided in the
+  console.}
 }
 \description{
-  A treemap is a space-filling visualization of
-  hierarchical structures. This function offers great
-  flexibility to draw treemaps. Required is a data.frame
-  (\code{dtf}) that contains one or more hierarchical index
-  columns given by \code{index}, a column that determines
-  the rectangle area sizes (\code{vSize}), and optionally a
-  column that determines the rectangle colors
-  (\code{vColor}). The way how rectangles are colored is
-  determined by the argument \code{type}.
+  This function is an interactive web-based user interface
+  for creating treemaps. Interaction is provided for the
+  four main input arguments of (\code{\link{treemap}})
+  besides the data.frame itself, namely \code{index},
+  \code{vSize}, \code{vColor} and \code{type}. Zooming in
+  and out is possible. Command line outputs are generated
+  in the console.
 }
 \examples{
 \dontrun{

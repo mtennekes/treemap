@@ -1,6 +1,6 @@
 #' Hierarchical color palettes
 #'
-#' Create hierarchical color palettes, either by using the HCL color space model, or by using an existing color palette with the HSV space.
+#' Create hierarchical color palettes, either by using the HCL color space model, or by using an existing color palette with the HSV space. The former, which is recommended, is used in \code{\link{treemap}} (type \code{"index"}) and \code{\link{treegraph}}.
 #' 
 #' @param dtf a data.frame or data.table. Required.
 #' @param index the index variables of dtf

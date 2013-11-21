@@ -1,13 +1,13 @@
-#' Interactieve versie van treemap
+#' Interactive user interface of treemap
 #'
-#' A treemap is a space-filling visualization of hierarchical structures. This function offers great flexibility to draw treemaps. Required is a data.frame (\code{dtf}) that contains one or more hierarchical index columns given by \code{index}, a column that determines the rectangle area sizes (\code{vSize}), and optionally a column that determines the rectangle colors (\code{vColor}). The way how rectangles are colored is determined by the argument \code{type}.
+#' This function is an interactive web-based user interface for creating treemaps. Interaction is provided for the four main input arguments of (\code{\link{treemap}}) besides the data.frame itself, namely \code{index}, \code{vSize}, \code{vColor} and \code{type}. Zooming in and out is possible. Command line outputs are generated in the console.
 #' 
 #' @param dtf a data.frame (\code{\link{treemap}}) If not provided, then the first data.frame in the global workspace is loaded.
 #' @param index index variables (up to four). See \code{\link{treemap}}.
 #' @param vSize name of the variable that determine the rectangle sizes.
 #' @param vColor name of the variable that determine the rectangle colors. See \code{\link{treemap}}.
 #' @param type treemap type. See \code{\link{treemap}}.
-#' @param height height of the plotted treemap in pixels
+#' @param height height of the plotted treemap in pixels. Tip: decrease this number if the treemap doesn't fit conveniently.
 #' @param command.line.output if \code{TRUE}, the command line output of the generated treemaps are provided in the console.
 #' @examples
 #' \dontrun{
@@ -19,7 +19,7 @@
 #' @import gridBase
 #' @import shiny
 #' @export
-itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, height=NULL, command.line.output=TRUE) {
+itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, height=700, command.line.output=TRUE) {
     # get data.frame(s)
     obs <- ls(envir=.GlobalEnv)
     if (!length(obs)) stop("No data.frames loaded")
@@ -91,17 +91,6 @@ itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, h
     color <- ""
     type <- ""
     index <- rep("", 4)
-    
-    # set plotheight: quick and dirty method
-    if (missing(height)) {
-        if (Sys.info()[['sysname']]=="Windows") {
-            (scr_height <- system("wmic desktopmonitor get screenheight", intern=TRUE))
-            scr_height <- as.numeric(scr_height[2])
-            height <- scr_height - 350
-        } else {
-            height <- 800
-        }
-    }
     
     runApp(list(
         ui = pageWithSidebar(

@@ -1,26 +1,30 @@
-#' Draw a tree graph
+#' Tree graph
 #'
-#' Apply certain function to a tree structure.
+#' This function draws a tree graph with a radial layout. Experimental.
 #' 
 #' @param dtf a data.frame or data.table. Required.
-#' @param index the index variables of dtf
-#' @param palette.HCL.options palette.HCL.options
-#' @param show.labels show.labels
-#' @param stack.labels stack.labels
-#' @param rootlabel rootlabel
-#' @param vertex.size vertex.size 
-#' @param vertex.label.dist vertex.label.dist
-#' @param vertex.label.cex vertex.label.cex
-#' @param vertex.label.family vertex.label.family
-#' @param vertex.label.color vertex.label.color
-#' @return invisible igraph object
+#' @param index the index variables of dtf (see \code{\link{treemap}})
+#' @param palette.HCL.options palette.HCL.options (see \code{\link{treemap}})
+#' @param show.labels show the labels
+#' @param rootlabel name of the rootlabel
+#' @param truncate.labels number of characters at which the levels are truncated. Either a single value for all index variables, or a vector of values for each index variable
+#' @param vertex.size vertex.size (see \code{\link[igraph:igraph.plotting]{igraph.plotting}})
+#' @param vertex.label.dist vertex.label.dist (see \code{\link[igraph:igraph.plotting]{igraph.plotting}})
+#' @param vertex.label.cex vertex.label.cex (see \code{\link[igraph:igraph.plotting]{igraph.plotting}})
+#' @param vertex.label.family vertex.label.family (see \code{\link[igraph:igraph.plotting]{igraph.plotting}})
+#' @param vertex.label.color vertex.label.color (see \code{\link[igraph:igraph.plotting]{igraph.plotting}})
+#' @param ... arguments passed to \code{\link[igraph:plot.igraph]{plot.igraph}}
+#' @return (invisible) igraph object
+#' @examples
+#' data(business)
+#' treegraph(business, index=c("NACE1", "NACE2", "NACE3", "NACE4"), show.labels=FALSE)
+#' treegraph(business[business$NACE1=="F - Construction",], index=c("NACE2", "NACE3", "NACE4"), show.labels=TRUE, truncate=c(2,4,6))
 #' @import data.table
 #' @import igraph
 #' @import colorspace
-treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FALSE, stack.labels= FALSE, rootlabel="", vertex.size=3, vertex.label.dist=0.5, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black") {
+#' @export
+treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FALSE, rootlabel="", truncate.labels=NULL, vertex.size=3, vertex.label.dist=0.3, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black", ...) {
     palette.HCL.options <- tmSetHCLoptions(palette.HCL.options)
-    
-    
     
     k <- length(index)
     dat <- treepalette(dtf, index,
@@ -28,6 +32,14 @@ treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FA
                 return.parameters=TRUE)[, 1:(k+1)]
     
     dat <- unique(dat)
+    
+    if (!missing(truncate.labels)) {
+        truncate.labels <- rep_len(truncate.labels, k)
+        for (i in 1:k) {
+            levels(dat[[i]]) <- substr(levels(dat[[i]]), 1, truncate.labels[i])
+        }
+    }
+    
     dat <- cbind(dat, as.data.table(treeid(dat[,1:k, drop=FALSE])))
     vdat <- dat[,c("current", "HCL.color")]
     setnames(vdat, "HCL.color", "color")
@@ -38,19 +50,15 @@ treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FA
     
     
     g <- graph.data.frame(dat[,c("current", "parent")], vertices=vdat, directed=FALSE)
-    #color <- color[match(get.vertex.attribute(g, "name"), dat$current)]
-    #V(g)$color <- color[match(get.vertex.attribute(g, "name"), dat$current)]
     
     if (show.labels) {
             
-        vdat_names <- gsub(".NA", "", vdat$current, fixed=TRUE)
+        vdat_names <- gsub("__NA", "", vdat$current, fixed=TRUE)
         vdat_names[1] <- rootlabel
 
-        if (!stack.labels) {
-            ssres <- strsplit(vdat_names, split=".", fixed=TRUE)
-            ssres[[1]] <- rootlabel
-            vdat_names <- sapply(ssres, function(x)x[length(x)])
-        }
+        ssres <- strsplit(vdat_names, split="__", fixed=TRUE)
+        ssres[[1]] <- rootlabel
+        vdat_names <- sapply(ssres, function(x)x[length(x)])
         
         ## equal string lengths
         lengths <- nchar(vdat_names)
@@ -66,6 +74,6 @@ treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FA
     
     par(mai=c(0,0,0,0))
     plot(g, vertex.size=vertex.size, vertex.frame.color=NA, vertex.label=vdat_names, layout=
-             layout.reingold.tilford(g, circular=T, root=1), vertex.label.dist=vertex.label.dist, vertex.label.cex=vertex.label.cex, vertex.label.family=vertex.label.family, vertex.label.color=vertex.label.color, vertex.label.degree=-pi/2.5)
+             layout.reingold.tilford(g, circular=T, root=1), vertex.label.dist=vertex.label.dist, vertex.label.cex=vertex.label.cex, vertex.label.family=vertex.label.family, vertex.label.color=vertex.label.color, vertex.label.degree=-pi/2.5, ...)
     invisible(g)
 }

@@ -5,7 +5,7 @@
 #' @param dtf a data.frame. Required.
 #' @param index    vector of column names in \code{dtf} that specify the aggregation indices. It could contain only one column name, which results in a treemap without hierarchy. If multiple column names are provided, the first name is the highest aggregation level, the second name the second-highest aggregation level, and so on. Required. 
 #' @param vSize name of the column in \code{dtf} that specifies the sizes of the rectangles. Required.
-#' @param vColor name of the column that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". When omitted, a contant value of 1 is taken.
+#' @param vColor name of the column that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". Note: when omitted for \code{"value"} treemaps, a contant value of 1 is taken.
 #' @param type type of the treemap, which determines how the rectangles are colored:
 #' \describe{
 #'    	\item{\code{"index"}:}{colors are determined by the \code{index} variables. Different branches in the hierarchical tree get different colors. For this type, \code{vColor} is not needed.}
@@ -43,26 +43,30 @@
 #' @param fontfamily.title font family of the title. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
 #' @param fontfamily.labels font family of the labels in each rectangle. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
 #' @param fontfamily.legend font family of the legend. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
-#' @param border.col colour of borders drawn around each rectangle. Either one colour for all rectangles or a vector of colours, or one for each aggregation level
+#' @param border.col color of borders drawn around each rectangle. Either one color for all rectangles or a vector of colors, or one for each aggregation level
 #' @param border.lwds thicknesses of border lines. Either one number specifies the line thicknesses (widths) for all rectangles or a vector of line thicknesses for each aggregation level.
 #' @param lowerbound.cex.labels multiplier between 0 and 1 that sets the lowerbound for the data label font sizes: 0 means draw all data labels, and 1 means only draw data labels if they fit (given \code{fontsize.labels}).
-#' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles. If TRUE, \code{fontsize.labels} is does not determine the maximum fontsize, but it does determine in combination with  \code{lowerbound.cex.labels} the minimum fontsize.
+#' @param inflate.labels logical that determines whether data labels are inflated inside the rectangles. If \code{TRUE}, \code{fontsize.labels} does not determine the fontsize anymore, but it still determines the minimum fontsize in combination with  \code{lowerbound.cex.labels}.
 #' @param bg.labels background color of high aggregation labels. Either a color, or a number between 0 and 255 that determines the transparency of the labels. In the latter case, the color itself is determined by the color of the underlying rectangle. For "value" and "categorical" treemaps, the default is (slightly) transparent grey (\code{"#CCCCCCDC"}), and for the other types slightly transparent: \code{220}.
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed if they don't fit.
 #' @param overlap.labels number between 0 and 1 that determines the tolerance of the overlap between labels. 0 means that labels of lower levels are not printed if higher level labels overlap, 1 means that labels are always printed. In-between values, for instance the default value .5, means that lower level labels are printed if other labels do not overlap with more than .5 times their area size.
-#' @param align.labels object that specifies the alignment of the labels. Either a character vector of two values specifying the horizontal alignment (\code{"left"}, \code{"center"}, \code{"right"}) and the vertical alignment (\code{"top"}, \code{"center"}, \code{"bottom"}), or a list of sush character vectors, one for each aggregation level.
-#' @param xmod.labels the horizontal position modification of the labels in inches. Either a single value, or a vector that specifies the modifitaion for each aggregation level.
-#' @param ymod.labels the vertical position modification of the labels in inches. Either a single value, or a vector that specifies the modifitaion for each aggregation level.
+#' @param align.labels object that specifies the alignment of the labels. Either a character vector of two values specifying the horizontal alignment (\code{"left"}, \code{"center"}, or \code{"right"}) and the vertical alignment (\code{"top"}, \code{"center"}, or \code{"bottom"}), or a list of sush character vectors, one for each aggregation level.
+#' @param xmod.labels the horizontal position modification of the labels in inches. Either a single value, or a vector that specifies the modification for each aggregation level.
+#' @param ymod.labels the vertical position modification of the labels in inches. Either a single value, or a vector that specifies the modification for each aggregation level.
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
 #' @param vp \code{\link[grid:viewport]{viewport}} to draw in. By default it is not specified, which means that a new plot is created. Useful when drawing small multiples, or when placing a treemap in a custom grid based plot.
 #' @return A list is silently returned:
-#'	\item{tm}{a \code{data.frame} containing information about the rectangles}
+#'	\item{tm}{a \code{data.frame} containing information about the rectangles: indices, sizes, original color values, derived color values, depth level, position (x0, y0, w, h), and color.}
 #'  \item{type}{argument type}
 #'  \item{vSize}{argument vSize}
 #'  \item{vColor}{argument vColor}
 #'  \item{algorithm}{argument algorithm}
+#'  \item{vpCoorX}{x-coordinates of the treemap within the whole plot}
+#'  \item{vpCoorY}{y-coordinates of the treemap within the whole plot}
+#'  \item{aspRatio}{aspect ratio of the treemap}
+#'  \item{range}{range of the color values scale}
 #' @references
 #' Bederson, B., Shneiderman, B., Wattenberg, M. (2002) Ordered and Quantum Treemaps: Making Effective Use of 2D Space to Display Hierarchies. ACM Transactions on Graphics, 21(4): 833-854.
 #'

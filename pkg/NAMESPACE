@@ -1,6 +1,6 @@
 export(itreemap)
-export(tmClick)
 export(tmPlot)
+export(treegraph)
 export(treemap)
 export(treepalette)
 import(colorspace)

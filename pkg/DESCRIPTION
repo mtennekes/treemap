@@ -2,7 +2,7 @@ Package: treemap
 Type: Package
 Title: Treemap visualization
 Version: 2.1
-Date: 2013-06-19
+Date: 2013-11-21
 Author: Martijn Tennekes
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
 Description: A treemap is a space-filling visualization of hierarchical
@@ -44,7 +44,6 @@ Collate:
     'treefunctions.R'
     'treemap.R'
     'value2col.R'
-    'tmClick.R'
     'tmLocate.R'
     'treepalette.R'
     'treegraph.R'

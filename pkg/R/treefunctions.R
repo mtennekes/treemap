@@ -63,7 +63,6 @@ treeapply <- function(dat, values, depth=NULL, fun, ...) {
 		res <- as.list(dt[, fn(.SD), by=id][, vars, with=FALSE])
 		dt[, eval(vars):=res]
 	}
-	
 	id1 <- treeid(dat)$current
 	id2 <- treeid(dt[,1:k, with=FALSE])$current
 	
@@ -147,7 +146,7 @@ spread <- function(n) {
 
 
 treeid <- function(dat) {
-	current <- apply(dat, MARGIN=1, paste, collapse=".")
+	current <- apply(dat, MARGIN=1, paste, collapse="__")
     if (ncol(dat)==1) {
         parent <- rep.int("NA", length(current))
     } else {
@@ -155,7 +154,7 @@ treeid <- function(dat) {
     		n <- length(x)-sum(is.na(x))-1
     		y <- rep(NA, length(x))
     		if (n>0) y[1:n] <- x[1:n]
-    		paste(y,collapse=".")
+    		paste(y,collapse="__")
     	})
     }
 	list(current=current, parent=parent)

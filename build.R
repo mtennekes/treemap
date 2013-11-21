@@ -6,7 +6,7 @@ source("roxygen.R")
 setwd("../pkg")
 
 
-
+install(".")
 
 
 ## check

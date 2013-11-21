@@ -24,9 +24,13 @@ treepalette(business[, c("NACE1", "NACE2", "NACE3", "NACE4")],
 treemap(business, index=c("NACE1", "NACE2"), vSize="employees",
         palette.HCL.options=palette.HCL.options, bg.labels=255)
 
+treemap(business, index=c("NACE1"), vSize="employees")
+
+levels(business$NACE2) <- substr(levels(business$NACE2), 1, 2)
+levels(business$NACE3) <- substr(levels(business$NACE3), 1, 4)
+levels(business$NACE4) <- substr(levels(business$NACE4), 1, 6)
 
 
-treegraph(business[business$NACE1=="F - Construction",], index=c("NACE2", "NACE3", "NACE4"), show.labels=TRUE, truncate=2)
 
 
 data(GNI2010)
