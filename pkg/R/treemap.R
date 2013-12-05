@@ -302,7 +302,7 @@ treemap <-
         # fontsize.labels
         if (!is.numeric(fontsize.labels))
             stop("Invalid fontsize.labels")
-        fontsize.labels <- rep_len(fontsize.labels, depth)
+        fontsize.labels <- rep(fontsize.labels, length.out=depth)
         cex_indices <- fontsize.labels / max(min(fontsize.labels), 1)
         
         # fontsize.legend
@@ -312,14 +312,14 @@ treemap <-
         
         
         # fontface.labels
-        if (length(fontface.labels)!=depth) fontface.labels <- rep_len(fontface.labels, depth)
+        if (length(fontface.labels)!=depth) fontface.labels <- rep(fontface.labels, length.out=depth)
         
         # fontfamily
         
         
         # border.col and border.lwds
-        if (length(border.col)!=depth) border.col <- rep_len(border.col, depth)
-        if (length(border.lwds)!=depth) border.lwds <- rep_len(border.lwds, depth)
+        if (length(border.col)!=depth) border.col <- rep(border.col, length.out=depth)
+        if (length(border.lwds)!=depth) border.lwds <- rep(border.lwds, length.out=depth)
         
         # lowerbound.cex.labels
         if (length(lowerbound.cex.labels)!=1 ||

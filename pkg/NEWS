@@ -1,3 +1,6 @@
+version 2.1-1
+- minor fix: for compatibility with R<3.0.0, rep_len is replaced by rep(..., length.out=)
+
 version 2.1
 - itreemap added, a web-interface (made with shiny) added
 - treepalettes added, to make hierarchical color palettes directly available
@@ -14,7 +17,7 @@ version 2.1
 - improved business test data set (removed redundant colums)
 - add version number of required data.table package to prevent conflicts
 
-version 2.0.1
+version 2.0-1
 - computation time examples shorter (CRAN policy)
 
 version 2.0

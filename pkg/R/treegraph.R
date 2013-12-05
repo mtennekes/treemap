@@ -35,7 +35,7 @@ treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FA
     dat <- unique(dat)
     
     if (!missing(truncate.labels)) {
-        truncate.labels <- rep_len(truncate.labels, k)
+        truncate.labels <- rep(truncate.labels, length.out=k)
         for (i in 1:k) {
             levels(dat[[i]]) <- substr(levels(dat[[i]]), 1, truncate.labels[i])
         }
