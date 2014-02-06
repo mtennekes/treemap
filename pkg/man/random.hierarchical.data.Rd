@@ -1,0 +1,83 @@
+\name{random.hierarchical.data}
+\alias{random.hierarchical.data}
+\title{Random hierarchical data}
+\usage{
+  random.hierarchical.data(n = NULL, method = "random",
+    number.children = 3, children.root = 4, depth = 3,
+    nodes.per.layer = NULL,
+    labels = c("LETTERS", "numbers", "letters"),
+    labels.prefix = NULL, sep = ".",
+    colnames = c(paste("index", 1:depth, sep = ""), "x"),
+    value.generator = rlnorm, value.generator.args = NULL)
+}
+\arguments{
+  \item{n}{number of leaf nodes. This is a shortcut
+  argument. If specified, the method is set to
+  \code{"random.arcs"} with a nodes.per.layer such that the
+  average number of children per layer is as constant as
+  possible.}
+
+  \item{method}{one of \describe{
+  \item{\code{"random"}:}{Random tree where for each node,
+  the number of children, is determined by a random poisson
+  generator with \code{lambda=number.children}, until the
+  maximum depth specified by \code{depth} is reached. The
+  number of children of the root node is set to
+  \code{children.root}.}
+  \item{\code{"random.arcs"}:}{Random tree where the exact
+  number of nodes in each layer must be speficied by
+  \code{nodes.per.layer}. The arcs between the layers are
+  random, with the restriction that each node is
+  connected.} \item{\code{"full.tree"}:}{Each node has
+  exactly \code{number.children} children.}}}
+
+  \item{number.children}{the number of children. For
+  \code{method="random"} this is the average number of
+  children and for \code{method="full.tree"}, it is the
+  exact number of children. In the latter case, it can also
+  be a vector that specifies the number of children for
+  each layer.}
+
+  \item{children.root}{number of children of the root node.
+  For \code{method="random"} only.}
+
+  \item{depth}{depth of the tree. Note that for
+  \code{method="random"}, this depth may not be reached.}
+
+  \item{nodes.per.layer}{exact number of nodes per layer,
+  that is needed for \code{method="random.arcs"}}
+
+  \item{labels}{one of \code{"letters"}, \code{"LETTERS"},
+  \code{"numbers"}, \code{"numbers1"}, \code{"numbers0"},
+  \code{"hex"}, \code{"bits"}. The label set for
+  \code{"numbers1"} is \code{1:9}, and for
+  \code{"numbers0"} it is \code{0:9}. \code{"numbers"} is
+  equal to \code{"numbers0"}, except that is starts from
+  \code{1}.}
+
+  \item{labels.prefix}{vector of label prefixes, one for
+  each layer}
+
+  \item{sep}{seperator character}
+
+  \item{value.generator}{function that determine the random
+  values for the leaf nodes}
+
+  \item{value.generator.args}{list of arguments passed to
+  \code{value.generator}}
+}
+\description{
+  This function generates random hierarchical data.
+  Experimental.
+}
+\examples{
+d <- random.hierarchical.data(300)
+treemap(d, index=names(d)[1:(ncol(d)-1)], vSize="x")
+
+d <- random.hierarchical.data(number.children=5)
+treemap(d, index=names(d)[1:(ncol(d)-1)], vSize="x")
+
+d <- random.hierarchical.data(method="full.tree", number.children=5)
+treemap(d, index=names(d)[1:(ncol(d)-1)], vSize="x")
+}
+

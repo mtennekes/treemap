@@ -47,3 +47,4 @@ Collate:
     'tmLocate.R'
     'treepalette.R'
     'treegraph.R'
+    'random_hierarchical_data.R'

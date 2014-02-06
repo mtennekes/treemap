@@ -15,6 +15,7 @@
 #' @param vertex.label.cex vertex.label.cex (see \code{\link[igraph:igraph.plotting]{igraph.plotting}})
 #' @param vertex.label.family vertex.label.family (see \code{\link[igraph:igraph.plotting]{igraph.plotting}})
 #' @param vertex.label.color vertex.label.color (see \code{\link[igraph:igraph.plotting]{igraph.plotting}})
+#' @param mai margins see \code{\link[graphics:par]{par}}
 #' @param ... arguments passed to \code{\link[igraph:plot.igraph]{plot.igraph}}
 #' @return (invisible) igraph object
 #' @examples
@@ -26,7 +27,7 @@
 #' @import igraph
 #' @import colorspace
 #' @export
-treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FALSE, rootlabel="", vertex.layout, vertex.layout.params, truncate.labels=NULL, vertex.size=3, vertex.label.dist=0.3, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black", ...) {
+treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FALSE, rootlabel="", vertex.layout, vertex.layout.params, truncate.labels=NULL, vertex.size=3, vertex.label.dist=0.3, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black", mai=c(0,0,0,0), ...) {
     palette.HCL.options <- tmSetHCLoptions(palette.HCL.options)
     
     k <- length(index)
@@ -75,7 +76,7 @@ treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FA
     }
     
     
-    par(mai=c(0,0,0,0))
+    par(mai=mai)
     if (missing(vertex.layout)){
         vertex.layout=layout.reingold.tilford
     }

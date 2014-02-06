@@ -3,10 +3,10 @@
 \title{Tree graph}
 \usage{
   treegraph(dtf, index = names(dtf), palette.HCL.options,
-    show.labels = FALSE, rootlabel = "",
-    truncate.labels = NULL, vertex.size = 3,
-    vertex.label.dist = 0.3, vertex.label.cex = 0.8,
-    vertex.label.family = "sans",
+    show.labels = FALSE, rootlabel = "", vertex.layout,
+    vertex.layout.params, truncate.labels = NULL,
+    vertex.size = 3, vertex.label.dist = 0.3,
+    vertex.label.cex = 0.8, vertex.label.family = "sans",
     vertex.label.color = "black", ...)
 }
 \arguments{
@@ -21,6 +21,11 @@
   \item{show.labels}{show the labels}
 
   \item{rootlabel}{name of the rootlabel}
+
+  \item{vertex.layout}{layout algorithm}
+
+  \item{vertex.layout.params}{list of arguments passed to
+  \code{vertex.layout}}
 
   \item{truncate.labels}{number of characters at which the
   levels are truncated. Either a single value for all index

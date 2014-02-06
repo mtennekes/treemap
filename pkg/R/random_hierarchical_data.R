@@ -13,12 +13,13 @@
 #' @param depth depth of the tree. Note that for \code{method="random"}, this depth may not be reached.
 #' @param nodes.per.layer exact number of nodes per layer, that is needed for \code{method="random.arcs"}
 #' @param labels one of \code{"letters"}, \code{"LETTERS"}, \code{"numbers"}, \code{"numbers1"}, \code{"numbers0"}, \code{"hex"}, \code{"bits"}. The label set for \code{"numbers1"} is \code{1:9}, and for \code{"numbers0"} it is \code{0:9}. \code{"numbers"} is equal to \code{"numbers0"}, except that is starts from \code{1}.
+#' @param labels.prefix vector of label prefixes, one for each layer
 #' @param sep seperator character
 #' @param value.generator function that determine the random values for the leaf nodes
 #' @param value.generator.args list of arguments passed to \code{value.generator}
 #' @example ../examples/random_hierarchical_data.R
 #' @export
-random.hierarchical.data <- function(n=NULL, method="random", number.children=3, children.root=4, depth=3, nodes.per.layer=NULL, labels=c("LETTERS", "numbers", "letters"), sep=".", value.generator=rlnorm, value.generator.args=NULL) {
+random.hierarchical.data <- function(n=NULL, method="random", number.children=3, children.root=4, depth=3, nodes.per.layer=NULL, labels=c("LETTERS", "numbers", "letters"), labels.prefix=NULL, sep=".", colnames=c(paste("index", 1:depth, sep=""), "x"), value.generator=rlnorm, value.generator.args=NULL) {
     
     # check parameters
     if (!missing(n)) {
@@ -50,7 +51,7 @@ random.hierarchical.data <- function(n=NULL, method="random", number.children=3,
     l <- list(as.character(1:switch(method,
                                     random=children.root,
                                     full.tree=number.children[1],
-                                    random.arcs=number.children[1])))
+                                    random.arcs=nodes.per.layer[1])))
     isleaf <- list()
     # fill tree        
     for (d in 2:depth) {
@@ -76,6 +77,7 @@ random.hierarchical.data <- function(n=NULL, method="random", number.children=3,
     l <- l[1:depth]
     isleaf <- isleaf[1:depth]
     labels <- rep(labels, length.out=depth)
+    if (!missing(labels.prefix)) labels.prefix <- rep(labels.prefix, length.out=depth)
     
     # keep leafs
     l <- mapply("[", l, isleaf)
@@ -95,16 +97,20 @@ random.hierarchical.data <- function(n=NULL, method="random", number.children=3,
     l <- l[do.call("order", l),]
 
     
-    l <- add.labels(l, labels)
+    l <- add.labels(l, labels, labels.prefix, sep)
+    
     
     # add values
     l$x <- do.call("value.generator", args=c(list(nrow(l)), value.generator.args))
+    
+    # change colnames
+    names(l) <- colnames[c(1:depth, ncol(l))]
     
     l
 }    
      
 # function to add labels
-add.labels <- function(l, labels) {
+add.labels <- function(l, labels, labels.prefix, sep) {
     # get maxima
     maxx <- sapply(l, function(ll) {
         max(as.integer(gsub(".*[.](.*)", "\\1", ll)), na.rm=TRUE)
@@ -121,6 +127,7 @@ add.labels <- function(l, labels) {
         m <- lapply(1:ncol(m), function(x)lvls[[x]][m[,x]])
         lvl <- do.call("paste", c(m, list(sep=sep)))
         lvl[nas] <- NA
+        if (!is.null(labels.prefix)) if (labels.prefix[d]!="") lvl <- paste(labels.prefix[d], lvl)
         lvl
     }))
 }

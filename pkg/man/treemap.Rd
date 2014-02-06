@@ -308,7 +308,7 @@ data(business)
 #########################################
 
 # index treemap: colors are determined by the index argument
-\dontrun{
+\\dontrun{
 # large example which takes some time...
 treemap(business, 
         index=c("NACE1", "NACE2", "NACE3"), 
@@ -342,7 +342,7 @@ treemap(business,
         vColor="employees/1000",
         type="dens")
 
-\dontrun{
+\\dontrun{
 # depth treemap: show depth
 treemap(business,
         index=c("NACE1", "NACE2", "NACE3"), 
@@ -358,7 +358,7 @@ treemap(business,
         vColor="data.available",
         type="categorical")
 
-\dontrun{
+\\dontrun{
 # color treemap
 business$color <- rainbow(nlevels(business$NACE2))[business$NACE2]
 treemap(business,
@@ -382,7 +382,7 @@ treemap(business,
 ### graphical options: control fontsizes
 #########################################
 
-\dontrun{
+\\dontrun{
 # draw labels of first index at fontsize 12 at the center, 
 # and labels of second index at fontsize 8 top left
 treemap(business, 
