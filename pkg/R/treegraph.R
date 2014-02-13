@@ -4,6 +4,7 @@
 #' 
 #' @param dtf a data.frame or data.table. Required.
 #' @param index the index variables of dtf (see \code{\link{treemap}})
+#' @param directed logical that determines whether the graph is directed (\code{TRUE}) or undirected (\code{FALSE})
 #' @param palette.HCL.options palette.HCL.options (see \code{\link{treemap}})
 #' @param show.labels show the labels
 #' @param rootlabel name of the rootlabel
@@ -27,7 +28,7 @@
 #' @import igraph
 #' @import colorspace
 #' @export
-treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FALSE, rootlabel="", vertex.layout, vertex.layout.params, truncate.labels=NULL, vertex.size=3, vertex.label.dist=0.3, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black", mai=c(0,0,0,0), ...) {
+treegraph <- function(dtf, index=names(dtf), directed=TRUE, palette.HCL.options, show.labels=FALSE, rootlabel="", vertex.layout, vertex.layout.params, truncate.labels=NULL, vertex.size=3, vertex.label.dist=0.3, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black", mai=c(0,0,0,0), ...) {
     palette.HCL.options <- tmSetHCLoptions(palette.HCL.options)
     
     k <- length(index)
@@ -53,7 +54,7 @@ treegraph <- function(dtf, index=names(dtf), palette.HCL.options, show.labels=FA
     
     
     
-    g <- graph.data.frame(dat[,c("current", "parent")], vertices=vdat, directed=FALSE)
+    g <- graph.data.frame(dat[,c("parent", "current")], vertices=vdat, directed=directed)
     
     if (show.labels) {
         
