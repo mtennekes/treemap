@@ -72,8 +72,8 @@ addRange <- function(x, depth, frc = .5) {
 	s <- spread(nr)
     if (REV) s <- rev(s)
 	
-	start <- sq[1:nr][s]
-	end <- sq[2:(nr+1)][s]
+	start <- sq[1:nr][order(s)]
+	end <- sq[2:(nr+1)][order(s)]
     
     
 
