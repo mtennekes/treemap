@@ -1,6 +1,6 @@
 tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, 
                        force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, 
-                       fontface.labels, fontfamily.labels, 
+                       fontcolor.labels, fontface.labels, fontfamily.labels, 
                        align.labels, xmod.labels, ymod.labels) {
     pushViewport(vps$vpDat, vps$vpDatAsp)
     
@@ -23,6 +23,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                force.print.labels=force.print.labels,
                                cex_index=cex_indices,
                                border.col=border.col,
+                               fontcolor.labels=fontcolor.labels,
                                fontface.labels=fontface.labels,
                                fontfamily.labels=fontfamily.labels,
                                align.labels=align.labels[[1]], 
@@ -44,6 +45,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                   force.print.labels=force.print.labels, 
                                   cex_index=cex_indices[depth], 
                                   border.col=border.col[depth],
+                                  fontcolor.labels=fontcolor.labels[depth],
                                   fontface.labels=fontface.labels[depth],
                                   fontfamily.labels=fontfamily.labels)
         
@@ -56,6 +58,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                     force.print.labels=force.print.labels, 
                                     cex_index=cex_indices[depth],
                                     border.col=border.col[depth],
+                                    fontcolor.labels=fontcolor.labels[depth],
                                     fontface.labels=fontface.labels[depth],
                                     fontfamily.labels=fontfamily.labels,
                                     align.labels=align.labels[[depth]], 
@@ -74,6 +77,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      force.print.labels=force.print.labels, 
                                      cex_index=cex_indices[r],
                                      border.col=border.col[r],
+                                     fontcolor.labels=fontcolor.labels[r],
                                      fontface.labels=fontface.labels[r],
                                      fontfamily.labels=fontfamily.labels,
                                      align.labels=align.labels[[r]], 
@@ -90,6 +94,7 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      force.print.labels=force.print.labels, 
                                      cex_index=cex_indices[1],
                                      border.col=border.col[1],
+                                     fontcolor.labels=fontcolor.labels[1],
                                      fontface.labels=fontface.labels[1],
                                      fontfamily.labels=fontfamily.labels,
                                      align.labels=align.labels[[1]], 

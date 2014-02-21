@@ -1,7 +1,7 @@
 # Creates graphical rectangle objects out of coordinates
 createRec <-
 function(datlist, filled, label, bg.labels=220, labellb, lwd, inflate.labels, force.print.labels, 
-         cex_index, border.col, fontface.labels, fontfamily.labels, align.labels, xmod.labels, ymod.labels) {
+         cex_index, border.col, fontcolor.labels, fontface.labels, fontfamily.labels, align.labels, xmod.labels, ymod.labels) {
 #browser()
 	if (nrow(datlist)==0) {
 		return(list(recs=NA, txt=NA, txtbg=NA))
@@ -31,7 +31,7 @@ function(datlist, filled, label, bg.labels=220, labellb, lwd, inflate.labels, fo
 	
 	if (label) {
         light <- apply(txtRgb * c(.299, .587, .114), MARGIN=2, sum) >= 128
-		tCol <- ifelse(light, "black", "white")
+		tCol <- if (is.null(fontcolor.labels)) ifelse(light, "black", "white") else rep(fontcolor.labels, length(light))
 
 		noText <- recs$name == ""
 		recs$name[noText] <- " "
