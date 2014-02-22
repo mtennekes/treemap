@@ -58,7 +58,7 @@ treeapply <- function(dat, values, depth=NULL, fun, ...) {
 }
 
 ########## method 1: split hcl circle
-addRange <- function(x, depth, frc = .5) {
+addRange <- function(x, depth, frc = .5, hue_spread = TRUE) {
 	LB <- x[[1]][1]
 	UB <- x[[2]][1]
     REV <- x[[3]][1]
@@ -69,8 +69,10 @@ addRange <- function(x, depth, frc = .5) {
     sq <- seq(LB, UB, length.out=nr+1)
 	spacer <- (sq[2] - sq[1]) * (1 - frc) *.5
 
-	s <- spread(nr)
-    if (REV) s <- rev(s)
+	if (hue_spread) {
+        s <- spread(nr)
+        if (REV) s <- rev(s)
+	} else s <- 1:nr
 	
 	start <- sq[1:nr][order(s)]
 	end <- sq[2:(nr+1)][order(s)]

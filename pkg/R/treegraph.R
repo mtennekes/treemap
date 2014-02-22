@@ -28,7 +28,7 @@
 #' @import igraph
 #' @import colorspace
 #' @export
-treegraph <- function(dtf, index=names(dtf), directed=TRUE, palette.HCL.options, show.labels=FALSE, rootlabel="", vertex.layout, vertex.layout.params, truncate.labels=NULL, vertex.size=3, vertex.label.dist=0.3, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black", mai=c(0,0,0,0), ...) {
+treegraph <- function(dtf, index=names(dtf), directed=FALSE, palette.HCL.options, show.labels=FALSE, rootlabel="", vertex.layout, vertex.layout.params, truncate.labels=NULL, vertex.size=3, vertex.label.dist=0.3, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black", mai=c(0,0,0,0), ...) {
     palette.HCL.options <- tmSetHCLoptions(palette.HCL.options)
     
     k <- length(index)

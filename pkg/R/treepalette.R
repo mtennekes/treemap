@@ -53,7 +53,8 @@ treepalette <- function(dtf, index=names(dtf), method="HCL", palette=NULL, palet
         res <- treeapply(dat, list(lb=palette.HCL.options$hue_start, 
                                    ub=palette.HCL.options$hue_end,
                                    rev=FALSE), 
-                         fun="addRange", frc=palette.HCL.options$hue_fraction)
+                         fun="addRange", frc=palette.HCL.options$hue_fraction, 
+                         hue_spread=palette.HCL.options$hue_spread)
         
         point <- with(res, (lb+ub)/2)
         chr <- palette.HCL.options$chroma + 
