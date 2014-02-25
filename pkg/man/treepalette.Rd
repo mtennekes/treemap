@@ -2,9 +2,8 @@
 \alias{treepalette}
 \title{Hierarchical color palettes}
 \usage{
-  treepalette(dtf, index = names(dtf), method = "HCL",
-    palette = NULL, palette.HCL.options,
-    return.parameters = TRUE, prepare.dat = TRUE)
+treepalette(dtf, index = names(dtf), method = "HCL", palette = NULL,
+  palette.HCL.options, return.parameters = TRUE, prepare.dat = TRUE)
 }
 \arguments{
   \item{dtf}{a data.frame or data.table. Required.}
@@ -61,14 +60,14 @@
   except for interal use}
 }
 \value{
-  Either a vector of colors, or a data.frame is return (see
-  \code{return.parameters}).
+Either a vector of colors, or a data.frame is return (see
+\code{return.parameters}).
 }
 \description{
-  Create hierarchical color palettes, either by using the
-  HCL color space model, or by using an existing color
-  palette with the HSV space. The former, which is
-  recommended, is used in \code{\link{treemap}} (type
-  \code{"index"}) and \code{\link{treegraph}}.
+Create hierarchical color palettes, either by using the HCL
+color space model, or by using an existing color palette
+with the HSV space. The former, which is recommended, is
+used in \code{\link{treemap}} (type \code{"index"}) and
+\code{\link{treegraph}}.
 }
 

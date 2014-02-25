@@ -15,6 +15,7 @@
 #' @param labels one of \code{"letters"}, \code{"LETTERS"}, \code{"numbers"}, \code{"numbers1"}, \code{"numbers0"}, \code{"hex"}, \code{"bits"}. The label set for \code{"numbers1"} is \code{1:9}, and for \code{"numbers0"} it is \code{0:9}. \code{"numbers"} is equal to \code{"numbers0"}, except that is starts from \code{1}.
 #' @param labels.prefix vector of label prefixes, one for each layer
 #' @param sep seperator character
+#' @param colnames names of the columns. The first \code{depth} columns are the index columns (from highest to lowest hierarchical layer), and the last column is stored with random values
 #' @param value.generator function that determine the random values for the leaf nodes
 #' @param value.generator.args list of arguments passed to \code{value.generator}
 #' @example ../examples/random_hierarchical_data.R

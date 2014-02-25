@@ -2,13 +2,11 @@
 \alias{random.hierarchical.data}
 \title{Random hierarchical data}
 \usage{
-  random.hierarchical.data(n = NULL, method = "random",
-    number.children = 3, children.root = 4, depth = 3,
-    nodes.per.layer = NULL,
-    labels = c("LETTERS", "numbers", "letters"),
-    labels.prefix = NULL, sep = ".",
-    colnames = c(paste("index", 1:depth, sep = ""), "x"),
-    value.generator = rlnorm, value.generator.args = NULL)
+random.hierarchical.data(n = NULL, method = "random", number.children = 3,
+  children.root = 4, depth = 3, nodes.per.layer = NULL,
+  labels = c("LETTERS", "numbers", "letters"), labels.prefix = NULL,
+  sep = ".", colnames = c(paste("index", 1:depth, sep = ""), "x"),
+  value.generator = rlnorm, value.generator.args = NULL)
 }
 \arguments{
   \item{n}{number of leaf nodes. This is a shortcut
@@ -60,6 +58,11 @@
 
   \item{sep}{seperator character}
 
+  \item{colnames}{names of the columns. The first
+  \code{depth} columns are the index columns (from highest
+  to lowest hierarchical layer), and the last column is
+  stored with random values}
+
   \item{value.generator}{function that determine the random
   values for the leaf nodes}
 
@@ -67,8 +70,8 @@
   \code{value.generator}}
 }
 \description{
-  This function generates random hierarchical data.
-  Experimental.
+This function generates random hierarchical data.
+Experimental.
 }
 \examples{
 d <- random.hierarchical.data(300)

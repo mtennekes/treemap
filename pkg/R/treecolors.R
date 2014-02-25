@@ -1,3 +1,13 @@
+#' Interactive tool to expore Tree Colors
+#' 
+#' Tree Colors are color palettes for tree data structures. They are used in \code{\link{treemap}} by default (\code{type="index"}). With this tool, users can experiment with the parameters (in \code{\link{treemap}} stored in \code{palette.HCL.options}).
+#' @param height height of the plotted treemap in pixels. Tip: decrease this number if the treemap doesn't fit conveniently.
+#' @examples
+#' \dontrun{
+#' treecolors()
+#' }
+#' @import shiny
+#' @export  
 treecolors <- function(height=700) {
     
     runApp(list(
@@ -14,7 +24,8 @@ treecolors <- function(height=700) {
                                 label = "Tree depth",
                                 min = 2, max = 6,
                                 step= 1,
-                                value = 3)),
+                                value = 3),
+                    helpText("Change these values to generate a new random tree.")),
                 wellPanel(
                     sliderInput(inputId = "Hstart",
                                 label = "Hue start",
@@ -26,6 +37,7 @@ treecolors <- function(height=700) {
                                 min = 0, max = 360,
                                 step= 1,
                                 value = 360),
+                    helpText("If Hue end < Hue start, then Hue end + 360 is taken."),
                     sliderInput(inputId = "Hf",
                                 label = "Hue fraction",
                                 min = 0, max = 1,
@@ -61,11 +73,15 @@ treecolors <- function(height=700) {
                     tabPanel("Treemap", plotOutput("tmplot", height=paste(height, "px", sep="")))))),
         server = function(input, output, session){
             data <- reactive({
-                random.hierarchical.data(n=input$n, depth=input$d, value.generator=rnorm, value.generator.args=list(mean=10, sd=3))
+                dat <- random.hierarchical.data(n=input$n, depth=input$d, value.generator=rnorm, value.generator.args=list(mean=15, sd=3))
+                dat$x[dat$x<0] <- 0
+                dat
             })
             
             HCL.options <- reactive({
-                list(hue_start=input$Hstart, hue_end=input$Hend, 
+                huestart <- input$Hstart
+                hueend <- ifelse(huestart<=input$Hend, input$Hend, input$Hend+360)
+                list(hue_start=huestart, hue_end=hueend, 
                      hue_spread=input$Hperm, hue_fraction=input$Hf,
                      chroma=input$C, luminance=input$L, 
                      chroma_slope=input$Cslope, luminance_slope=input$Lslope)
@@ -79,15 +95,17 @@ treecolors <- function(height=700) {
 
             output$gplot2 <- renderPlot({
                 dat <- data()
-                set.seed(1234)
+                random.seed <- sample.int((2^31)-1, 1)
+                set.seed(1234) # to fix layout
                 treegraph(dat, index=names(dat)[1:(ncol(dat)-1)], palette.HCL.options=HCL.options(), vertex.size=6, vertex.layout=igraph::layout.fruchterman.reingold, show.labels=TRUE)
+                set.seed(random.seed)
                 
             })
             
             output$tmplot <- renderPlot({
                 dat <- data()
-                
-                treemap(dat, index=names(dat)[1:(ncol(dat)-1)], vSize="x", palette.HCL.options=HCL.options(), bg.labels=255)
+                for (i in 1:(ncol(dat)-2)) levels(dat[[i]]) <- paste("Category", levels(dat[[i]]))
+                treemap(dat, index=names(dat)[1:(ncol(dat)-1)], vSize="x", palette.HCL.options=HCL.options(), bg.labels=255, overlap.labels=.1)
                 
             })
             

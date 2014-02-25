@@ -39,7 +39,7 @@
 #' @param fontsize.title font size of the title
 #' @param fontsize.labels font size(s) of the data labels, which is either a single number that specifies the font size for all aggregation levels, or a vector that specifies the font size for each aggregation level. Use value \code{0} to omit the labels for the corresponding aggregation level. 
 #' @param fontsize.legend font size for the legend
-#' @param fontcolor.labels. Specifies the label colors. Either a single color value, or a vector of color values one for each aggregation level. By default, white and black colors are used, depending on the background (\code{bg.labels}).
+#' @param fontcolor.labels Specifies the label colors. Either a single color value, or a vector of color values one for each aggregation level. By default, white and black colors are used, depending on the background (\code{bg.labels}).
 #' @param fontface.labels either a single value, or a vector of values one for each aggregation level. Values can be integers  If an integer, following the R base graphics standard: 1 = plain, 2 = bold, 3 = italic, 4 = bold italic, or characters: \code{"plain"}, \code{"bold"}, \code{"italic"}, \code{"oblique"}, and \code{"bold.italic"}.
 #' @param fontfamily.title font family of the title. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
 #' @param fontfamily.labels font family of the labels in each rectangle. Standard values are "serif", "sans", "mono", "symbol". Mapping is device dependent. 
