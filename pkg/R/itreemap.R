@@ -178,43 +178,50 @@ itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, h
                 l <- getClickID()
                 if (back.new == back) {
                     if (!is.null(l)) if (!(l$x0==0 && l$y0==0 && l$w==1 && l$y==1))  {
-                        
                         # mouse click on treemap
                         filter <- as.character(l[[1]])
                         
+                        proceed <- is.null(filters)
+                        if (!proceed) proceed <- (!length(filters)) || (filter != filters[length(filters)])
+                        
                         # select all rectangles inside clicked rectangle
-                        sel <- tm$tm[[1]] == filter
-                        
-                        # create hcl options
-                        cols <- tm$tm$color[sel]
-                        cols <- substr(cols, 1L, 7L)
-                        cols <- hex2RGB(cols)
-                        cols <- as(cols, "polarLUV")
-                        hues <- cols@coords[,3]
-                        hcl.last <- hcl[[length(hcl)]]
-                        hcl.last$hue_start <- min(hues)
-                        hcl.last$hue_end <- max(hues)
-                        if (length(l)>10) {
-                            hcl.last$chroma <- hcl.last$chroma + hcl.last$chroma_slope
-                            hcl.last$luminance <- hcl.last$luminance + hcl.last$luminance_slope
+                        if (proceed) {
+                            sel <- tm$tm[[1]] == filter
+                            #browser()
+                            # create hcl options
+                            cols <- tm$tm$color[sel]
+                            cols <- substr(cols, 1L, 7L)
+                            cols <- hex2RGB(cols)
+                            cols <- as(cols, "polarLUV")
+                            hues <- cols@coords[,3]
+                            hcl.last <- hcl[[length(hcl)]]
+                            hcl.last$hue_start <- min(hues)
+                            hcl.last$hue_end <- max(hues)
+                            notDeeper <- all(is.na(tm$tm[sel, 2]))
+                            if (length(l)>10 && !notDeeper) {
+                                hcl.last$chroma <- hcl.last$chroma + hcl.last$chroma_slope
+                                hcl.last$luminance <- hcl.last$luminance + hcl.last$luminance_slope
+                            }
+                            
+                            
+                            assign("hcl", c(hcl, list(hcl.last)), envir=e)
+                            
+                            # set aspect ratio
+                            x0 <- tm$tm$x0[sel]
+                            x1 <- x0 + tm$tm$w[sel]
+                            y0 <- tm$tm$y0[sel]
+                            y1 <- y0 + tm$tm$h[sel]
+                            w <- max(x1) - min(x0)
+                            h <- max(y1) - min(y0)
+                            asp.new <- tm$aspRatio
+                            assign("asp", if (is.null(asp)) c(asp.new, asp.new*(w/h)) else c(asp, asp.new*(w/h)), envir=e)
+                            
+                            # get range
+                            assign("range", tm$range, envir=e)
+                            
+                            # add filter
+                            assign("filters", c(filters, filter), envir=e)
                         }
-                        assign("hcl", c(hcl, list(hcl.last)), envir=e)
-                        
-                        # set aspect ratio
-                        x0 <- tm$tm$x0[sel]
-                        x1 <- x0 + tm$tm$w[sel]
-                        y0 <- tm$tm$y0[sel]
-                        y1 <- y0 + tm$tm$h[sel]
-                        w <- max(x1) - min(x0)
-                        h <- max(y1) - min(y0)
-                        asp.new <- tm$aspRatio
-                        assign("asp", if (is.null(asp)) c(asp.new, asp.new*(w/h)) else c(asp, asp.new*(w/h)), envir=e)
-                        
-                        # get range
-                        assign("range", tm$range, envir=e)
-                        
-                        # add filter
-                        assign("filters", unique(c(filters, filter)), envir=e)
                     }
                 } else {
                     if (!is.null(filters)) if (length(filters)) {
@@ -408,12 +415,22 @@ itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, h
                     vps <- baseViewports()
                     
                     # subset data and get aspect ratio
+                    
+                    #### TODO: in incomplete trees, the max zoom level is lower
+                    #### test: 53 Postal and courier activities
+                    
                     dat <- get(p, envir=.GlobalEnv)
                     if (zoomLevel>0) {
                         filterString <- paste(paste(index.new[1:zoomLevel], paste("\"", filters, "\"", sep=""), sep=" == "), collapse=" & ")
                         selection <- eval(parse(text=filterString), dat, parent.frame())
                         dat <- dat[selection,]
-                        if (length(index.new)>1) index.new <- index.new[-(1:min(zoomLevel, length(index.new)-1))]
+                        
+                        # determine indices of treemap
+                        allNA <- sapply(dat[, index.new], function(x)all(is.na(x)))
+                        maxLevel <- ifelse(any(allNA), which(allNA)[1]-1, length(index.new))
+                        minLevel <- min(maxLevel, zoomLevel+1, length(index.new))
+                        if (length(index.new)>1) index.new <- index.new[(minLevel:maxLevel)]
+                        #if (maxLevel==zoomLevel) hcl
                         aspRatio <- ifelse(asp.new, asp[length(asp)], NA)
                     } else {
                         aspRatio <- NA
@@ -426,7 +443,6 @@ itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, h
                     # get range and hcl info
                     assign("range", if(scales) range else NA, envir=e)
 
-                    
                     hcl.new <- if(scales) as.list(hcl[[zoomLevel+1]]) else hcl[[1]]
                     
                     #require(data.table)
