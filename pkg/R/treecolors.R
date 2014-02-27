@@ -70,7 +70,8 @@ treecolors <- function(height=700) {
                 tabsetPanel(
                     tabPanel("Graph (radial)", plotOutput("gplot1", height=paste(height, "px", sep=""))),
                     tabPanel("Graph (Fruchterman Reingold)", plotOutput("gplot2", height=paste(height, "px", sep=""))),
-                    tabPanel("Treemap", plotOutput("tmplot", height=paste(height, "px", sep="")))))),
+                    tabPanel("Treemap", plotOutput("tmplot", height=paste(height, "px", sep=""))),
+                    tabPanel("Bar chart", plotOutput("barchart", height=paste(height, "px", sep="")))))),
         server = function(input, output, session){
             data <- reactive({
                 dat <- random.hierarchical.data(n=input$n, depth=input$d, value.generator=rnorm, value.generator.args=list(mean=15, sd=3))
@@ -80,7 +81,7 @@ treecolors <- function(height=700) {
             
             HCL.options <- reactive({
                 huestart <- input$Hstart
-                hueend <- ifelse(huestart<=input$Hend, input$Hend, input$Hend+360)
+                hueend <- ifelse(huestart < input$Hend, input$Hend, input$Hend+360)
                 list(hue_start=huestart, hue_end=hueend, 
                      hue_spread=input$Hperm, hue_fraction=input$Hf,
                      chroma=input$C, luminance=input$L, 
@@ -105,10 +106,50 @@ treecolors <- function(height=700) {
             output$tmplot <- renderPlot({
                 dat <- data()
                 for (i in 1:(ncol(dat)-2)) levels(dat[[i]]) <- paste("Category", levels(dat[[i]]))
-                treemap(dat, index=names(dat)[1:(ncol(dat)-1)], vSize="x", palette.HCL.options=HCL.options(), bg.labels=255, overlap.labels=.1)
+                treemap(dat, index=names(dat)[1:(ncol(dat)-1)], vSize="x", palette.HCL.options=HCL.options(), bg.labels=255, overlap.labels=.1, title="")
                 
             })
             
+            output$barchart <- renderPlot({
+                dat <- data()
+                require(ggplot2)
+                
+                d <- input$d
+                
+                # reverse levels
+                for (i in 1:d) dat[[i]] <- factor(as.character(dat[[i]]), levels=rev(unique(as.character(dat[[i]]))))
+                
+                datcolors <- treepalette( dat, index=paste("index", 1:d, sep=""),
+                                         palette.HCL.options = HCL.options())
+                
+                
+                dat$color <- datcolors$HCL.color[match(dat[[d]], datcolors[[d]])]
+                
+                dat$sp <- addSpace(dat[, 1:d])
+                dat$sp <- max(dat$sp) - dat$sp
+                
+                print(ggplot(dat, aes_string(x="sp", y="x", fill=paste("index", d, sep=""))) +
+                    geom_bar(stat="identity") + 
+                    scale_x_continuous("", breaks=dat$sp, labels=dat[[d]]) +
+                    scale_y_continuous("") +
+                    scale_fill_manual(values=rev(dat$color)) + coord_flip() + theme_bw() +
+                    theme(legend.position="none"))
+            })
+            
+                
+                
+            
             
     }))
+}
+
+
+
+addSpace <- function(dat, fact=1.10) {
+    d <- ncol(dat)
+    dat <- lapply(dat, as.integer) 
+    diff <- lapply(dat, function(x)x[-1]!=x[-(length(x))])
+    diff <- matrix(unlist(diff), ncol=d)
+    steps <- floor(log10(apply(diff, MARGIN=1,FUN=function(x)sum(1, as.numeric(x)*(10^(length(x):1))))))
+    cumsum(c(0, fact^steps))
 }
