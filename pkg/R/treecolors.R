@@ -12,39 +12,40 @@ treecolors <- function(height=700) {
     
     runApp(list(
         ui = pageWithSidebar(
-            headerPanel("Tree Colors: color schemes for tree structures data", windowTitle="Tree Colors"),
+            headerPanel(p(HTML('Tree Colors <span style="color: #999999">color schemes for tree structured data</span>')), windowTitle="Tree Colors"),
             sidebarPanel(
-                wellPanel(
+                    p(strong("Random tree data")),
                     sliderInput(inputId = "n",
-                                label = "Number of nodes",
+                                label = "Number of leaf nodes",
                                 min = 10, max = 100,
-                                step= 5,
+                                step= 1,
                                 value = 30),
                     sliderInput(inputId = "d",
                                 label = "Tree depth",
                                 min = 2, max = 6,
                                 step= 1,
                                 value = 3),
-                    helpText("Change these values to generate a new random tree.")),
-                wellPanel(
+                    br(),
+                    p(strong("Hue")),
                     sliderInput(inputId = "Hstart",
                                 label = "Hue start",
                                 min = 0, max = 360,
                                 step= 1,
                                 value = 0),
                     sliderInput(inputId = "Hend",
-                                label = "Hue end",
+                                label = p(HTML('Hue end <span style="color: #999999">(if Hue end < Hue start, then Hue end + 360 is taken)</span>')),
                                 min = 0, max = 360,
                                 step= 1,
                                 value = 360),
-                    helpText("If Hue end < Hue start, then Hue end + 360 is taken."),
+                    #helpText("If Hue end < Hue start, then Hue end + 360 is taken."),
                     sliderInput(inputId = "Hf",
                                 label = "Hue fraction",
                                 min = 0, max = 1,
                                 step= 0.05,
                                 value = 0.75),
-                    checkboxInput("Hperm", "Hue permutations", TRUE)),
-                wellPanel(
+                    checkboxInput("Hperm", "Hue permutations", TRUE),
+                    br(),
+                    p(strong("Luminance")),
                     sliderInput(inputId = "L",
                                 label = "\nLuminance first level value",
                                 min = 50, max = 100,
@@ -55,7 +56,9 @@ treecolors <- function(height=700) {
                                 min = -20, max = 20,
                                 step= 1,
                                 value = -10),
-                    sliderInput(inputId = "C",
+                    br(),
+                    p(strong("Chroma")),
+                                sliderInput(inputId = "C",
                                 label = "Chroma first level value",
                                 min = 50, max = 100,
                                 step= 1,
@@ -64,7 +67,7 @@ treecolors <- function(height=700) {
                                 label = "Chroma slope value",
                                 min = -20, max = 20,
                                 step= 1,
-                                value = 5))
+                                value = 5)
             ),
             mainPanel(
                 tabsetPanel(
