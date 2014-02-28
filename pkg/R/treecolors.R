@@ -44,6 +44,7 @@ treecolors <- function(height=700) {
                                 step= 0.05,
                                 value = 0.75),
                     checkboxInput("Hperm", "Hue permutations", TRUE),
+                    checkboxInput("Hrev", "Hue reverse", TRUE),
                     br(),
                     p(strong("Luminance")),
                     sliderInput(inputId = "L",
@@ -86,7 +87,7 @@ treecolors <- function(height=700) {
                 huestart <- input$Hstart
                 hueend <- ifelse(huestart < input$Hend, input$Hend, input$Hend+360)
                 list(hue_start=huestart, hue_end=hueend, 
-                     hue_spread=input$Hperm, hue_fraction=input$Hf,
+                     hue_perm=input$Hperm, hue_rev=input$Hrev, hue_fraction=input$Hf,
                      chroma=input$C, luminance=input$L, 
                      chroma_slope=input$Cslope, luminance_slope=input$Lslope)
             })
