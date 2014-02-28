@@ -72,7 +72,7 @@ treecolors <- function(height=700) {
             ),
             mainPanel(
                 tabsetPanel(
-                    tabPanel("Graph (radial)", plotOutput("gplot1", height=paste(height, "px", sep=""))),
+                    tabPanel("Graph (Reingold-Tilford)", plotOutput("gplot1", height=paste(height, "px", sep=""))),
                     tabPanel("Graph (Fruchterman-Reingold)", plotOutput("gplot2", height=paste(height, "px", sep=""))),
                     tabPanel("Treemap", plotOutput("tmplot", height=paste(height, "px", sep=""))),
                     tabPanel("Bar chart", plotOutput("barchart", height=paste(height, "px", sep=""))),
