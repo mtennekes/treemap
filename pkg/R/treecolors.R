@@ -73,9 +73,11 @@ treecolors <- function(height=700) {
             mainPanel(
                 tabsetPanel(
                     tabPanel("Graph (radial)", plotOutput("gplot1", height=paste(height, "px", sep=""))),
-                    tabPanel("Graph (Fruchterman Reingold)", plotOutput("gplot2", height=paste(height, "px", sep=""))),
+                    tabPanel("Graph (Fruchterman-Reingold)", plotOutput("gplot2", height=paste(height, "px", sep=""))),
                     tabPanel("Treemap", plotOutput("tmplot", height=paste(height, "px", sep=""))),
-                    tabPanel("Bar chart", plotOutput("barchart", height=paste(height, "px", sep="")))))),
+                    tabPanel("Bar chart", plotOutput("barchart", height=paste(height, "px", sep=""))),
+                    tabPanel("Data", dataTableOutput("data"))
+                    ))),
         server = function(input, output, session){
             data <- reactive({
                 dat <- random.hierarchical.data(n=input$n, depth=input$d, value.generator=rnorm, value.generator.args=list(mean=15, sd=3))
@@ -126,7 +128,6 @@ treecolors <- function(height=700) {
                 datcolors <- treepalette( dat, index=paste("index", 1:d, sep=""),
                                          palette.HCL.options = HCL.options())
                 
-                
                 dat$color <- datcolors$HCL.color[match(dat[[d]], datcolors[[d]])]
                 
                 dat$sp <- addSpace(dat[, 1:d])
@@ -140,7 +141,36 @@ treecolors <- function(height=700) {
                     theme(legend.position="none"))
             })
             
+            output$barchart <- renderPlot({
+                dat <- data()
+                require(ggplot2)
                 
+                d <- input$d
+                
+                # reverse levels
+                for (i in 1:d) dat[[i]] <- factor(as.character(dat[[i]]), levels=rev(unique(as.character(dat[[i]]))))
+                datcolors <- treepalette( dat, index=paste("index", 1:d, sep=""),
+                                          palette.HCL.options = HCL.options())
+                dat$color <- datcolors$HCL.color[match(dat[[d]], datcolors[[d]])]
+                
+                dat$sp <- addSpace(dat[, 1:d])
+                dat$sp <- max(dat$sp) - dat$sp
+                
+                print(ggplot(dat, aes_string(x="sp", y="x", fill=paste("index", d, sep=""))) +
+                          geom_bar(stat="identity") + 
+                          scale_x_continuous("", breaks=dat$sp, labels=dat[[d]]) +
+                          scale_y_continuous("") +
+                          scale_fill_manual(values=rev(dat$color)) + coord_flip() + theme_bw() +
+                          theme(legend.position="none"))
+            }) 
+            
+            output$data <- renderDataTable({
+                dat <- data()
+                d <- input$d
+                treepalette( dat, index=paste("index", 1:d, sep=""),
+                                          palette.HCL.options = HCL.options())
+                
+            })
                 
             
             
