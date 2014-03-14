@@ -32,6 +32,8 @@ treepalette <- function(dtf, index=names(dtf), method="HCL", palette=NULL, palet
     dat <- as.data.table(dtf)
     othercols <- setdiff(names(dat), index)
     if (length(othercols)) dat[, eval(othercols):=NULL]
+    setcolorder(dat, index)
+    
     dat[, names(dat):=lapply(.SD,as.factor)]
     if (prepare.dat) {
         if (k>1) {

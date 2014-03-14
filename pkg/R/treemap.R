@@ -393,9 +393,8 @@ treemap <-
         ###########
         ## prepare data for aggregation
         ###########
-        
         if (is.data.table(dtf)) {
-            dtfDT <- copy(dtf[, c(index, vSize, vColor, sortID)])
+            dtfDT <- copy(dtf[, c(index, vSize, vColor, sortID), with=FALSE])
         } else {
             dtfDT <- as.data.table(dtf[, c(index, vSize, vColor, sortID)])
         }
@@ -408,7 +407,7 @@ treemap <-
         }
         
         indexList <- paste0("index", 1:depth)
-        setnames(dtfDT, old=names(dtfDT), new=c(indexList, "s", "c", "i"))
+        setnames(dtfDT, old=1:ncol(dtfDT), new=c(indexList, "s", "c", "i"))
         
         if (vColorX!=1) dtfDT[, c:=c/vColorX]
         ## cast non-factor index columns to factor
