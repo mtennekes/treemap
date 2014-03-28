@@ -29,13 +29,13 @@ treecolors <- function(height=700) {
                     p(strong("Hue")),
                     sliderInput(inputId = "Hstart",
                                 label = "Hue start",
-                                min = 0, max = 360,
-                                step= 1,
+                                min = -360, max = 360,
+                                step= 10,
                                 value = 0),
                     sliderInput(inputId = "Hend",
-                                label = p(HTML('Hue end <span style="color: #999999">(if Hue end < Hue start, then Hue end + 360 is taken)</span>')),
-                                min = 0, max = 360,
-                                step= 1,
+                                label = "Hue end", #p(HTML('Hue end <span style="color: #999999">(if Hue end < Hue start, then Hue end + 360 is taken)</span>')),
+                                min = -360, max = 360,
+                                step= 10,
                                 value = 360),
                     #helpText("If Hue end < Hue start, then Hue end + 360 is taken."),
                     sliderInput(inputId = "Hf",
@@ -87,7 +87,7 @@ treecolors <- function(height=700) {
             
             HCL.options <- reactive({
                 huestart <- input$Hstart
-                hueend <- ifelse(huestart < input$Hend, input$Hend, input$Hend+360)
+                hueend <- input$Hend #ifelse(huestart < input$Hend, input$Hend, input$Hend+360)
                 list(hue_start=huestart, hue_end=hueend, 
                      hue_perm=input$Hperm, hue_rev=input$Hrev, hue_fraction=input$Hf,
                      chroma=input$C, luminance=input$L, 
