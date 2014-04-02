@@ -1,12 +1,13 @@
-#' Interactive tool to expore Tree Colors
+#' Interactive tool to experiment with Tree Colors
 #' 
-#' Tree Colors are color palettes for tree data structures. They are used in \code{\link{treemap}} by default (\code{type="index"}). With this tool, users can experiment with the parameters (in \code{\link{treemap}} stored in \code{palette.HCL.options}).
+#' Tree Colors are color palettes for tree data structures. They are used in \code{\link{treemap}} by default (\code{type="index"}). With this tool, users can experiment with the parameters (in \code{\link{treemap}} stored in \code{palette.HCL.options}). Tree Colors can directly be obtained by \code{\link{treepalette}} with \code{method="HCL"}.
 #' @param height height of the plotted treemap in pixels. Tip: decrease this number if the treemap doesn't fit conveniently.
 #' @examples
 #' \dontrun{
 #' treecolors()
 #' }
 #' @import shiny
+#' @import ggplot2
 #' @export  
 treecolors <- function(height=700) {
     
@@ -118,8 +119,6 @@ treecolors <- function(height=700) {
             
             output$barchart <- renderPlot({
                 dat <- data()
-                require(ggplot2)
-                
                 d <- input$d
                 
                 # reverse levels
@@ -143,8 +142,6 @@ treecolors <- function(height=700) {
             
             output$barchart <- renderPlot({
                 dat <- data()
-                require(ggplot2)
-                
                 d <- input$d
                 
                 # reverse levels

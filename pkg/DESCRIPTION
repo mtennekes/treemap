@@ -2,7 +2,7 @@ Package: treemap
 Type: Package
 Title: Treemap visualization
 Version: 2.2
-Date: 2014-02-06
+Date: 2014-03-31
 Author: Martijn Tennekes
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
 Description: A treemap is a space-filling visualization of hierarchical
@@ -12,6 +12,7 @@ LazyLoad: yes
 Imports:
     colorspace,
     data.table (>= 1.8.8),
+    ggplot2,
     grid,
     gridBase,
     igraph,

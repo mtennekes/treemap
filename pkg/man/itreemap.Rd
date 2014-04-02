@@ -1,6 +1,6 @@
 \name{itreemap}
 \alias{itreemap}
-\title{Interactive user interface of treemap}
+\title{Interactive user interface for treemap}
 \usage{
 itreemap(dtf = NULL, index = NULL, vSize = NULL, vColor = NULL,
   type = NULL, height = 700, command.line.output = TRUE)

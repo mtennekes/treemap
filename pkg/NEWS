@@ -1,4 +1,5 @@
 version 2.2
+- added treecolors, a function to experiment with Tree Colors
 - improved treegraph: added layout options
 - added random.hierarchical.data
 
