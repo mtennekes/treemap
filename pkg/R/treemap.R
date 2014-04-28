@@ -1,4 +1,4 @@
-#' Treemap
+#' Create a treemap
 #'
 #' A treemap is a space-filling visualization of hierarchical structures. This function offers great flexibility to draw treemaps. Required is a data.frame (\code{dtf}) that contains one or more hierarchical index columns given by \code{index}, a column that determines the rectangle area sizes (\code{vSize}), and optionally a column that determines the rectangle colors (\code{vColor}). The way how rectangles are colored is determined by the argument \code{type}.
 #' 
@@ -24,8 +24,8 @@
 #' \describe{
 #'        \item{a color palette:}{i.e., a vector of hexadecimal colors (#RRGGBB)}
 #'        \item{a name of a Brewer palette:}{See \code{RColorBrewer::display.brewer.all()} for the options. The palette can be reversed by prefixing with a "-". For treemap types "value" and "comp", a diverging palette should be chosen (default="RdYlGn"), for type "dens" a sequential (default="OrRd"). The default value for "depth" is "Set2".}
-#'        \item{"HCL":}{Colors are derived from the Hue-Chroma-Luminance color space model. This is only applicable for qualitative palettes, which are applied to the treemap types "index", "depth", and "categorical". For "index" and "categorical" this is the default value.}}
-#' @param palette.HCL.options list of advanced options to pick colors from  the HCL space (when \code{palette="HCL"}). This list contains: 
+#'        \item{"HCL":}{Tree Colors are color schemes derived from the Hue-Chroma-Luminance color space model. This is only applicable for qualitative palettes, which are applied to the treemap types "index", "depth", and "categorical". For "index" and "categorical" this is the default value.}}
+#' @param palette.HCL.options list of advanced options to obtain Tree Colors from  the HCL space (when \code{palette="HCL"}). This list contains: 
 #' \describe{
 #'        \item{\code{hue_start}:}{number between 0 and 360 that determines the starting hue value (default: 30)}
 #'        \item{\code{hue_end}:}{number between \code{hue_start} and \code{hue_start + 360} that determines the ending hue value (default: 390)}
@@ -35,7 +35,7 @@
 #'        \item{\code{chroma}:}{chroma value of colors of the first-level nodes, that are determined by the first index variable (default: 60)}
 #'        \item{\code{luminance}:}{luminance value of colors of the first-level nodes, i.e. determined by the first index variable (default: 70)}
 #'        \item{\code{chroma_slope}:}{slope value for chroma of the non-first-level nodes. The chroma values for the second-level nodes are \code{chroma+chroma_slope}, for the third-level nodes \code{chroma+2*chroma_slope}, etc. (default: 5)}
-#'        \item{\code{luminance_slope}:}{slope value for luminance of the non-first-level nodes (default: -10)}} For "depth" and "categorical" types, only the first two items are used.
+#'        \item{\code{luminance_slope}:}{slope value for luminance of the non-first-level nodes (default: -10)}} For "depth" and "categorical" types, only the first two items are used. Use \code{\link{treecolors}} to experiment with these parameters.
 #' @param range range of values that determine the colors. Only applicable for types "value", "comp", and "dens". When omitted, the range of actual values is used. This range is mapped to \code{palette}.
 #' @param fontsize.title font size of the title
 #' @param fontsize.labels font size(s) of the data labels, which is either a single number that specifies the font size for all aggregation levels, or a vector that specifies the font size for each aggregation level. Use value \code{0} to omit the labels for the corresponding aggregation level. 

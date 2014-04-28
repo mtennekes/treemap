@@ -1,4 +1,4 @@
-#' Interactive user interface of treemap
+#' Interactive user interface for treemap
 #'
 #' This function is an interactive web-based user interface for creating treemaps. Interaction is provided for the four main input arguments of (\code{\link{treemap}}) besides the data.frame itself, namely \code{index}, \code{vSize}, \code{vColor} and \code{type}. Zooming in and out is possible. Command line outputs are generated in the console.
 #' 

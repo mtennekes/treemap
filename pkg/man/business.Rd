@@ -1,8 +1,8 @@
 \name{business}
 \alias{business}
-\title{Fictive Business Statistics Data}
+\title{Fictitious  Business Statistics Data}
 \description{
-Fictive (aggregated) business statistics data. The index
+Fictitious (aggregated) business statistics data. The index
 variables (\code{NACE1} to \code{NACE4}) are derived from
 the Statistical Classification of Economic Activities in
 the European Community (NACE). The variables

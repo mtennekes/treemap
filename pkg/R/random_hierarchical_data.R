@@ -1,4 +1,4 @@
-#' Random hierarchical data
+#' Create random hierarchical data
 #' 
 #' This function generates random hierarchical data. Experimental.
 #' 

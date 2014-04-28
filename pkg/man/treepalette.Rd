@@ -1,6 +1,6 @@
 \name{treepalette}
 \alias{treepalette}
-\title{Hierarchical color palettes}
+\title{Obtain hierarchical color palettes (Tree Colors)}
 \usage{
 treepalette(dtf, index = names(dtf), method = "HCL", palette = NULL,
   palette.HCL.options, return.parameters = TRUE, prepare.dat = TRUE)
@@ -18,18 +18,21 @@ treepalette(dtf, index = names(dtf), method = "HCL", palette = NULL,
   \item{palette}{color palette, which is only used for the
   HSV method}
 
-  \item{palette.HCL.options}{list of advanced options to
-  pick colors from the HCL space (when
-  \code{method="HCL"}). This list contains: \describe{
+  \item{palette.HCL.options}{list of options to obtain Tree
+  Colors from the HCL space (when \code{palette="HCL"}).
+  This list contains: \describe{
   \item{\code{hue_start}:}{number between 0 and 360 that
   determines the starting hue value (default: 30)}
   \item{\code{hue_end}:}{number between \code{hue_start}
   and \code{hue_start + 360} that determines the ending hue
-  value (default: 390)} \item{\code{hue_spread}:}{boolean
-  that determines whether the colors are spread such that
+  value (default: 390)} \item{\code{hue_perm}:}{boolean
+  that determines whether the colors are permuted such that
   adjacent levels get more distinguishable colors. If
   \code{FALSE}, then the colors are equally distributed
   from \code{hue_start} to \code{hue_end} (default: TRUE)}
+  \item{\code{hue_rev}:}{boolean that determines whether
+  the colors of even-numbered branched are reversed (to
+  increase discrimination among branches)}
   \item{\code{hue_fraction}:}{number between 0 and 1 that
   determines the fraction of the hue circle that is used
   for recursive color picking: if 1 then the full hue
@@ -50,7 +53,8 @@ treepalette(dtf, index = names(dtf), method = "HCL", palette = NULL,
   \item{\code{luminance_slope}:}{slope value for luminance
   of the non-first-level nodes (default: -10)}} For "depth"
   and "categorical" types, only the first two items are
-  used.}
+  used. Use \code{\link{treecolors}} to experiment with
+  these parameters.}
 
   \item{return.parameters}{should a data.frame with color
   values and parameter options be returned (\code{TRUE}),
@@ -64,10 +68,11 @@ Either a vector of colors, or a data.frame is return (see
 \code{return.parameters}).
 }
 \description{
-Create hierarchical color palettes, either by using the HCL
-color space model, or by using an existing color palette
-with the HSV space. The former, which is recommended, is
-used in \code{\link{treemap}} (type \code{"index"}) and
-\code{\link{treegraph}}.
+Obtain hierarchical color palettes, either the so-called
+Tree Colors from the HCL color space model, or by using an
+existing color palette. The former method, which is
+recommended, is used by default in \code{\link{treemap}}
+(type \code{"index"}) and \code{\link{treegraph}}. Use
+\code{\link{treecolors}} to experiment with this method.
 }
 

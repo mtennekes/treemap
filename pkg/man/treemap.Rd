@@ -1,6 +1,6 @@
 \name{treemap}
 \alias{treemap}
-\title{Treemap}
+\title{Create a treemap}
 \usage{
 treemap(dtf, index, vSize, vColor = NULL, type = "index", title = NA,
   title.legend = NA, algorithm = "pivotSize", sortID = "-size",
@@ -102,25 +102,28 @@ treemap(dtf, index, vSize, vColor = NULL, type = "index", title = NA,
   "-". For treemap types "value" and "comp", a diverging
   palette should be chosen (default="RdYlGn"), for type
   "dens" a sequential (default="OrRd"). The default value
-  for "depth" is "Set2".} \item{"HCL":}{Colors are derived
-  from the Hue-Chroma-Luminance color space model. This is
-  only applicable for qualitative palettes, which are
-  applied to the treemap types "index", "depth", and
-  "categorical". For "index" and "categorical" this is the
-  default value.}}}
+  for "depth" is "Set2".} \item{"HCL":}{Tree Colors are
+  color schemes derived from the Hue-Chroma-Luminance color
+  space model. This is only applicable for qualitative
+  palettes, which are applied to the treemap types "index",
+  "depth", and "categorical". For "index" and "categorical"
+  this is the default value.}}}
 
   \item{palette.HCL.options}{list of advanced options to
-  pick colors from the HCL space (when
+  obtain Tree Colors from the HCL space (when
   \code{palette="HCL"}). This list contains: \describe{
   \item{\code{hue_start}:}{number between 0 and 360 that
   determines the starting hue value (default: 30)}
   \item{\code{hue_end}:}{number between \code{hue_start}
   and \code{hue_start + 360} that determines the ending hue
-  value (default: 390)} \item{\code{hue_spread}:}{boolean
-  that determines whether the colors are spread such that
+  value (default: 390)} \item{\code{hue_perm}:}{boolean
+  that determines whether the colors are permuted such that
   adjacent levels get more distinguishable colors. If
   \code{FALSE}, then the colors are equally distributed
   from \code{hue_start} to \code{hue_end} (default: TRUE)}
+  \item{\code{hue_rev}:}{boolean that determines whether
+  the colors of even-numbered branched are reversed (to
+  increase discrimination among branches)}
   \item{\code{hue_fraction}:}{number between 0 and 1 that
   determines the fraction of the hue circle that is used
   for recursive color picking: if 1 then the full hue
@@ -141,7 +144,8 @@ treemap(dtf, index, vSize, vColor = NULL, type = "index", title = NA,
   \item{\code{luminance_slope}:}{slope value for luminance
   of the non-first-level nodes (default: -10)}} For "depth"
   and "categorical" types, only the first two items are
-  used.}
+  used. Use \code{\link{treecolors}} to experiment with
+  these parameters.}
 
   \item{range}{range of values that determine the colors.
   Only applicable for types "value", "comp", and "dens".

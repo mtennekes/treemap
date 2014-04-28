@@ -1,12 +1,13 @@
-#' Interactive tool to expore Tree Colors
+#' Interactive tool to experiment with Tree Colors
 #' 
-#' Tree Colors are color palettes for tree data structures. They are used in \code{\link{treemap}} by default (\code{type="index"}). With this tool, users can experiment with the parameters (in \code{\link{treemap}} stored in \code{palette.HCL.options}).
+#' Tree Colors are color palettes for tree data structures. They are used in \code{\link{treemap}} by default (\code{type="index"}). With this tool, users can experiment with the parameters (in \code{\link{treemap}} stored in \code{palette.HCL.options}). Tree Colors can directly be obtained by \code{\link{treepalette}} with \code{method="HCL"}.
 #' @param height height of the plotted treemap in pixels. Tip: decrease this number if the treemap doesn't fit conveniently.
 #' @examples
 #' \dontrun{
 #' treecolors()
 #' }
 #' @import shiny
+#' @import ggplot2
 #' @export  
 treecolors <- function(height=700) {
     
@@ -29,13 +30,13 @@ treecolors <- function(height=700) {
                     p(strong("Hue")),
                     sliderInput(inputId = "Hstart",
                                 label = "Hue start",
-                                min = 0, max = 360,
-                                step= 1,
+                                min = -360, max = 360,
+                                step= 10,
                                 value = 0),
                     sliderInput(inputId = "Hend",
-                                label = p(HTML('Hue end <span style="color: #999999">(if Hue end < Hue start, then Hue end + 360 is taken)</span>')),
-                                min = 0, max = 360,
-                                step= 1,
+                                label = "Hue end", #p(HTML('Hue end <span style="color: #999999">(if Hue end < Hue start, then Hue end + 360 is taken)</span>')),
+                                min = -360, max = 360,
+                                step= 10,
                                 value = 360),
                     #helpText("If Hue end < Hue start, then Hue end + 360 is taken."),
                     sliderInput(inputId = "Hf",
@@ -49,7 +50,7 @@ treecolors <- function(height=700) {
                     p(strong("Luminance")),
                     sliderInput(inputId = "L",
                                 label = "\nLuminance first level value",
-                                min = 50, max = 100,
+                                min = 0, max = 100,
                                 step= 1,
                                 value = 70),
                     sliderInput(inputId = "Lslope",
@@ -61,7 +62,7 @@ treecolors <- function(height=700) {
                     p(strong("Chroma")),
                                 sliderInput(inputId = "C",
                                 label = "Chroma first level value",
-                                min = 50, max = 100,
+                                min = 0, max = 100,
                                 step= 1,
                                 value = 60),
                     sliderInput(inputId = "Cslope",
@@ -87,7 +88,7 @@ treecolors <- function(height=700) {
             
             HCL.options <- reactive({
                 huestart <- input$Hstart
-                hueend <- ifelse(huestart < input$Hend, input$Hend, input$Hend+360)
+                hueend <- input$Hend #ifelse(huestart < input$Hend, input$Hend, input$Hend+360)
                 list(hue_start=huestart, hue_end=hueend, 
                      hue_perm=input$Hperm, hue_rev=input$Hrev, hue_fraction=input$Hf,
                      chroma=input$C, luminance=input$L, 
@@ -118,8 +119,6 @@ treecolors <- function(height=700) {
             
             output$barchart <- renderPlot({
                 dat <- data()
-                require(ggplot2)
-                
                 d <- input$d
                 
                 # reverse levels
@@ -143,8 +142,6 @@ treecolors <- function(height=700) {
             
             output$barchart <- renderPlot({
                 dat <- data()
-                require(ggplot2)
-                
                 d <- input$d
                 
                 # reverse levels

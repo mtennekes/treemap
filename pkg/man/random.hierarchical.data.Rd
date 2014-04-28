@@ -1,6 +1,6 @@
 \name{random.hierarchical.data}
 \alias{random.hierarchical.data}
-\title{Random hierarchical data}
+\title{Create random hierarchical data}
 \usage{
 random.hierarchical.data(n = NULL, method = "random", number.children = 3,
   children.root = 4, depth = 3, nodes.per.layer = NULL,
@@ -74,13 +74,13 @@ This function generates random hierarchical data.
 Experimental.
 }
 \examples{
-d <- random.hierarchical.data(300)
+d <- random.hierarchical.data(200)
 treemap(d, index=names(d)[1:(ncol(d)-1)], vSize="x")
 
 d <- random.hierarchical.data(number.children=5)
 treemap(d, index=names(d)[1:(ncol(d)-1)], vSize="x")
 
-d <- random.hierarchical.data(method="full.tree", number.children=5)
+d <- random.hierarchical.data(method="full.tree", number.children=3, value.generator=runif)
 treemap(d, index=names(d)[1:(ncol(d)-1)], vSize="x")
 }
 
