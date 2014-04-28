@@ -8,22 +8,25 @@
 # @param bold logical defining whe the text is bold
 # @param inflate.labels logical defining whether the textsize may exceed \code{cex=1}
 str2rect <-
-function(grb, fontcol, fill, fontface, fontfamily, inflate.labels, cex_index, align.labels, xmod.labels, ymod.labels) {
+function(grb, fontcol, fill, fontface, fontfamily, inflate.labels, cex_index, align.labels, xmod.labels, ymod.labels, eval.labels) {
 	# wrap text to 1-5 sentences
-	txtWraps <- lapply(grb$name, FUN=function(txt) {
-		txtWrap <- list(txt)
-		txtWrap[2:5] <- sapply(2:5, FUN=function(x, txt) {
-			sq <- seq(1,5,by=2)
-			results <- lapply(sq, FUN=function(pos, x, txt) {
-			strwrap(txt, width = pos+(nchar(txt)/x))}, x, txt)
-			lengths <- sapply(seq_along(sq), FUN=function(x)length(results[[x]]))
-			results <- (results[lengths==x])[1]},txt)
-		txtWrap <- sapply(txtWrap, FUN=paste, collapse="\n")
-		strID <- which(txtWrap!="")
-		nLines <- (1:5)[strID]
-		txtWrap <- txtWrap[strID]
-		return(list(txt=txtWrap, lines=nLines))})
-
+	if (eval.labels) {
+	    txtWraps <- mapply(function(x,y)list(txt=x, lines=y), grb$name, 1, SIMPLIFY=FALSE)
+	} else {
+        txtWraps <- lapply(grb$name, FUN=function(txt) {
+    		txtWrap <- list(txt)
+    		txtWrap[2:5] <- sapply(2:5, FUN=function(x, txt) {
+    			sq <- seq(1,5,by=2)
+    			results <- lapply(sq, FUN=function(pos, x, txt) {
+    			strwrap(txt, width = pos+(nchar(txt)/x))}, x, txt)
+    			lengths <- sapply(seq_along(sq), FUN=function(x)length(results[[x]]))
+    			results <- (results[lengths==x])[1]},txt)
+    		txtWrap <- sapply(txtWrap, FUN=paste, collapse="\n")
+    		strID <- which(txtWrap!="")
+    		nLines <- (1:5)[strID]
+    		txtWrap <- txtWrap[strID]
+    		return(list(txt=txtWrap, lines=nLines))})
+	}
 	# select succesfully wrapped text
 
 	# get size of viewport
@@ -51,7 +54,7 @@ function(grb, fontcol, fill, fontface, fontfamily, inflate.labels, cex_index, al
 		return(list(txt=wrap$txt[winningStr], cex=incr[winningStr], lines=wrap$lines[winningStr]))
 	})
 	txt <- unlist(results[1,])
-	cex <- unlist(results[2,]) * cex_index
+    cex <- if (eval.labels) rep(cex_index, length(grb$name)) else unlist(results[2,]) * cex_index
 	nlines <- unlist(results[3,])
 	
 	#fontface <- ifelse(bold, "bold", "plain")
@@ -82,6 +85,11 @@ function(grb, fontcol, fill, fontface, fontfamily, inflate.labels, cex_index, al
     x <- x + unit(xmod.labels, "inch")
 	y <- y + unit(ymod.labels, "inch")
 	
+    ## parse compatible
+    if (eval.labels) txt <- sapply(txt, function(tx) {
+        parse(text=tx)
+    }) 
+    
     txtGrb <- textGrob(txt, x=x, y=y, just=c(xjust, yjust), gp=gpar(cex=cex, fontface=fontface, fontfamily=fontfamily, col=fontcol))
 	
 	

@@ -55,6 +55,7 @@
 #' @param align.labels object that specifies the alignment of the labels. Either a character vector of two values specifying the horizontal alignment (\code{"left"}, \code{"center"}, or \code{"right"}) and the vertical alignment (\code{"top"}, \code{"center"}, or \code{"bottom"}), or a list of sush character vectors, one for each aggregation level.
 #' @param xmod.labels the horizontal position modification of the labels in inches. Either a single value, or a vector that specifies the modification for each aggregation level.
 #' @param ymod.labels the vertical position modification of the labels in inches. Either a single value, or a vector that specifies the modification for each aggregation level.
+#' @param eval.labels should the text labels, i.e. the factor labels of the \code{index} variables, be evaluated as expressions? Useful for printing mathematical symbols or equations.
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
@@ -111,6 +112,7 @@ treemap <-
              align.labels = c("center", "center"),
              xmod.labels = 0,
              ymod.labels = 0,
+             eval.labels = FALSE,
              position.legend=NULL,
              drop.unused.levels = TRUE,
              aspRatio=NA,
@@ -455,7 +457,7 @@ treemap <-
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
         tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, 
                    force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, 
-                   fontcolor.labels, fontface.labels, fontfamily.labels, align.labels, xmod.labels, ymod.labels)
+                   fontcolor.labels, fontface.labels, fontfamily.labels, align.labels, xmod.labels, ymod.labels, eval.labels)
         
         upViewport(0 + !is.null(vp))
         
