@@ -20,6 +20,8 @@
 #' @param title.legend title of the legend.
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
 #' @param sortID name of the variable that determines the order in which the rectangles are placed from top left to bottom right. Only applicable when \code{algorithm=="pivotSize"}. Also the values "size" and "color" can be used, which refer to \code{vSize} and \code{vColor} respectively. To inverse the sorting order, use "-" in the prefix. By default, large rectangles are placed top left.
+#' @param mirror.x logical that determines whether the rectangles are mirrored horizontally
+#' @param mirror.y logical that determines whether the rectangles are mirrored vertically
 #' @param palette one of the following: 
 #' \describe{
 #'        \item{a color palette:}{i.e., a vector of hexadecimal colors (#RRGGBB)}
@@ -91,6 +93,8 @@ treemap <-
              title.legend=NA,
              algorithm="pivotSize",
              sortID="-size",
+             mirror.x=FALSE,
+             mirror.y=FALSE,
              palette=NA,
              palette.HCL.options=NULL,
              range=NA,
@@ -455,6 +459,9 @@ treemap <-
             datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
+        if (mirror.x) datlist <- within(datlist, x0 <- 1 - x0 - w)
+        if (mirror.y) datlist <- within(datlist, y0 <- 1 - y0 - h)
+
         tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, 
                    force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, 
                    fontcolor.labels, fontface.labels, fontfamily.labels, align.labels, xmod.labels, ymod.labels, eval.labels)
