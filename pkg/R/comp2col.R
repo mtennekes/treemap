@@ -45,6 +45,9 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
     }
     
 	scale <- round(((log.growth/max_lg) *49)+50)
+    scale[scale<1] <- 1
+    scale[scale>99] <- 99
+    
 	legColScale[legColScale < -max_lg] <- -max_lg
 	legColScale[legColScale > max_lg] <- max_lg
 	
