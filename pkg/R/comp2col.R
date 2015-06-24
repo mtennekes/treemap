@@ -1,5 +1,5 @@
 comp2col <-
-function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
+function(dat, position.legend, palette, range, border.col, fontfamily.legend, n) {
     color <- colorRampPalette(palette,space="rgb")(99)
 	perc <-((dat$s - dat$c)/dat$c) * 100
 	
@@ -22,13 +22,13 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
 	
     if (!any(is.na(range))) {
         if (range[1] < -100) range[1] <- -100
-        prettyP <-pretty(range, n=8)
+        prettyP <-pretty(range, n=n)
     } else if (range_lg[1] >= 0 || range_lg[2] <= 0) {
-		prettyP <-pretty(perc, n=8)
+		prettyP <-pretty(perc, n=n)
 	} else {
 		ratio <- abs(range_lg) / sum(abs(range_lg))
-		prettyP_neg <- pretty(c(0, perc[perc<0]), n=9*ratio[1])
-		prettyP_pos <- pretty(c(0, perc[perc>0]), n=9*ratio[2])
+		prettyP_neg <- pretty(c(0, perc[perc<0]), n=n*ratio[1])
+		prettyP_pos <- pretty(c(0, perc[perc>0]), n=n*ratio[2])
 		prettyP <- c(prettyP_neg, prettyP_pos[-1])
 	}
     

@@ -7,7 +7,7 @@
 treemap(dtf, index, vSize, vColor = NULL, type = "index", title = NA,
   title.legend = NA, algorithm = "pivotSize", sortID = "-size",
   mirror.x = FALSE, mirror.y = FALSE, palette = NA,
-  palette.HCL.options = NULL, range = NA, fontsize.title = 14,
+  palette.HCL.options = NULL, range = NA, n = 7, fontsize.title = 14,
   fontsize.labels = 11, fontsize.legend = 12, fontcolor.labels = NULL,
   fontface.labels = c("bold", rep("plain", length(index) - 1)),
   fontfamily.title = "sans", fontfamily.labels = "sans",
@@ -70,6 +70,8 @@ treemap(dtf, index, vSize, vColor = NULL, type = "index", title = NA,
        \item{\code{luminance_slope}:}{slope value for luminance of the non-first-level nodes (default: -10)}} For "depth" and "categorical" types, only the first two items are used. Use \code{\link{treecolors}} to experiment with these parameters.}
 
 \item{range}{range of values that determine the colors. Only applicable for types "value", "comp", and "dens". When omitted, the range of actual values is used. This range is mapped to \code{palette}.}
+
+\item{n}{number of categories by which numeric variables are discretized.}
 
 \item{fontsize.title}{font size of the title}
 

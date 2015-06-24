@@ -1,13 +1,13 @@
 dens2col <-
-function(dat, position.legend, palette, range, border.col, fontfamily.legend) {
+function(dat, position.legend, palette, range, border.col, fontfamily.legend, n) {
 	color <- colorRampPalette(palette,space="rgb")(99)
 
     values <- dat$c
     
     if (any(is.na(range))) {
-	    prettyP <- pretty(values,n=8)
+	    prettyP <- pretty(values,n=n)
     } else {
-        prettyP <- pretty(range,n=8)
+        prettyP <- pretty(range,n=n)
     }
 	n <- length(prettyP)
 	minP <- min(prettyP)

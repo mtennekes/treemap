@@ -1,5 +1,5 @@
 value2col <-
-    function(dat, position.legend, palette, range, border.col, fontfamily.legend, auto.col.mapping) {
+    function(dat, position.legend, palette, range, border.col, fontfamily.legend, auto.col.mapping, n) {
         maxlev <- max(dat$l)
         
         #browser()
@@ -9,7 +9,7 @@ value2col <-
 
         
         if (any(is.na(range))) {
-            prettyV <- pretty(values, n=8)
+            prettyV <- pretty(values, n=n)
             
             mx <- max(abs(c(values, prettyV)))
             
@@ -19,7 +19,7 @@ value2col <-
         } else {
             if (any(values < range[1]) || any(values > range[2])) warning("Values are found that exceed the provided range")
             
-            prettyV <- pretty(range, n=8)
+            prettyV <- pretty(range, n=n)
             prettyV <- prettyV[prettyV>=range[1] & prettyV<=range[2]]
             
             
