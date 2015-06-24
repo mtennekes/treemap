@@ -18,7 +18,7 @@
 #'        \item{\code{luminance_slope}:}{slope value for luminance of the non-first-level nodes (default: -10)}} For "depth" and "categorical" types, only the first two items are used. Use \code{\link{treecolors}} to experiment with these parameters.
 #' @param show.labels show the labels
 #' @param rootlabel name of the rootlabel
-#' @param vertex.layout layout algorithm. See \code{\link[igraph:layout]{layout}} for options. Note: if the \code{\link[igraph:igraph-package]{igraph}} package is not loaded, use \code{igraph::} as prefix (see example).
+#' @param vertex.layout layout algorithm name. See \code{\link[igraph:layout]{layout}} for options. The name corresponds to the layout function name after the period symbol, e.g. "auto", "random", etc. The default is "reingold.tilford" with a cirular layout.
 #' @param vertex.layout.params list of arguments passed to \code{vertex.layout}
 #' @param truncate.labels number of characters at which the levels are truncated. Either a single value for all index variables, or a vector of values for each index variable
 #' @param vertex.size vertex.size (see \code{\link[igraph:igraph.plotting]{igraph.plotting}})
@@ -36,12 +36,12 @@
 #'     index=c("NACE2", "NACE3", "NACE4"), show.labels=TRUE, truncate.labels=c(2,4,6))
 #' treegraph(business[business$NACE1=="F - Construction",], 
 #'     index=c("NACE2", "NACE3", "NACE4"), show.labels=TRUE, truncate.labels=c(2,4,6),
-#'     vertex.layout=igraph::layout.fruchterman.reingold)
+#'     vertex.layout="fruchterman.reingold")
 #' @import data.table
 #' @import igraph
 #' @import colorspace
 #' @export
-treegraph <- function(dtf, index=names(dtf), directed=FALSE, palette.HCL.options, show.labels=FALSE, rootlabel="", vertex.layout, vertex.layout.params, truncate.labels=NULL, vertex.size=3, vertex.label.dist=0.3, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black", mai=c(0,0,0,0), ...) {
+treegraph <- function(dtf, index=names(dtf), directed=FALSE, palette.HCL.options, show.labels=FALSE, rootlabel="", vertex.layout="reingold.tilford", vertex.layout.params, truncate.labels=NULL, vertex.size=3, vertex.label.dist=0.3, vertex.label.cex=0.8, vertex.label.family="sans", vertex.label.color="black", mai=c(0,0,0,0), ...) {
     palette.HCL.options <- tmSetHCLoptions(palette.HCL.options)
     
     k <- length(index)
@@ -91,14 +91,17 @@ treegraph <- function(dtf, index=names(dtf), directed=FALSE, palette.HCL.options
     
     
     par(mai=mai)
-    if (missing(vertex.layout)){
-        vertex.layout=layout.reingold.tilford
-    }
+
+    vertex.layout.function <- get(paste("layout", vertex.layout, sep="."))
     if (missing(vertex.layout.params)){
-        vertex.layout.params = list(circular=T, root=1)
+        vertex.layout.params <- if (vertex.layout=="reingold.tilford") {
+            list(circular=T, root=1) 
+        } else {
+            list()
+        }
     }
     vertex.layout.params = c(list(graph=g), vertex.layout.params)
-    vertex.layout = do.call(vertex.layout, vertex.layout.params)
+    vertex.layout = do.call(vertex.layout.function, vertex.layout.params)
     plot(g, vertex.size=vertex.size, vertex.frame.color=NA, vertex.label=vdat_names, layout=vertex.layout
          , vertex.label.dist=vertex.label.dist, vertex.label.cex=vertex.label.cex, vertex.label.family=vertex.label.family, vertex.label.color=vertex.label.color, vertex.label.degree=-pi/2.5, ...)
     invisible(g)
