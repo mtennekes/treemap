@@ -1,5 +1,7 @@
 version 2.2-1
 - added mirror.x and .y
+- fixed treegraph bug (changed vertex.layout argument)
+- dplyr objects work with treemap
 
 version 2.2
 - added treecolors, a function to experiment with Tree Colors
