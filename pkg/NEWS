@@ -4,6 +4,7 @@ version 2.3
 - fixed treegraph bug (changed vertex.layout argument)
 - dplyr objects work with treemap
 - fixed bug in comparison treemap with specified range
+- fixed treecolors and itreemap warning messages
 
 version 2.2
 - added treecolors, a function to experiment with Tree Colors

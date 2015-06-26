@@ -111,7 +111,7 @@ itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, h
             ),
             mainPanel(
                 tabsetPanel(
-                    tabPanel("Treemap", plotOutput("plot", hoverId="hover", clickId="click", height=paste(height, "px", sep="")),
+                    tabPanel("Treemap", plotOutput("plot", hover="hover", click="click", height=paste(height, "px", sep="")),
                              tableOutput("summary")),
                     tabPanel("Data", dataTableOutput("data")),
                     tabPanel("Microdata", dataTableOutput("microdata"))))

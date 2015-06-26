@@ -105,7 +105,7 @@ treecolors <- function(height=700) {
                 dat <- data()
                 random.seed <- sample.int((2^31)-1, 1)
                 set.seed(1234) # to fix layout
-                treegraph(dat, index=names(dat)[1:(ncol(dat)-1)], palette.HCL.options=HCL.options(), vertex.size=6, vertex.layout=igraph::layout.fruchterman.reingold, show.labels=TRUE)
+                treegraph(dat, index=names(dat)[1:(ncol(dat)-1)], palette.HCL.options=HCL.options(), vertex.size=6, vertex.layout="fruchterman.reingold", show.labels=TRUE)
                 set.seed(random.seed)
                 
             })

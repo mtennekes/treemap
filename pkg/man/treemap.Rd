@@ -71,7 +71,7 @@ treemap(dtf, index, vSize, vColor = NULL, type = "index", title = NA,
 
 \item{range}{range of values that determine the colors. Only applicable for types "value", "comp", and "dens". When omitted, the range of actual values is used. This range is mapped to \code{palette}.}
 
-\item{n}{number of categories by which numeric variables are discretized.}
+\item{n}{preferred number of categories by which numeric variables are discretized.}
 
 \item{fontsize.title}{font size of the title}
 

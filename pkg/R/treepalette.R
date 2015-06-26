@@ -53,8 +53,8 @@ treepalette <- function(dtf, index=names(dtf), method="HCL", palette=NULL, palet
     }
     
     if (method=="HCL") {
-        res <- treeapply(dat, list(lb=palette.HCL.options$hue_start, 
-                                   ub=palette.HCL.options$hue_end,
+        res <- treeapply(dat, list(lb=as.integer(palette.HCL.options$hue_start), 
+                                   ub=as.integer(palette.HCL.options$hue_end),
                                    rev=FALSE), 
                          fun="addRange", frc=palette.HCL.options$hue_fraction, 
                          hue_perm=palette.HCL.options$hue_perm, hue_rev=palette.HCL.options$hue_rev)

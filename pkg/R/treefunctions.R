@@ -79,7 +79,7 @@ addRange <- function(x, depth, frc = .5, hue_perm = TRUE, hue_rev=TRUE) {
     
     
 
-    list(lb=start+spacer, ub=end-spacer, rev=rep(c(F, T), length.out=nr))
+    list(lb=as.integer(start+spacer), ub=as.integer(end-spacer), rev=rep(c(F, T), length.out=nr))
 }
 
 ########## method 2: modify fixed colors with hsv space
