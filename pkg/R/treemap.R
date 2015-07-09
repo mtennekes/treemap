@@ -401,7 +401,7 @@ treemap <-
         ###########
         ## prepare data for aggregation
         ###########
-        if (inherits(dtf, c("tbl", "tbl_df"))) {
+        if (inherits(dtf, c("tbl_df"))) {
             dtfDT <- as.data.table(data.frame(dtf[, c(index, vSize, vColor, sortID)]))
         } else if (is.data.table(dtf)) {
             dtfDT <- copy(dtf[, c(index, vSize, vColor, sortID), with=FALSE])
