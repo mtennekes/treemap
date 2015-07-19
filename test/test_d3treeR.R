@@ -1,6 +1,7 @@
 devtools::install_github("gluc/data.tree")
 devtools::install_github('ramnathv/htmlwidgets')
 devtools::install_github('jeroenooms/jsonlite')
+devtools::install_github("timelyportfolio/d3treeR")
 
 library(d3treeR)
 library(treemap)
