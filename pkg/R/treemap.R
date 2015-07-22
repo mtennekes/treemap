@@ -16,6 +16,7 @@
 #'    	\item{\code{"categorical"}:}{\code{vColor} is a factor column that determines the color.}
 #'      \item{\code{"color"}:}{\code{vColor} is a vector of colors in the hexadecimal (#RRGGBB) format}
 #'      \item{\code{"manual"}:}{The numeric \code{vColor}-column is directly mapped to a color palette. Both palette and range should be provided. The palette is mapped linearly to the range.}}
+#' @param fun.aggregate aggregation function, only used in \code{"value"} treemaps. This function determines how values of the lowest aggregation level are aggregated. By default, it takes the \code{sum}. Other sensible functions are \code{mean} and \code{weighted.mean}. In the latter case, the weights are determined by the \code{vSize} variable. Other arguments can be passed on. For \code{weighted.mean}, it is possible to assign a variable name for its \code{w} argument.
 #' @param title title of the treemap.
 #' @param title.legend title of the legend.
 #' @param algorithm name of the used algorithm: \code{"squarified"} or \code{"pivotSize"}. The squarified treemap algorithm (Bruls et al., 2000) produces good aspect ratios, but ignores the sorting order of the rectangles (\code{sortID}). The ordered treemap, pivot-by-size, algorithm (Bederson et al., 2002) takes the sorting order (\code{sortID}) into account while aspect ratios are still acceptable.
@@ -63,6 +64,7 @@
 #' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
 #' @param vp \code{\link[grid:viewport]{viewport}} to draw in. By default it is not specified, which means that a new plot is created. Useful when drawing small multiples, or when placing a treemap in a custom grid based plot.
+#' @param ... arguments to be passed to other functions. Currently, only \code{fun.aggregate} takes optional arguments. 
 #' @return A list is silently returned:
 #'	\item{tm}{a \code{data.frame} containing information about the rectangles: indices, sizes, original color values, derived color values, depth level, position (x0, y0, w, h), and color.}
 #'  \item{type}{argument type}
@@ -90,6 +92,7 @@ treemap <-
              vSize, 
              vColor=NULL, 
              type="index",
+             fun.aggregate="sum",
              title=NA,
              title.legend=NA,
              algorithm="pivotSize",
@@ -122,7 +125,8 @@ treemap <-
              position.legend=NULL,
              drop.unused.levels = TRUE,
              aspRatio=NA,
-             vp=NULL) {
+             vp=NULL,
+             ...) {
         s <- NULL #for CMD check
         
         vColor.temp <- i <- w <- h <- NULL
@@ -186,6 +190,12 @@ treemap <-
         # type
         if (!type %in% c("value", "categorical", "comp", "dens", "index", "depth", "color", "manual")) 
             stop("Invalid type")
+        
+        # fun.aggregate
+        if (!is.function(match.fun(fun.aggregate)))
+            stop("fun.aggregate is not a function")
+        
+        if (type=="dens") fun.aggregate <- "weighted.mean"
         
         # title	
         if (!is.na(title[1]) && length(title) != 1) {
@@ -397,6 +407,9 @@ treemap <-
         if (length(aspRatio)!=1 || (!is.na(aspRatio[1]) && !is.numeric(aspRatio)))
             stop("Invalid aspRatio")
         
+        args <- list(...)
+        args$na.rm <- TRUE
+        
         
         ###########
         ## prepare data for aggregation
@@ -416,10 +429,27 @@ treemap <-
             setcolorder(dtfDT, c(1:(ncol(dtfDT)-2), ncol(dtfDT), ncol(dtfDT)-1))
         }
         
+        
         indexList <- paste0("index", 1:depth)
         setnames(dtfDT, old=1:ncol(dtfDT), new=c(indexList, "s", "c", "i"))
         
         if (vColorX!=1) dtfDT[, c:=c/vColorX]
+        
+        if (fun.aggregate=="weighted.mean") {
+            if ("w" %in% names(args)) {
+                if (is.character(args$w)) {
+                    dtfDT[, w:=eval(parse(text=args$w))]
+                } else {
+                    dtfDT[, w:=args$w]
+                }
+            } else {
+                dtfDT[, w:=s]
+            }
+        } else {
+            dtfDT[, w:=1]
+        }
+ 
+
         ## cast non-factor index columns to factor
         for (d in 1:depth) {
             if (is.numeric(dtfDT[[d]])) { 
@@ -450,7 +480,7 @@ treemap <-
         ###########
         ## process treemap
         ###########
-        datlist <- tmAggregate(dtfDT, indexList, type, ascending, drop.unused.levels)
+        datlist <- tmAggregate(dtfDT, indexList, type, ascending, drop.unused.levels, fun.aggregate, args)
         catLabels <- switch(type, categorical=levels(datlist$c), index=levels(datlist$index1), depth=index, NA)
         vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
                               position.legend, type, aspRatio, title.legend, catLabels)
