@@ -54,10 +54,9 @@ tmGenerateRect <- function(datlist, vps, indexList, algorithm) {
         if (i!=1) {
             active <- datlist$l==i
             parents_active <- datlist$l==(i-1)
-            
-            parent_names <- apply(datlist[, paste0("index", 1:(i-1)), with=FALSE], 
+            iminusone <- i-1  # resolves data.table 1.9.5 compatibility issue
+            parent_names <- apply(datlist[, paste0("index", 1:iminusone), with=FALSE], 
                                   1, paste, collapse="_")
-            
             parents1 <- parent_names[active]
             parents2 <- parent_names[parents_active]
             matchID <- match(parents1, parents2)
