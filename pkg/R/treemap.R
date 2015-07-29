@@ -64,6 +64,7 @@
 #' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
 #' @param vp \code{\link[grid:viewport]{viewport}} to draw in. By default it is not specified, which means that a new plot is created. Useful when drawing small multiples, or when placing a treemap in a custom grid based plot.
+#' @param draw logical that determines whether to draw the treemap.
 #' @param ... arguments to be passed to other functions. Currently, only \code{fun.aggregate} takes optional arguments. 
 #' @return A list is silently returned:
 #'	\item{tm}{a \code{data.frame} containing information about the rectangles: indices, sizes, original color values, derived color values, depth level, position (x0, y0, w, h), and color.}
@@ -126,6 +127,7 @@ treemap <-
              drop.unused.levels = TRUE,
              aspRatio=NA,
              vp=NULL,
+             draw=TRUE,
              ...) {
         s <- NULL #for CMD check
         
@@ -482,9 +484,11 @@ treemap <-
         ###########
         datlist <- tmAggregate(dtfDT, indexList, type, ascending, drop.unused.levels, fun.aggregate, args)
         catLabels <- switch(type, categorical=levels(datlist$c), index=levels(datlist$index1), depth=index, NA)
+
+        if (!draw) position.legend <- "none"
         vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
                               position.legend, type, aspRatio, title.legend, catLabels)
-        tmPrintTitles(vps, title, title.legend, position.legend, fontfamily.title, fontfamily.legend)
+        if (draw) tmPrintTitles(vps, title, title.legend, position.legend, fontfamily.title, fontfamily.legend)
         if (type == "color") {
             datlist$color <- as.character(datlist$c)
             datlist$colorvalue <- NA
@@ -496,12 +500,14 @@ treemap <-
         if (mirror.x) datlist <- within(datlist, x0 <- 1 - x0 - w)
         if (mirror.y) datlist <- within(datlist, y0 <- 1 - y0 - h)
 
-        tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, 
+        if (draw) {
+            tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, 
                    force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, 
                    fontcolor.labels, fontface.labels, fontfamily.labels, align.labels, xmod.labels, ymod.labels, eval.labels)
+        }
         
         upViewport(0 + !is.null(vp))
-        
+
         # return treemap info
         tm <- datlist[, c(indexList, "s", "c", "colorvalue", "l", "x0", "y0", "w", "h", "color"), with=FALSE]
         
