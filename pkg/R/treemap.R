@@ -524,6 +524,7 @@ treemap <-
                        vpCoorX = vps$vpCoorX,
                        vpCoorY = vps$vpCoorY,
                        aspRatio = vps$aspRatio,
-                       range = range)
+                       range = range,
+                       draw = draw)
         invisible(tmSave)
     }
