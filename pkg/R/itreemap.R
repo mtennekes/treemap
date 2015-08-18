@@ -68,11 +68,11 @@ itreemap <- function(dtf=NULL, index=NULL, vSize=NULL, vColor=NULL, type=NULL, h
     
 
     if (missing(vColor)) {
-        if (typeName %in% c("value", "comp", "dens") && (!(vColor %in% dfnum[[dtfname]]))) stop("vColor is not numeric")
-        if (typeName == "categorical" && (!(vColor %in% dfcat[[dtfname]]))) stop("vColor is not categorical")
-    } else {
         if (typeName %in% c("value", "comp", "dens")) vColor <- dfnum[[dtfname]][1]
         if (typeName == "categorical") vColor <- dfcat[[dtfname]][1]
+    } else {
+        if (typeName %in% c("value", "comp", "dens") && (!(vColor %in% dfnum[[dtfname]]))) stop("vColor is not numeric")
+        if (typeName == "categorical" && (!(vColor %in% dfcat[[dtfname]]))) stop("vColor is not categorical")
     }
     if (typeName %in% c("index", "depth")) vColor <- "<not needed>"
     
