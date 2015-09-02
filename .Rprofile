@@ -1,2 +1,2 @@
-library(devtools)
+require(devtools)
 setwd("pkg")
