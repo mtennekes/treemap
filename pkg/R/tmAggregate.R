@@ -8,7 +8,7 @@ tmAggregate <- function(dtfDT, indexList, type, ascending, drop.unused.levels, f
         if (d < depth) {
             indexPlus <- indexList[(d+1):depth]
             datd[, get("indexPlus"):=lapply(indexPlus, function(x)factor(NA, levels=levels(dtfDT[[x]])))]
-            setcolorder(datd, c(indexList, "s", "c", "i"))
+            setcolorder(datd, c(indexList, "s", "c", "i", "se"))
         }
         datd[, l:=d]
         
@@ -65,9 +65,9 @@ tmAggregateStep <- function(dtfDT, indexList, fun.aggregate, args) {
     }
     
     if (fun.aggregate=="weighted.mean") {
-        dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c, w), args)), i=fn(i)), by=indexList]
+        dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c, w), args)), i=fn(i), se=fn(se)), by=indexList]
     } else {
-        dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c), args)), i=fn(i)), by=indexList]
+        dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c), args)), i=fn(i), se=fn(se)), by=indexList]
     }
     
     ## aggregate categorical variables: for each aggregate, get the mode

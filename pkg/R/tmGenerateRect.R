@@ -32,6 +32,7 @@ tmGenerateRect <- function(datlist, vps, indexList, algorithm) {
     level <- NULL; rm(level); #trick R CMD check
     color <- NULL; rm(color); #trick R CMD check
     clevel <- NULL; rm(clevel); #trick R CMD check
+    se <- NULL; rm(se)
     
     depth <- length(indexList)
     

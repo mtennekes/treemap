@@ -92,6 +92,7 @@ treemap <-
              index, 
              vSize, 
              vColor=NULL, 
+             stdErr=NULL,
              type="index",
              fun.aggregate="sum",
              title=NA,
@@ -160,6 +161,17 @@ treemap <-
         if (!vSize %in% names(dtf)) stop("vSize is invalid column name")
         if (!is.numeric(dtf[[vSize]]))
             stop(paste("Column(s) in vSize not numeric",sep=""))
+        
+        #stdErr
+        if (!is.null(stdErr)) {
+            if (length(stdErr)!=1) stop("stdErr should be one column name")
+            if (!stdErr %in% names(dtf)) stop("stdErr is invalid column name")
+            if (!is.numeric(dtf[[stdErr]]))
+                stop(paste("Column(s) in stdErr not numeric",sep=""))
+        }
+        else {
+            stdErr <- vSize
+        }
         
         # vColor
         vColorMplySplit <- function(vColor) {
@@ -259,6 +271,7 @@ treemap <-
         
         if (sortID=="size") sortID <- vSize
         if (sortID=="color") sortID <- vColor
+        if (sortID=="se") sortID <- stdErr
         
         if (!(sortID %in% names(dtf)))
             stop("Incorrect sortID")
@@ -417,11 +430,11 @@ treemap <-
         ## prepare data for aggregation
         ###########
         if (inherits(dtf, c("tbl_df"))) {
-            dtfDT <- as.data.table(data.frame(dtf[, c(index, vSize, vColor, sortID)]))
+            dtfDT <- as.data.table(data.frame(dtf[, c(index, vSize, vColor, sortID, stdErr)]))
         } else if (is.data.table(dtf)) {
-            dtfDT <- copy(dtf[, c(index, vSize, vColor, sortID), with=FALSE])
+            dtfDT <- copy(dtf[, c(index, vSize, vColor, sortID, stdErr), with=FALSE])
         } else {
-            dtfDT <- as.data.table(dtf[, c(index, vSize, vColor, sortID)])
+            dtfDT <- as.data.table(dtf[, c(index, vSize, vColor, sortID, stdErr)])
         }
         
         if (is.null(vColor)) {
@@ -430,11 +443,10 @@ treemap <-
             dtfDT[, vColor.temp:=1]
             setcolorder(dtfDT, c(1:(ncol(dtfDT)-2), ncol(dtfDT), ncol(dtfDT)-1))
         }
-        
-        
+    
         indexList <- paste0("index", 1:depth)
-        setnames(dtfDT, old=1:ncol(dtfDT), new=c(indexList, "s", "c", "i"))
-        
+        setnames(dtfDT, old=1:ncol(dtfDT), new=c(indexList, "s", "c", "i", "se"))
+            
         if (vColorX!=1) dtfDT[, c:=c/vColorX]
         
         if (fun.aggregate=="weighted.mean") {
@@ -477,13 +489,20 @@ treemap <-
             dtfDT[, i:=integer(nrow(dtfDT))]
         }
         
+        ## cast se to numeric
+        if (!is.null(stdErr) && !is.numeric(dtfDT[["se"]])) {
+            warning("stdErr must be a numeric variable")
+            dtfDT[, "se":=integer(dtfDT[["se"]])]
+        }
+        
         setkeyv(dtfDT, indexList)
+
         
         ###########
         ## process treemap
         ###########
         datlist <- tmAggregate(dtfDT, indexList, type, ascending, drop.unused.levels, fun.aggregate, args)
-        catLabels <- switch(type, categorical=levels(datlist$c), index=levels(datlist$index1), depth=index, NA)
+        catLabels <- switch(type, categorical=levels(datlist$c), index=levels(datlist$index1), depth=index, standErr=datlist$se, NA)
 
         if (!draw) position.legend <- "none"
         vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
@@ -497,6 +516,7 @@ treemap <-
             datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend, n)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
+
         if (mirror.x) datlist <- within(datlist, x0 <- 1 - x0 - w)
         if (mirror.y) datlist <- within(datlist, y0 <- 1 - y0 - h)
 
@@ -507,19 +527,20 @@ treemap <-
         }
         
         upViewport(0 + !is.null(vp))
-
+        
         # return treemap info
-        tm <- datlist[, c(indexList, "s", "c", "colorvalue", "l", "x0", "y0", "w", "h", "color"), with=FALSE]
+        tm <- datlist[, c(indexList, "s", "c", "se", "colorvalue", "l", "x0", "y0", "w", "h", "color"), with=FALSE]
         
         # recover original color values from densities
         if (type=="dens") tm[,c:=c*s]
         
-        setnames(tm, c(index, "vSize", "vColor", "vColorValue", "level", "x0", "y0", "w", "h", "color"))
+        setnames(tm, c(index, "vSize", "vColor", "stdErr", "vColorValue", "level", "x0", "y0", "w", "h", "color"))
         
         tmSave <- list(tm = as.data.frame(tm),
                        type = type,
                        vSize = vSize,
                        vColor = ifelse(vColor=="vColor.temp", NA, vColor),
+                       stdErr = stdErr,
                        algorithm = algorithm,
                        vpCoorX = vps$vpCoorX,
                        vpCoorY = vps$vpCoorY,
