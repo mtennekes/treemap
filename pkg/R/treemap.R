@@ -311,13 +311,13 @@ treemap <-
         }
         
         palette.HCL.options <- tmSetHCLoptions(palette.HCL.options)
-#         # palette.HCL.options
-#         palette.HCL.options.temp <- list(hue_start=30, hue_end=390, hue_spread=TRUE, hue_fraction=0.5, chroma=60, luminance=70, chroma_slope=5, luminance_slope=-10)
-#         if (!missing(palette.HCL.options)) {
-#             if (!is.list(palette.HCL.options) | !all(names(palette.HCL.options)%in%names(palette.HCL.options.temp))) stop("Incorrect palette.HCL.options")
-#             palette.HCL.options.temp[names(palette.HCL.options)] <- palette.HCL.options
-#         }
-#         palette.HCL.options <- palette.HCL.options.temp
+        #         # palette.HCL.options
+        #         palette.HCL.options.temp <- list(hue_start=30, hue_end=390, hue_spread=TRUE, hue_fraction=0.5, chroma=60, luminance=70, chroma_slope=5, luminance_slope=-10)
+        #         if (!missing(palette.HCL.options)) {
+        #             if (!is.list(palette.HCL.options) | !all(names(palette.HCL.options)%in%names(palette.HCL.options.temp))) stop("Incorrect palette.HCL.options")
+        #             palette.HCL.options.temp[names(palette.HCL.options)] <- palette.HCL.options
+        #         }
+        #         palette.HCL.options <- palette.HCL.options.temp
         
         # range
         if (!any(is.na(range))) {
@@ -331,7 +331,7 @@ treemap <-
         
         # fontsize.title
         if (length(fontsize.title)!=1 || 
-                !is.numeric(fontsize.title))
+            !is.numeric(fontsize.title))
             stop("Invalid fontsize.title")
         if (title=="") fontsize.title <- 0
         
@@ -343,13 +343,13 @@ treemap <-
         
         # fontsize.legend
         if (length(fontsize.legend)!=1 || 
-                !is.numeric(fontsize.legend))
+            !is.numeric(fontsize.legend))
             stop("Invalid fontsize.legend")
         
         
         # fontcolor.labels
         if (!missing(fontcolor.labels)) if (length(fontcolor.labels)!=depth) fontcolor.labels <- rep(fontcolor.labels, length.out=depth)
-
+        
         # fontface.labels
         if (length(fontface.labels)!=depth) fontface.labels <- rep(fontface.labels, length.out=depth)
         
@@ -362,14 +362,14 @@ treemap <-
         
         # lowerbound.cex.labels
         if (length(lowerbound.cex.labels)!=1 ||
-                !is.numeric(lowerbound.cex.labels))
+            !is.numeric(lowerbound.cex.labels))
             stop("Invalid lowerbound.cex.labels")
         if (lowerbound.cex.labels < 0 || lowerbound.cex.labels > 1)
             stop("lowerbound.cex.labels not between 0 and 1")
         
         # inflate.labels
         if (length(inflate.labels)!=1 ||
-                class(inflate.labels) !="logical")
+            class(inflate.labels) !="logical")
             stop("Invalid inflate.labels")
         
         # bg.labels
@@ -386,20 +386,20 @@ treemap <-
         
         # force.print.labels
         if (length(force.print.labels)!=1 ||
-                class(force.print.labels) !="logical")
+            class(force.print.labels) !="logical")
             stop("Invalid force.print.labels")
         
         # overlap.labels
         if (length(overlap.labels)!=1 ||
-                !is.numeric(overlap.labels))
+            !is.numeric(overlap.labels))
             stop("Invalid overlap.labels")
         if (overlap.labels<0 || overlap.labels > 1) stop("overlap.labels should be between 0 and 1")
-
+        
         #align.labels
         if (!is.list(align.labels)) align.labels <- list(align.labels)
         if (length(align.labels) !=depth) align.labels <- rep(align.labels, length.out=depth)
         lapply(align.labels, function(al) if (!(al[1]%in% c("left", "center", "centre", "right") && 
-                                                        al[2]%in% c("top", "center", "centre", "bottom"))) stop("incorrect align.labels"))
+                                                al[2]%in% c("top", "center", "centre", "bottom"))) stop("incorrect align.labels"))
         
         #xmod.labels and ymod.labels
         if (length(xmod.labels)!=depth) xmod.labels <- rep(xmod.labels, length.out=depth)
@@ -415,9 +415,9 @@ treemap <-
         
         # drop.unused.levels
         if (length(drop.unused.levels)!=1 ||
-                class(drop.unused.levels) !="logical")
+            class(drop.unused.levels) !="logical")
             stop("Invalid drop.unused.levels")
-
+        
         # aspRatio
         if (length(aspRatio)!=1 || (!is.na(aspRatio[1]) && !is.numeric(aspRatio)))
             stop("Invalid aspRatio")
@@ -443,10 +443,10 @@ treemap <-
             dtfDT[, vColor.temp:=1]
             setcolorder(dtfDT, c(1:(ncol(dtfDT)-2), ncol(dtfDT), ncol(dtfDT)-1))
         }
-    
+        
         indexList <- paste0("index", 1:depth)
         setnames(dtfDT, old=1:ncol(dtfDT), new=c(indexList, "s", "c", "i", "se"))
-            
+        
         if (vColorX!=1) dtfDT[, c:=c/vColorX]
         
         if (fun.aggregate=="weighted.mean") {
@@ -462,8 +462,8 @@ treemap <-
         } else {
             dtfDT[, w:=1]
         }
- 
-
+        
+        
         ## cast non-factor index columns to factor
         for (d in 1:depth) {
             if (is.numeric(dtfDT[[d]])) { 
@@ -496,14 +496,14 @@ treemap <-
         }
         
         setkeyv(dtfDT, indexList)
-
+        
         
         ###########
         ## process treemap
         ###########
         datlist <- tmAggregate(dtfDT, indexList, type, ascending, drop.unused.levels, fun.aggregate, args)
         catLabels <- switch(type, categorical=levels(datlist$c), index=levels(datlist$index1), depth=index, standErr=datlist$se, NA)
-
+        
         if (!draw) position.legend <- "none"
         vps <- tmGetViewports(vp, fontsize.title, fontsize.labels, fontsize.legend,
                               position.legend, type, aspRatio, title.legend, catLabels)
@@ -516,14 +516,14 @@ treemap <-
             datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend, n)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
-
+        
         if (mirror.x) datlist <- within(datlist, x0 <- 1 - x0 - w)
         if (mirror.y) datlist <- within(datlist, y0 <- 1 - y0 - h)
-
+        
         if (draw) {
             tmDrawRect(datlist, vps, indexList, lowerbound.cex.labels, inflate.labels, bg.labels, 
-                   force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, 
-                   fontcolor.labels, fontface.labels, fontfamily.labels, align.labels, xmod.labels, ymod.labels, eval.labels)
+                       force.print.labels, cex_indices, overlap.labels, border.col, border.lwds, 
+                       fontcolor.labels, fontface.labels, fontfamily.labels, align.labels, xmod.labels, ymod.labels, eval.labels)
         }
         
         upViewport(0 + !is.null(vp))

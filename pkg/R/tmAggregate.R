@@ -65,9 +65,9 @@ tmAggregateStep <- function(dtfDT, indexList, fun.aggregate, args) {
     }
     
     if (fun.aggregate=="weighted.mean") {
-        dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c, w), args)), i=fn(i), se=fn(se)), by=indexList]
+        dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c, w), args)), i=fn(i), se=do.call("fun", c(list(se, w), args))), by=indexList]
     } else {
-        dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c), args)), i=fn(i), se=fn(se)), by=indexList]
+        dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c), args)), i=fn(i), se=do.call("fun", c(list(se), args))), by=indexList]
     }
     
     ## aggregate categorical variables: for each aggregate, get the mode
