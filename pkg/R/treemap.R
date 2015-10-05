@@ -39,7 +39,8 @@
 #'        \item{\code{luminance}:}{luminance value of colors of the first-level nodes, i.e. determined by the first index variable (default: 70)}
 #'        \item{\code{chroma_slope}:}{slope value for chroma of the non-first-level nodes. The chroma values for the second-level nodes are \code{chroma+chroma_slope}, for the third-level nodes \code{chroma+2*chroma_slope}, etc. (default: 5)}
 #'        \item{\code{luminance_slope}:}{slope value for luminance of the non-first-level nodes (default: -10)}} For "depth" and "categorical" types, only the first two items are used. Use \code{\link{treecolors}} to experiment with these parameters.
-#' @param range range of values that determine the colors. Only applicable for types "value", "comp", and "dens". When omitted, the range of actual values is used. This range is mapped to \code{palette}.
+#' @param range range of values (so vector of two) that correspond to the color legend. By default, the range of actual values, determined by \code{vColor}, is used. Only applicable for numeric types, i.e. "value", "comp", "dens", and "manual". See also \code{mapping}.
+#' @param mapping vector of three values that specifies the mapping of the actual values, determined by \code{vColor}, to \code{palette}. The three values are respectively the minimum value, the mid value, and the maximum value. The mid value is particularly useful for diverging color palettes, where it defined the middle, neutral, color which is typically white or yellow. The \code{mapping} should cover the \code{range}. By default, for "value" treemaps, it is \code{c(-max(abs(values)), 0, max(abs(values)))}, where values are the actual values defined by \code{vColor}. For "manual" treemaps, the default setting is \code{c(min(values), mean(range(values)), max(values))}. For "dens" treemaps, where a sequential color palette is used, it is \code{c(0, max(values)/2, max(values))}. A vector of two can also be specified. In that case, the mid value will be the average of those.
 #' @param n preferred number of categories by which numeric variables are discretized.
 #' @param fontsize.title font size of the title
 #' @param fontsize.labels font size(s) of the data labels, which is either a single number that specifies the font size for all aggregation levels, or a vector that specifies the font size for each aggregation level. Use value \code{0} to omit the labels for the corresponding aggregation level. 
@@ -103,6 +104,7 @@ treemap <-
              palette=NA,
              palette.HCL.options=NULL,
              range=NA,
+             mapping=NA,
              n=7,
              fontsize.title=14, 
              fontsize.labels=11, 
@@ -307,14 +309,23 @@ treemap <-
 #         palette.HCL.options <- palette.HCL.options.temp
         
         # range
-        if (!any(is.na(range))) {
+        if (!all(is.na(range))) {
             if (length(range)!=2)
-                stop("length range is not 2")
+                stop("length range should be 2")
             if (!is.numeric(range))
                 stop("range is not numeric")
-        } else if (type=="manual") {
-            stop("For \"manual\" treemaps, a range should be provided.")
-        }
+        } else range <- c(NA, NA)
+        
+        # mapping
+        if (!all(is.na(mapping))) {
+            if (!length(mapping) %in% c(2,3))
+                stop("length range should be 2 or 3")
+            if (!is.numeric(mapping))
+                stop("range is not numeric")
+            if (length(mapping)==2) {
+                mapping <- c(mapping[1], mean(mapping), mapping[2])
+            }
+        } else mapping <- c(NA, NA, NA)
         
         # fontsize.title
         if (length(fontsize.title)!=1 || 
@@ -494,7 +505,7 @@ treemap <-
             datlist$colorvalue <- NA
         } else {
             attr(datlist, "range") <- 1:2
-            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend, n)
+            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, mapping, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend, n)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
         if (mirror.x) datlist <- within(datlist, x0 <- 1 - x0 - w)
@@ -525,6 +536,7 @@ treemap <-
                        vpCoorY = vps$vpCoorY,
                        aspRatio = vps$aspRatio,
                        range = range,
+                       mapping = mapping,
                        draw = draw)
         invisible(tmSave)
     }

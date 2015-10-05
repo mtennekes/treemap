@@ -1,4 +1,4 @@
-tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, indexNames, palette.HCL.options, border.col, fontfamily.legend, n) {
+tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, mapping, indexNames, palette.HCL.options, border.col, fontfamily.legend, n) {
     if (position.legend!="none") {    
         pushViewport(vps$vpLeg)
     }
@@ -12,9 +12,9 @@ tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, 
     } else if (type == "index") {
         index2col(datlist, position.legend, palette, levels(datlist$index1), palette.HCL.options, border.col, fontfamily.legend)
     } else if (type == "value") {
-        value2col(datlist, position.legend, palette, range, border.col, fontfamily.legend, auto.col.mapping=TRUE, n=n)
+        value2col(datlist, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping=TRUE, n=n)
     } else if (type == "manual") {
-        value2col(datlist, position.legend, palette, range, border.col, fontfamily.legend, auto.col.mapping=FALSE, n=n)
+        value2col(datlist, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping=FALSE, n=n)
     } else if (type == "categorical") {
         cat2col(datlist, position.legend, palette, levels(datlist$c), palette.HCL.options, border.col, fontfamily.legend)
     }

@@ -1,12 +1,34 @@
 value2col <-
-    function(dat, position.legend, palette, range, border.col, fontfamily.legend, auto.col.mapping, n) {
+    function(dat, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping, n) {
         maxlev <- max(dat$l)
         
-        #browser()
+        browser()
         
         values_all <- dat$c
         values <- values_all[dat$l==maxlev]
 
+        if (any(is.na(range))) {
+            range <- range(values)
+        }
+        
+        prettyV <- pretty(range, n=n)
+        prettyV <- prettyV[prettyV>=range[1] & prettyV<=range[2]]
+        
+        mx <- max(abs(prettyV))
+        
+        if (auto.col.mapping) {
+            if (is.na(mapping[1])) mapping[1] <- -mx
+            if (is.na(mapping[2])) mapping[2] <- 0
+            if (is.na(mapping[3])) mapping[3] <- mx
+        } else {
+            if (is.na(mapping[1])) mapping[1] <- -mx
+            if (is.na(mapping[2])) mapping[2] <- 0
+            if (is.na(mapping[3])) mapping[3] <- mx
+        }
+        
+        
+        #\code{c(-max(abs(values)), 0, max(abs(values)))}, where values are the actual values defined by \code{vColor}. For "manual" treemaps, the default setting is \code{c(min(values), mean(range(values)), max(values))}
+        
         
         if (any(is.na(range))) {
             prettyV <- pretty(values, n=n)
