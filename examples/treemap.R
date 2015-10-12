@@ -160,12 +160,22 @@ treemap(business,
         type="value",
         palette=terrain.colors(10))
 
-# Brewer's Red-White-Grey palette reversed with predefined range
+# Brewer's Red-White-Grey palette reversed with predefined legend range
 treemap(business,
         index=c("NACE1", "NACE2"),
         vSize="employees",
         vColor="employees.growth",
         type="value",
         palette="-RdGy",
-        range=c(-30000,30000))
+        range=c(-10000,30000))
+
+# More control over the color palette can be achieved with mapping
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        vColor="employees.growth",
+        type="value",
+        palette="RdYlGn",
+        range=c(-10000,30000),           # this is shown in the legend
+        mapping=c(-20000, 10000, 40000)) # Rd is mapped to -20k, Yl to 10k, and Gn to 40k
 }
