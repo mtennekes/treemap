@@ -84,8 +84,7 @@ treemap(business,
         vSize="turnover",
         vColor="employees",
         type="manual",
-        palette=terrain.colors(10),
-        range=c(-50000, 500000))
+        palette=terrain.colors(10))
 }
 
 #########################################

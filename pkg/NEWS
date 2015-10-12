@@ -1,4 +1,5 @@
 version 2.3
+- added mapping argument to support manual palette mappings 
 - added argument n, number of categories
 - added mirror.x and .y
 - fixed treegraph bug (changed vertex.layout argument)

@@ -2,63 +2,50 @@ value2col <-
     function(dat, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping, n) {
         maxlev <- max(dat$l)
         
-        browser()
-        
+ 
         values_all <- dat$c
         values <- values_all[dat$l==maxlev]
 
         if (any(is.na(range))) {
             range <- range(values)
+        } else {
+            if (any(values < range[1]) || any(values > range[2])) warning("Values are found that exceed the provided range")            
         }
         
         prettyV <- pretty(range, n=n)
         prettyV <- prettyV[prettyV>=range[1] & prettyV<=range[2]]
         
-        mx <- max(abs(prettyV))
+        mx <- max(values)
+        mn <- min(values)
+        m <- mean(c(mx, mn))
+        absmx <- max(abs(c(mx, mn)))
         
         if (auto.col.mapping) {
-            if (is.na(mapping[1])) mapping[1] <- -mx
+            if (is.na(mapping[1])) mapping[1] <- -absmx
             if (is.na(mapping[2])) mapping[2] <- 0
-            if (is.na(mapping[3])) mapping[3] <- mx
+            if (is.na(mapping[3])) mapping[3] <- absmx
         } else {
-            if (is.na(mapping[1])) mapping[1] <- -mx
-            if (is.na(mapping[2])) mapping[2] <- 0
+            if (is.na(mapping[1])) mapping[1] <- mn
+            if (is.na(mapping[2])) mapping[2] <- m
             if (is.na(mapping[3])) mapping[3] <- mx
         }
         
         
-        #\code{c(-max(abs(values)), 0, max(abs(values)))}, where values are the actual values defined by \code{vColor}. For "manual" treemaps, the default setting is \code{c(min(values), mean(range(values)), max(values))}
-        
-        
-        if (any(is.na(range))) {
-            prettyV <- pretty(values, n=n)
-            
-            mx <- max(abs(c(values, prettyV)))
-            
-            value.ids <- round((values_all / mx * 50) + 51)
-            prettyV.ids <- round((prettyV / mx * 50) + 51)
-            
-        } else {
-            if (any(values < range[1]) || any(values > range[2])) warning("Values are found that exceed the provided range")
-            
-            prettyV <- pretty(range, n=n)
-            prettyV <- prettyV[prettyV>=range[1] & prettyV<=range[2]]
+        value.ids <- ifelse(values_all < mapping[2],
+                            (values_all-mapping[1]) / (mapping[2]-mapping[1]) * 50 + 1,
+                            (values_all-mapping[2]) / (mapping[3]-mapping[2]) * 50 + 51
+                            )
+
+        prettyV.ids <- ifelse(prettyV < mapping[2],
+                              (prettyV-mapping[1]) / (mapping[2]-mapping[1]) * 50 + 1,
+                              (prettyV-mapping[2]) / (mapping[3]-mapping[2]) * 50 + 51)
             
             
-            if (auto.col.mapping) {
-                mx <- max(abs(prettyV))
-                
-                value.ids <- round((values_all / mx * 50) + 51)
-                prettyV.ids <- round((prettyV / mx * 50) + 51)
-            } else {
-                diff <- range[2] - range[1]
-                value.ids <- round(((values_all - range[1]) /  diff) * 100 + 1)
-                prettyV.ids <- round(((prettyV - range[1]) /  diff) * 100 + 1)
-            }
-        }
-        
         value.ids[value.ids < 1] <- 1
         value.ids[value.ids > 101] <- 101
+
+        prettyV.ids[prettyV.ids < 1] <- 1
+        prettyV.ids[prettyV.ids > 101] <- 101
         
             
         colpal <- colorRampPalette(palette)(101)
