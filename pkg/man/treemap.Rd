@@ -4,7 +4,7 @@
 \alias{treemap}
 \title{Create a treemap}
 \usage{
-treemap(dtf, index, vSize, vColor = NULL, type = "index", title = NA,
+treemap(dtf, index, vSize, vColor = NULL, stdErr, type = "index", title = NA,
   title.legend = NA, algorithm = "pivotSize", sortID = "-size",
   mirror.x = FALSE, mirror.y = FALSE, palette = NA,
   palette.HCL.options = NULL, range = NA, n = 7, fontsize.title = 14,
