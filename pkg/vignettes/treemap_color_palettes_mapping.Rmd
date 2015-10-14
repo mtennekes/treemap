@@ -1,0 +1,109 @@
+---
+title: 'treemap: mapping to color palettes'
+author: "Martijn Tennekes"
+date: "October 14, 2015"
+output: html_document
+---
+
+This small tutorial is about the mapping of values to color palettes, for treemap types "value" and "manual".
+
+There are to arguments that determine the mapping to color palettes: `mapping` and `palette`. The arguent `range` does not influence this mapping, as it only defined what range of color values is shown in the legend.
+
+
+The only difference between "value" and "manual" is the default value for `mapping`. The "value" treemap considers `palette` to be a diverging color palette (say ColorBrewer's `"RdYlBu"`), and maps it in such a way that 0 corresponds to the middle color (typically white or yellow), `-max(abs(values))` to the left-end color, and `max(abs(values))`, to the right-end color. The "manual" treemap simply maps `min(values)` to the left-end color, `max(values)` to the right-end color, and `mean(range(values))` to the middle color.
+
+
+
+```{r}
+library(treemap)
+set.seed(20151014)
+```
+
+### "value" type treemaps: `mapping=(-max(abs(values)), 0, max(abs(values)))`
+
+```{r}
+dat1 <- data.frame(letters=letters[1:26], x=1, y=runif(26)*16-8)
+treemap(dat1, index="letters", vSize="x", vColor="y", type="value", palette="RdYlBu")
+```
+
+You see that the center color (Yl) will automatically be assigned to 0, negative values to Rd-Yl and positive to Yl-Bu:
+
+
+Example when there are more extreme negative values than positive:
+
+```{r}
+dat2 <- data.frame(letters=letters[1:26], x=1, y=runif(26)*16-12)
+treemap(dat2, index="letters", vSize="x", vColor="y", type="value", palette="RdYlBu")
+```
+
+The reason why you see only -10 to 2 in the legend (and not -10 to 10), is because the `range` argument is by default c(min(values), max(values)) with a pretty rounding. This can be changed of course:
+
+```{r}
+treemap(dat2, index="letters", vSize="x", vColor="y", type="value", palette="RdYlBu", range=c(-10,10))
+```
+
+If there are only positive values, only the Yl-Bu half is used:
+
+```{r}
+dat3 <- data.frame(letters=letters[1:26], x=1, y=runif(26)*16)
+treemap(dat3, index="letters", vSize="x", vColor="y", type="value", palette="RdYlBu")
+```
+
+
+### "manual" type treemaps: `mapping=(min(values), 0, max(values))`
+
+Let's rerun the examples for `type="manual"`:
+
+```{r}
+treemap(dat1, index="letters", vSize="x", vColor="y", type="manual", palette="RdYlBu")
+```
+
+This is essentially the same treemap as above, because the middle value 0 for "value" is very close to `mean(range(dat1$y))` which is `-0.045`.
+
+
+```{r}
+treemap(dat2, index="letters", vSize="x", vColor="y", type="manual", palette="RdYlBu")
+```
+
+In this case, yellow will be assigned to the middle value `mean(range(dat2$y))` which is `-3.89`.
+
+
+```{r}
+treemap(dat3, index="letters", vSize="x", vColor="y", type="manual", palette="RdYlBu")
+```
+
+In contrary to value treemaps, also the lefthand-side range of the diverging palette is used when there are only positive values.
+
+
+### treemaps with custom mapping
+
+```{r}
+treemap(dat1, index="letters", vSize="x", vColor="y", type="value", palette="RdYlBu", mapping=c(-20, 0, 20))
+```
+
+This is an interesting one. Now -20 and 20 are mapped to both ends of the palette. What you get, is that the middle color is still 0 (as with value), but the colors range from orange to light blue, because only middle part of the palette is used.
+
+You don't see -20 and 20 in the legend, because `range` is by default c(min(values), max(values)) with a pretty rounding. You can change this, of course:
+
+```{r}
+treemap(dat1, index="letters", vSize="x", vColor="y", type="value", palette="RdYlBu", mapping=c(-20, 0, 20), range=c(-20,20))
+```
+
+If range falls outside the mapping, the correspinding legend items will be assigned to the end colors of the palette:
+
+```{r}
+treemap(dat1, index="letters", vSize="x", vColor="y", type="value", palette="RdYlBu", mapping=c(-20, 0, 20), range=c(-40,40))
+```
+
+Suppose we want the range of data values to be mapped to the whole palette, with 0 as middle value:
+
+```{r}
+treemap(dat2, index="letters", vSize="x", vColor="y", type="value", palette="RdYlBu", mapping=c(min(dat2$y), 0, max(dat2$y)))
+```
+
+Let's assign 10 to the middle value:
+
+```{r}
+treemap(dat3, index="letters", vSize="x", vColor="y", type="value", palette="RdYlBu", mapping=c(0, 10, 20))
+```
+
