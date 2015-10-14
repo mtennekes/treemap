@@ -6,6 +6,7 @@
 #' @param index    vector of column names in \code{dtf} that specify the aggregation indices. It could contain only one column name, which results in a treemap without hierarchy. If multiple column names are provided, the first name is the highest aggregation level, the second name the second-highest aggregation level, and so on. Required. 
 #' @param vSize name of the column in \code{dtf} that specifies the sizes of the rectangles. Required.
 #' @param vColor name of the column that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". Note: when omitted for \code{"value"} treemaps, a contant value of 1 is taken.
+#' @param stdErr name of the column that contains standard errors. These are not used for the treemaps, but only aggregated accordingly and returned as item of the output list.
 #' @param type type of the treemap, which determines how the rectangles are colored:
 #' \describe{
 #'    	\item{\code{"index"}:}{colors are determined by the \code{index} variables. Different branches in the hierarchical tree get different colors. For this type, \code{vColor} is not needed.}
@@ -39,7 +40,7 @@
 #'        \item{\code{luminance}:}{luminance value of colors of the first-level nodes, i.e. determined by the first index variable (default: 70)}
 #'        \item{\code{chroma_slope}:}{slope value for chroma of the non-first-level nodes. The chroma values for the second-level nodes are \code{chroma+chroma_slope}, for the third-level nodes \code{chroma+2*chroma_slope}, etc. (default: 5)}
 #'        \item{\code{luminance_slope}:}{slope value for luminance of the non-first-level nodes (default: -10)}} For "depth" and "categorical" types, only the first two items are used. Use \code{\link{treecolors}} to experiment with these parameters.
-#' @param range range of values (so vector of two) that correspond to the color legend. By default, the range of actual values, determined by \code{vColor}, is used. Only applicable for numeric types, i.e. "value", "comp", "dens", and "manual". See also \code{mapping}.
+#' @param range range of values (so vector of two) that correspond to the color legend. By default, the range of actual values, determined by \code{vColor}, is used. Only applicable for numeric types, i.e. "value", "comp", "dens", and "manual". Note that the range doesn't affect the colors in the treemap itself for "value" and "manual" types; this is controlled by \code{mapping}.
 #' @param mapping vector of three values that specifies the mapping of the actual values, determined by \code{vColor}, to \code{palette}. The three values are respectively the minimum value, the mid value, and the maximum value. The mid value is particularly useful for diverging color palettes, where it defined the middle, neutral, color which is typically white or yellow. The \code{mapping} should cover the \code{range}. By default, for "value" treemaps, it is \code{c(-max(abs(values)), 0, max(abs(values)))}, where values are the actual values defined by \code{vColor}. For "manual" treemaps, the default setting is \code{c(min(values), mean(range(values)), max(values))}. A vector of two can also be specified. In that case, the mid value will be the average of those.  Only applicable for "value" and "manual" type treemaps.
 #' @param n preferred number of categories by which numeric variables are discretized.
 #' @param fontsize.title font size of the title
@@ -72,6 +73,7 @@
 #'  \item{type}{argument type}
 #'  \item{vSize}{argument vSize}
 #'  \item{vColor}{argument vColor}
+#'  \item{stdErr}{standard errors}
 #'  \item{algorithm}{argument algorithm}
 #'  \item{vpCoorX}{x-coordinates of the treemap within the whole plot}
 #'  \item{vpCoorY}{y-coordinates of the treemap within the whole plot}
@@ -87,6 +89,10 @@
 #' @import RColorBrewer
 #' @import grid
 #' @import colorspace
+#' @importFrom grDevices col2rgb colorRampPalette hcl rgb
+#' @importFrom graphics par
+#' @importFrom methods as
+#' @importFrom stats rlnorm rnorm rpois
 #' @export
 treemap <-
     function(dtf, 

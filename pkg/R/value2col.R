@@ -13,7 +13,15 @@ value2col <-
         }
         
         prettyV <- pretty(range, n=n)
-        prettyV <- prettyV[prettyV>=range[1] & prettyV<=range[2]]
+        #prettyV <- prettyV[prettyV>=range[1] & prettyV<=range[2]]
+        
+        # truncate if min (max) value is closer to the second (last) legend value
+        
+        first <- which.min(abs(prettyV - range[1]))
+        last <- which.min(abs(prettyV - range[2]))
+
+        prettyV <- prettyV[first:last]
+        
         
         mx <- max(values)
         mn <- min(values)

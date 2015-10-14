@@ -48,14 +48,14 @@ tmAggregate <- function(dtfDT, indexList, type, ascending, drop.unused.levels, f
 
 
 tmAggregateStep <- function(dtfDT, indexList, fun.aggregate, args) {
-    .SD <- s <- i <- NULL
+    .SD <- s <- i <- se <- w <- NULL
 
     
     fun <- match.fun(fun.aggregate)
     
     isCat <- !is.numeric(dtfDT$c)
     
-    ## aggregate numeric variable
+    ## aggregate numeric or categorical variable
     fn <- function(x) {
         if (is.numeric(x)) {
             sum(x, na.rm=TRUE)
@@ -65,9 +65,17 @@ tmAggregateStep <- function(dtfDT, indexList, fun.aggregate, args) {
     }
     
     if (fun.aggregate=="weighted.mean") {
-        dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c, w), args)), i=fn(i), se=do.call("fun", c(list(se, w), args))), by=indexList]
+        if (isCat) {
+            dat <- dtfDT[ , list(s=fn(s), c=fn(c), i=fn(i), se=do.call("fun", c(list(se, w), args))), by=indexList]
+        } else {
+            dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c, w), args)), i=fn(i), se=do.call("fun", c(list(se, w), args))), by=indexList]
+        }
     } else {
-        dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c), args)), i=fn(i), se=do.call("fun", c(list(se), args))), by=indexList]
+        if (isCat) {
+            dat <- dtfDT[ , list(s=fn(s), c=fn(c), i=fn(i), se=do.call("fun", c(list(se), args))), by=indexList]
+        } else {
+            dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c), args)), i=fn(i), se=do.call("fun", c(list(se), args))), by=indexList]
+        }
     }
     
     ## aggregate categorical variables: for each aggregate, get the mode

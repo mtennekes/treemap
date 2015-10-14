@@ -4,10 +4,11 @@
 \alias{treemap}
 \title{Create a treemap}
 \usage{
-treemap(dtf, index, vSize, vColor = NULL, stdErr, type = "index", title = NA,
-  title.legend = NA, algorithm = "pivotSize", sortID = "-size",
-  mirror.x = FALSE, mirror.y = FALSE, palette = NA,
-  palette.HCL.options = NULL, range = NA, n = 7, fontsize.title = 14,
+treemap(dtf, index, vSize, vColor = NULL, stdErr = NULL, type = "index",
+  fun.aggregate = "sum", title = NA, title.legend = NA,
+  algorithm = "pivotSize", sortID = "-size", mirror.x = FALSE,
+  mirror.y = FALSE, palette = NA, palette.HCL.options = NULL,
+  range = NA, mapping = NA, n = 7, fontsize.title = 14,
   fontsize.labels = 11, fontsize.legend = 12, fontcolor.labels = NULL,
   fontface.labels = c("bold", rep("plain", length(index) - 1)),
   fontfamily.title = "sans", fontfamily.labels = "sans",
@@ -17,7 +18,7 @@ treemap(dtf, index, vSize, vColor = NULL, stdErr, type = "index", title = NA,
   force.print.labels = FALSE, overlap.labels = 0.5,
   align.labels = c("center", "center"), xmod.labels = 0, ymod.labels = 0,
   eval.labels = FALSE, position.legend = NULL, drop.unused.levels = TRUE,
-  aspRatio = NA, vp = NULL)
+  aspRatio = NA, vp = NULL, draw = TRUE, ...)
 }
 \arguments{
 \item{dtf}{a data.frame. Required.}
@@ -27,6 +28,8 @@ treemap(dtf, index, vSize, vColor = NULL, stdErr, type = "index", title = NA,
 \item{vSize}{name of the column in \code{dtf} that specifies the sizes of the rectangles. Required.}
 
 \item{vColor}{name of the column that, in combination with \code{type}, determines the colors of the rectangles. The variable can be scaled by the addition of "*<scale factor>" or "/<scale factor>". Note: when omitted for \code{"value"} treemaps, a contant value of 1 is taken.}
+
+\item{stdErr}{name of the column that contains standard errors. These are not used for the treemaps, but only aggregated accordingly and returned as item of the output list.}
 
 \item{type}{type of the treemap, which determines how the rectangles are colored:
 \describe{
@@ -38,6 +41,8 @@ treemap(dtf, index, vSize, vColor = NULL, stdErr, type = "index", title = NA,
        \item{\code{"categorical"}:}{\code{vColor} is a factor column that determines the color.}
      \item{\code{"color"}:}{\code{vColor} is a vector of colors in the hexadecimal (#RRGGBB) format}
      \item{\code{"manual"}:}{The numeric \code{vColor}-column is directly mapped to a color palette. Both palette and range should be provided. The palette is mapped linearly to the range.}}}
+
+\item{fun.aggregate}{aggregation function, only used in \code{"value"} treemaps. This function determines how values of the lowest aggregation level are aggregated. By default, it takes the \code{sum}. Other sensible functions are \code{mean} and \code{weighted.mean}. In the latter case, the weights are determined by the \code{vSize} variable. Other arguments can be passed on. For \code{weighted.mean}, it is possible to assign a variable name for its \code{w} argument.}
 
 \item{title}{title of the treemap.}
 
@@ -69,7 +74,9 @@ treemap(dtf, index, vSize, vColor = NULL, stdErr, type = "index", title = NA,
        \item{\code{chroma_slope}:}{slope value for chroma of the non-first-level nodes. The chroma values for the second-level nodes are \code{chroma+chroma_slope}, for the third-level nodes \code{chroma+2*chroma_slope}, etc. (default: 5)}
        \item{\code{luminance_slope}:}{slope value for luminance of the non-first-level nodes (default: -10)}} For "depth" and "categorical" types, only the first two items are used. Use \code{\link{treecolors}} to experiment with these parameters.}
 
-\item{range}{range of values that determine the colors. Only applicable for types "value", "comp", and "dens". When omitted, the range of actual values is used. This range is mapped to \code{palette}.}
+\item{range}{range of values (so vector of two) that correspond to the color legend. By default, the range of actual values, determined by \code{vColor}, is used. Only applicable for numeric types, i.e. "value", "comp", "dens", and "manual". Note that the range doesn't affect the colors in the treemap itself for "value" and "manual" types; this is controlled by \code{mapping}.}
+
+\item{mapping}{vector of three values that specifies the mapping of the actual values, determined by \code{vColor}, to \code{palette}. The three values are respectively the minimum value, the mid value, and the maximum value. The mid value is particularly useful for diverging color palettes, where it defined the middle, neutral, color which is typically white or yellow. The \code{mapping} should cover the \code{range}. By default, for "value" treemaps, it is \code{c(-max(abs(values)), 0, max(abs(values)))}, where values are the actual values defined by \code{vColor}. For "manual" treemaps, the default setting is \code{c(min(values), mean(range(values)), max(values))}. A vector of two can also be specified. In that case, the mid value will be the average of those.  Only applicable for "value" and "manual" type treemaps.}
 
 \item{n}{preferred number of categories by which numeric variables are discretized.}
 
@@ -118,6 +125,10 @@ treemap(dtf, index, vSize, vColor = NULL, stdErr, type = "index", title = NA,
 \item{aspRatio}{preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.}
 
 \item{vp}{\code{\link[grid:viewport]{viewport}} to draw in. By default it is not specified, which means that a new plot is created. Useful when drawing small multiples, or when placing a treemap in a custom grid based plot.}
+
+\item{draw}{logical that determines whether to draw the treemap.}
+
+\item{...}{arguments to be passed to other functions. Currently, only \code{fun.aggregate} takes optional arguments.}
 }
 \value{
 A list is silently returned:
@@ -125,6 +136,7 @@ A list is silently returned:
  \item{type}{argument type}
  \item{vSize}{argument vSize}
  \item{vColor}{argument vColor}
+ \item{stdErr}{standard errors}
  \item{algorithm}{argument algorithm}
  \item{vpCoorX}{x-coordinates of the treemap within the whole plot}
  \item{vpCoorY}{y-coordinates of the treemap within the whole plot}
@@ -221,8 +233,7 @@ treemap(business,
         vSize="turnover",
         vColor="employees",
         type="manual",
-        palette=terrain.colors(10),
-        range=c(-50000, 500000))
+        palette=terrain.colors(10))
 }
 
 #########################################
@@ -298,14 +309,24 @@ treemap(business,
         type="value",
         palette=terrain.colors(10))
 
-# Brewer's Red-White-Grey palette reversed with predefined range
+# Brewer's Red-White-Grey palette reversed with predefined legend range
 treemap(business,
         index=c("NACE1", "NACE2"),
         vSize="employees",
         vColor="employees.growth",
         type="value",
         palette="-RdGy",
-        range=c(-30000,30000))
+        range=c(-20000,30000))
+
+# More control over the color palette can be achieved with mapping
+treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        vColor="employees.growth",
+        type="value",
+        palette="RdYlGn",
+        range=c(-20000,30000),           # this is shown in the legend
+        mapping=c(-30000, 10000, 40000)) # Rd is mapped to -30k, Yl to 10k, and Gn to 40k
 }
 }
 \references{

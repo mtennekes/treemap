@@ -167,7 +167,7 @@ treemap(business,
         vColor="employees.growth",
         type="value",
         palette="-RdGy",
-        range=c(-10000,30000))
+        range=c(-20000,30000))
 
 # More control over the color palette can be achieved with mapping
 treemap(business,
@@ -176,6 +176,6 @@ treemap(business,
         vColor="employees.growth",
         type="value",
         palette="RdYlGn",
-        range=c(-10000,30000),           # this is shown in the legend
-        mapping=c(-20000, 10000, 40000)) # Rd is mapped to -20k, Yl to 10k, and Gn to 40k
+        range=c(-20000,30000),           # this is shown in the legend
+        mapping=c(-30000, 10000, 40000)) # Rd is mapped to -30k, Yl to 10k, and Gn to 40k
 }

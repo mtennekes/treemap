@@ -1,2 +1,1 @@
 require(devtools)
-setwd("pkg")

@@ -1,5 +1,11 @@
+version 2.4
+- added mapping argument to support manual palette mappings (see new vignette)
+- added standard error aggregations
+- added draw argument to prevent drawing
+- aggregation function can be specified (e.g. weighted.mean)
+- compatible with tbl_df and tbl_dt
+
 version 2.3
-- added mapping argument to support manual palette mappings 
 - added argument n, number of categories
 - added mirror.x and .y
 - fixed treegraph bug (changed vertex.layout argument)

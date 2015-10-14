@@ -1,8 +1,8 @@
 Package: treemap
 Type: Package
 Title: Treemap Visualization
-Version: 2.3
-Date: 2015-06-25
+Version: 2.4
+Date: 2015-10-14
 Author: Martijn Tennekes
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
 Description: A treemap is a space-filling visualization of hierarchical
@@ -16,5 +16,9 @@ Imports:
     grid,
     gridBase,
     igraph,
+    methods,
     RColorBrewer,
     shiny (>= 0.12.0)
+Suggests: 
+	knitr
+VignetteBuilder: knitr

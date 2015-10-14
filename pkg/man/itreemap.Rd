@@ -23,7 +23,10 @@ itreemap(dtf = NULL, index = NULL, vSize = NULL, vColor = NULL,
 \item{command.line.output}{if \code{TRUE}, the command line output of the generated treemaps are provided in the console.}
 }
 \description{
-This function is an interactive web-based user interface for creating treemaps. Interaction is provided for the four main input arguments of (\code{\link{treemap}}) besides the data.frame itself, namely \code{index}, \code{vSize}, \code{vColor} and \code{type}. Zooming in and out is possible. Command line outputs are generated in the console.
+This function is an interactive user interface for creating treemaps. Interaction is provided for the four main input arguments of (\code{\link{treemap}}) besides the data.frame itself, namely \code{index}, \code{vSize}, \code{vColor} and \code{type}. Zooming in and out is possible. Command line outputs are generated in the console.
+}
+\note{
+This interface will no longer be maintained (except for small bugs), since there is a better interactive interface available: \url{https://github.com/timelyportfolio/d3treeR}.
 }
 \examples{
 \dontrun{
