@@ -19,6 +19,7 @@ Imports:
     methods,
     RColorBrewer,
     shiny (>= 0.12.0)
-Suggests: 
-	knitr
+Suggests:
+    knitr
 VignetteBuilder: knitr
+RoxygenNote: 5.0.0
