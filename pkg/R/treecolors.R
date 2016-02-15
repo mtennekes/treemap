@@ -7,7 +7,7 @@
 #' treecolors()
 #' }
 #' @import shiny
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot aes_string geom_bar scale_x_continuous scale_y_continuous scale_fill_manual coord_flip theme_bw theme
 #' @export  
 treecolors <- function(height=700) {
     
