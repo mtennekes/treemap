@@ -1,14 +1,16 @@
 Package: treemap
 Type: Package
 Title: Treemap Visualization
-Version: 2.4
-Date: 2015-10-14
+Version: 2.4-1
+Date: 2016-03-26
 Author: Martijn Tennekes
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
 Description: A treemap is a space-filling visualization of hierarchical
     structures. This package offers great flexibility to draw treemaps.
 License: GPL-3
 LazyLoad: yes
+Depends:
+    R (>= 2.10)
 Imports:
     colorspace,
     data.table (>= 1.8.8),

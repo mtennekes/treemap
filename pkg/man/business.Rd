@@ -8,6 +8,6 @@ Fictitious (aggregated) business statistics data. The index variables (\code{NAC
 }
 \references{
 \href{http://en.wikipedia.org/wiki/Statistical_Classification_of_Economic_Activities_in_the_European_Community}{Statistical Classification of Economic Activities in the European Community (NACE)}
-\href{http://epp.eurostat.ec.europa.eu/portal/page/portal/european_business/introduction}{Eurostat - Structural business statistics (SBS)}
+\href{http://ec.europa.eu/eurostat/web/structural-business-statistics}{Eurostat - Structural business statistics (SBS)}
 }
 

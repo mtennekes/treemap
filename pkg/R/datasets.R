@@ -5,14 +5,17 @@
 #' @name business
 #' @references 
 #' \href{http://en.wikipedia.org/wiki/Statistical_Classification_of_Economic_Activities_in_the_European_Community}{Statistical Classification of Economic Activities in the European Community (NACE)}
-#' \href{http://epp.eurostat.ec.europa.eu/portal/page/portal/european_business/introduction}{Eurostat - Structural business statistics (SBS)}
+#' \href{http://ec.europa.eu/eurostat/web/structural-business-statistics}{Eurostat - Structural business statistics (SBS)}
 {}
 
-#' GNI 2010 Data
+#' GNI 2014 Data
 #' 
-#' Gross national income (per capita) in dollars per country in 2010.
+#' Gross national income (per capita) in dollars and population totals per country in 2014. 
+#' 
+#' The GNI numbers from the World Bank are based on the Atlas. The population data are taken from Natural Earth Data.
 #'
-#' @name GNI2010
+#' @name GNI2014
 #' @references 
-#' \href{http://data.worldbank.org/data-catalog/health-nutrition-and-population-statistics}{Website of The World Bank - Health Nutrition and Population Statistics}
+#' \href{http://data.worldbank.org/data-catalog/GNI-per-capita-Atlas-and-PPP-table}{The World Bank - GNI per capita ranking}
+#' \href{http://www.naturalearthdata.com/}{Natural Earth Data}
 {}

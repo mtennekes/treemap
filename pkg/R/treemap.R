@@ -255,16 +255,16 @@ treemap <-
         }
         
         if (is.na(title.legend[1])) {	
-            options(warn=-1) 
-            if (!is.null(vColor)) {
-                if (type=="dens") 
-                    title.legend <- formatColorTitle(var=vColor, var2=vSize, 
-                                                     var2X=vColorX, div=vColorDiv)
-                else
-                    title.legend <- formatColorTitle(var=vColor, varX=vColorX, 
-                                                     div=vColorDiv)
-            } else title.legend <- ""
-            options(warn=0) 
+            suppressWarnings({
+                if (!is.null(vColor)) {
+                    if (type=="dens") 
+                        title.legend <- formatColorTitle(var=vColor, var2=vSize, 
+                                                         var2X=vColorX, div=vColorDiv)
+                    else
+                        title.legend <- formatColorTitle(var=vColor, varX=vColorX, 
+                                                         div=vColorDiv)
+                } else title.legend <- ""
+            })
         }
         
         # algorithm

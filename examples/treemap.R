@@ -1,8 +1,8 @@
 #########################################
 ### quick example with Gross National Income data
 #########################################
-data(GNI2010)
-treemap(GNI2010,
+data(GNI2014)
+treemap(GNI2014,
        index=c("continent", "iso3"),
        vSize="population",
        vColor="GNI",
