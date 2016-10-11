@@ -1,5 +1,5 @@
 dens2col <-
-function(dat, position.legend, palette, range, border.col, fontfamily.legend, n) {
+function(dat, position.legend, palette, range, border.col, fontfamily.legend, n, format.legend) {
 	color <- colorRampPalette(palette,space="rgb")(99)
 
     values <- dat$c
@@ -23,8 +23,10 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend, n)
 	legScale <- floor((prettyP - minP) / (maxP - minP) * 98) + 1
 	legCol <- color[legScale]
 	
-	
-	if (position.legend!="none") drawLegend(prettyT, legCol,
+	args.legend <- format.legend
+	args.legend[["x"]] <- prettyT
+	legendText <- do.call("format", args.legend)
+	if (position.legend!="none") drawLegend(legendText, legCol,
 											position.legend=="bottom", border.col, fontfamily.legend)
 
 	scale <- floor((values - minP) / (maxP - minP) * 98) + 1

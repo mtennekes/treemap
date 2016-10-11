@@ -17,8 +17,8 @@ treemap(dtf, index, vSize, vColor = NULL, stdErr = NULL, type = "index",
   lowerbound.cex.labels = 0.4, inflate.labels = FALSE, bg.labels = NULL,
   force.print.labels = FALSE, overlap.labels = 0.5,
   align.labels = c("center", "center"), xmod.labels = 0, ymod.labels = 0,
-  eval.labels = FALSE, position.legend = NULL, drop.unused.levels = TRUE,
-  aspRatio = NA, vp = NULL, draw = TRUE, ...)
+  eval.labels = FALSE, position.legend = NULL, format.legend = NULL,
+  drop.unused.levels = TRUE, aspRatio = NA, vp = NULL, draw = TRUE, ...)
 }
 \arguments{
 \item{dtf}{a data.frame. Required.}
@@ -120,6 +120,8 @@ treemap(dtf, index, vSize, vColor = NULL, stdErr = NULL, type = "index",
 
 \item{position.legend}{position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.}
 
+\item{format.legend}{a list of additional arguments for the formatting of numbers in the legend to pass to \code{format()}; only applies if \code{type} is \code{"value"}, \code{"dens"} or \code{"manual"}.}
+
 \item{drop.unused.levels}{logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.}
 
 \item{aspRatio}{preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.}
@@ -192,7 +194,8 @@ treemap(business,
         index=c("NACE1", "NACE2"),
         vSize="employees",
         vColor="employees.prev",
-        type="comp")
+        type="comp",
+        format.legend = list(scientific = FALSE, big.mark = ","))
 
 # density treemaps: colors indicate density (like a population density map)
 treemap(business,

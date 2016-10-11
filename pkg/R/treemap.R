@@ -63,6 +63,7 @@
 #' @param ymod.labels the vertical position modification of the labels in inches. Either a single value, or a vector that specifies the modification for each aggregation level.
 #' @param eval.labels should the text labels, i.e. the factor labels of the \code{index} variables, be evaluated as expressions? Useful for printing mathematical symbols or equations.
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.
+#' @param format.legend a list of additional arguments for the formatting of numbers in the legend to pass to \code{format()}; only applies if \code{type} is \code{"value"}, \code{"dens"} or \code{"manual"}.
 #' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
 #' @param vp \code{\link[grid:viewport]{viewport}} to draw in. By default it is not specified, which means that a new plot is created. Useful when drawing small multiples, or when placing a treemap in a custom grid based plot.
@@ -133,6 +134,7 @@ treemap <-
              ymod.labels = 0,
              eval.labels = FALSE,
              position.legend=NULL,
+             format.legend=NULL,
              drop.unused.levels = TRUE,
              aspRatio=NA,
              vp=NULL,
@@ -529,7 +531,7 @@ treemap <-
             datlist$colorvalue <- NA
         } else {
             attr(datlist, "range") <- 1:2
-            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, mapping, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend, n)
+            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, mapping, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend, n, format.legend)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
         
