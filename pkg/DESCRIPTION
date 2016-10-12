@@ -5,7 +5,7 @@ Version: 2.5
 Date: 2016-03-26
 Authors@R: c(
 	person("Martijn", "Tennekes", email="mtennekes@gmail.com", role=c("aut", "cre")),
-	person("Peter", "Ellis", email="peter.ellis@mbie.govt.nz", role="ctb"))
+	person("Peter", "Ellis", email="peter.ellis2013nz@gmail.com", role="ctb"))
 Maintainer: Martijn Tennekes <mtennekes@gmail.com>
 Description: A treemap is a space-filling visualization of hierarchical
     structures. This package offers great flexibility to draw treemaps.
