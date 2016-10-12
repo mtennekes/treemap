@@ -6,7 +6,8 @@ treemap(GNI2014,
        index=c("continent", "iso3"),
        vSize="population",
        vColor="GNI",
-       type="value")
+       type="value",
+       format.legend = list(scientific = FALSE, big.mark = " "))
 
 #########################################
 ### extended examples with fictive business statistics data

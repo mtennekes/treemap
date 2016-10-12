@@ -1,5 +1,5 @@
 value2col <-
-    function(dat, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping, n) {
+    function(dat, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping, n, format.legend) {
         maxlev <- max(dat$l)
         
  
@@ -55,10 +55,11 @@ value2col <-
         prettyV.ids[prettyV.ids < 1] <- 1
         prettyV.ids[prettyV.ids > 101] <- 101
         
-            
         colpal <- colorRampPalette(palette)(101)
-        
-        if (position.legend!="none") drawLegend(format(prettyV), colpal[prettyV.ids], position.legend=="bottom", border.col, fontfamily.legend)
+        args.legend <- format.legend
+        args.legend[["x"]] <- prettyV
+        legendText <- do.call("format", args.legend)
+        if (position.legend!="none") drawLegend(legendText, colpal[prettyV.ids], position.legend=="bottom", border.col, fontfamily.legend)
         
         return (list(colpal[value.ids], range(prettyV), values_all))
     }
