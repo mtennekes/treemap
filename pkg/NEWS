@@ -1,3 +1,6 @@
+version 2.5 (devel)
+- added format.legend argument to control legend number formatting
+
 version 2.4-1
 - fixed bug related to sortID
 - updated GNI data

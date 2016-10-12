@@ -157,7 +157,8 @@ treemap(GNI2014,
        index=c("continent", "iso3"),
        vSize="population",
        vColor="GNI",
-       type="value")
+       type="value",
+       format.legend = list(scientific = FALSE, big.mark = " "))
 
 #########################################
 ### extended examples with fictive business statistics data
@@ -194,8 +195,7 @@ treemap(business,
         index=c("NACE1", "NACE2"),
         vSize="employees",
         vColor="employees.prev",
-        type="comp",
-        format.legend = list(scientific = FALSE, big.mark = ","))
+        type="comp")
 
 # density treemaps: colors indicate density (like a population density map)
 treemap(business,
