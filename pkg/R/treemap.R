@@ -486,10 +486,10 @@ treemap <-
         for (d in 1:depth) {
             if (is.numeric(dtfDT[[d]])) { 
                 fact <- factor(dtfDT[[d]], levels=sort(unique(dtfDT[[d]])))
-                dtfDT[, d:=fact, with=FALSE] 
+                dtfDT[, (d):=fact] 
             } else if (!is.factor(dtfDT[[d]])) {
                 fact <- factor(dtfDT[[d]])
-                dtfDT[, d:=fact, with=FALSE]
+                dtfDT[, (d):=fact]
             }
         }
         
