@@ -496,8 +496,7 @@ treemap <-
         
         ## cast character color columns to factor
         if (is.character(dtfDT[["c"]])) {
-            fact <- factor(dtfDT[["c"]])
-            dtfDT[, "c":=fact, with=FALSE] 
+            dtfDT[, c:=factor(c)]
         }
         
         
