@@ -82,7 +82,7 @@ function(grb, fontcol, fill, fontface, fontfamily, inflate.labels, cex_index, al
 	    yjust <- 0
 	}
     
-	if ((length(xmod.labels)==1) || is.null(names(xmod.labels))) {
+	if (is.null(names(xmod.labels))) {
 	    xmod.labels <- rep(xmod.labels, length.out = length(x))
 	} else {
 	    tmp <- rep(0, length.out = length(x))
@@ -92,7 +92,7 @@ function(grb, fontcol, fill, fontface, fontfamily, inflate.labels, cex_index, al
 	    xmod.labels <- unname(tmp)
 	}
 	
-	if ((length(ymod.labels)==1) || is.null(names(ymod.labels))) {
+	if (is.null(names(ymod.labels))) {
 	    ymod.labels <- rep(ymod.labels, length.out = length(y))
 	} else {
 	    tmp <- rep(0, length.out = length(y))
