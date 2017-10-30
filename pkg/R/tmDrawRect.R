@@ -27,8 +27,8 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                fontface.labels=fontface.labels,
                                fontfamily.labels=fontfamily.labels,
                                align.labels=align.labels[[1]], 
-                               xmod.labels=xmod.labels, 
-                               ymod.labels=ymod.labels,
+                               xmod.labels=xmod.labels[[1]], 
+                               ymod.labels=ymod.labels[[1]],
                                eval.labels=eval.labels)
         grid.draw(recs_fill$recs)
         if (cex_indices!=0) grid.draw(recs_fill$txt)
@@ -50,8 +50,8 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                   fontface.labels=fontface.labels[depth],
                                   fontfamily.labels=fontfamily.labels,
                                   align.labels=align.labels[[depth]], 
-                                  xmod.labels=xmod.labels[depth], 
-                                  ymod.labels=ymod.labels[depth],
+                                  xmod.labels=xmod.labels[[depth]], 
+                                  ymod.labels=ymod.labels[[depth]],
                                   eval.labels=eval.labels)
         
         recs_fill_norm <- createRec(datlist[whichFill & !whichBold &!whichNA,], 
@@ -67,8 +67,8 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                     fontface.labels=fontface.labels[depth],
                                     fontfamily.labels=fontfamily.labels,
                                     align.labels=align.labels[[depth]], 
-                                    xmod.labels=xmod.labels[depth], 
-                                    ymod.labels=ymod.labels[depth],
+                                    xmod.labels=xmod.labels[[depth]], 
+                                    ymod.labels=ymod.labels[[depth]],
                                     eval.labels=eval.labels)
         
         rng <- rev(sort(unique(datlist$l[!whichFill & !whichBold & !whichNA])))
@@ -87,8 +87,8 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      fontface.labels=fontface.labels[r],
                                      fontfamily.labels=fontfamily.labels,
                                      align.labels=align.labels[[r]], 
-                                     xmod.labels=xmod.labels[r], 
-                                     ymod.labels=ymod.labels[r],
+                                     xmod.labels=xmod.labels[[r]], 
+                                     ymod.labels=ymod.labels[[r]],
                                      eval.labels=eval.labels)) 
         
         recs_trans_bold <- createRec(datlist[!whichFill & whichBold,], 
@@ -105,8 +105,8 @@ tmDrawRect <- function(datlist, vps, indexList, lowerbound.cex.labels, inflate.l
                                      fontface.labels=fontface.labels[1],
                                      fontfamily.labels=fontfamily.labels,
                                      align.labels=align.labels[[1]], 
-                                     xmod.labels=xmod.labels[1], 
-                                     ymod.labels=ymod.labels[1],
+                                     xmod.labels=xmod.labels[[1]], 
+                                     ymod.labels=ymod.labels[[1]],
                                      eval.labels=eval.labels) 
         if (overlap.labels < 1) {
             

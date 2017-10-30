@@ -82,6 +82,26 @@ function(grb, fontcol, fill, fontface, fontfamily, inflate.labels, cex_index, al
 	    yjust <- 0
 	}
     
+	if ((length(xmod.labels)==1) || is.null(names(xmod.labels))) {
+	    xmod.labels <- rep(xmod.labels, length.out = length(x))
+	} else {
+	    tmp <- rep(0, length.out = length(x))
+	    names(tmp) <- grb$name
+	    sel <- which(names(xmod.labels) %in% names(tmp))
+	    if (!length(sel)==0) tmp[names(xmod.labels)[sel]] <- xmod.labels[sel]
+	    xmod.labels <- unname(tmp)
+	}
+	
+	if ((length(ymod.labels)==1) || is.null(names(ymod.labels))) {
+	    ymod.labels <- rep(ymod.labels, length.out = length(y))
+	} else {
+	    tmp <- rep(0, length.out = length(y))
+	    names(tmp) <- grb$name
+	    sel <- which(names(ymod.labels) %in% names(tmp))
+	    if (!length(sel)==0) tmp[names(ymod.labels)[sel]] <- ymod.labels[sel]
+	    ymod.labels <- unname(tmp)
+	}
+	
     x <- x + unit(xmod.labels, "inch")
 	y <- y + unit(ymod.labels, "inch")
 	

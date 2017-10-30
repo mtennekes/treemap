@@ -1,3 +1,6 @@
+version 2.4-3 (in development)
+- xlab.labels and ylab.labels support lists (which enable users to modify specific labels)
+
 version 2.4-2
 - added format.legend argument to control legend number formatting
 - fixed data.table warning

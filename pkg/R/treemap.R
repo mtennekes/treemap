@@ -59,8 +59,8 @@
 #' @param force.print.labels logical that determines whether data labels are being forced to be printed if they don't fit.
 #' @param overlap.labels number between 0 and 1 that determines the tolerance of the overlap between labels. 0 means that labels of lower levels are not printed if higher level labels overlap, 1 means that labels are always printed. In-between values, for instance the default value .5, means that lower level labels are printed if other labels do not overlap with more than .5 times their area size.
 #' @param align.labels object that specifies the alignment of the labels. Either a character vector of two values specifying the horizontal alignment (\code{"left"}, \code{"center"}, or \code{"right"}) and the vertical alignment (\code{"top"}, \code{"center"}, or \code{"bottom"}), or a list of sush character vectors, one for each aggregation level.
-#' @param xmod.labels the horizontal position modification of the labels in inches. Either a single value, or a vector that specifies the modification for each aggregation level.
-#' @param ymod.labels the vertical position modification of the labels in inches. Either a single value, or a vector that specifies the modification for each aggregation level.
+#' @param xmod.labels the horizontal position modification of the labels in inches. Options: a single value, a vector or a list that specifies the modification for each aggregation level. If a list is provided, each list item consists of a single value or a named vector that specify the modification per label.
+#' @param ymod.labels the vertical position modification of the labels in inches. Options: a single value, a vector or a list that specifies the modification for each aggregation level. If a list is provided, each list item consists of a single value or a named vector that specify the modification per label.
 #' @param eval.labels should the text labels, i.e. the factor labels of the \code{index} variables, be evaluated as expressions? Useful for printing mathematical symbols or equations.
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.
 #' @param format.legend a list of additional arguments for the formatting of numbers in the legend to pass to \code{format()}; only applies if \code{type} is \code{"value"}, \code{"dens"} or \code{"manual"}.
@@ -421,6 +421,9 @@ treemap <-
                                                 al[2]%in% c("top", "center", "centre", "bottom"))) stop("incorrect align.labels"))
         
         #xmod.labels and ymod.labels
+        if (is.list(xmod.labels)) xmod.labels <- as.list(xmod.labels)
+        if (is.list(ymod.labels)) ymod.labels <- as.list(ymod.labels)
+        
         if (length(xmod.labels)!=depth) xmod.labels <- rep(xmod.labels, length.out=depth)
         if (length(ymod.labels)!=depth) ymod.labels <- rep(ymod.labels, length.out=depth)
         
