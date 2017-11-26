@@ -43,6 +43,9 @@
 #' @param range range of values (so vector of two) that correspond to the color legend. By default, the range of actual values, determined by \code{vColor}, is used. Only applicable for numeric types, i.e. "value", "comp", "dens", and "manual". Note that the range doesn't affect the colors in the treemap itself for "value" and "manual" types; this is controlled by \code{mapping}.
 #' @param mapping vector of three values that specifies the mapping of the actual values, determined by \code{vColor}, to \code{palette}. The three values are respectively the minimum value, the mid value, and the maximum value. The mid value is particularly useful for diverging color palettes, where it defined the middle, neutral, color which is typically white or yellow. The \code{mapping} should cover the \code{range}. By default, for "value" treemaps, it is \code{c(-max(abs(values)), 0, max(abs(values)))}, where values are the actual values defined by \code{vColor}. For "manual" treemaps, the default setting is \code{c(min(values), mean(range(values)), max(values))}. A vector of two can also be specified. In that case, the mid value will be the average of those.  Only applicable for "value" and "manual" type treemaps.
 #' @param n preferred number of categories by which numeric variables are discretized.
+#' @param na.rm ignore missing vlues for the vSize variable (by default TRUE)
+#' @param na.color color for missing values for the vColor variable
+#' @param na.text legend label for missing values for the vColor variable
 #' @param fontsize.title font size of the title
 #' @param fontsize.labels font size(s) of the data labels, which is either a single number that specifies the font size for all aggregation levels, or a vector that specifies the font size for each aggregation level. Use value \code{0} to omit the labels for the corresponding aggregation level. 
 #' @param fontsize.legend font size for the legend
@@ -114,6 +117,9 @@ treemap <-
              range=NA,
              mapping=NA,
              n=7,
+             na.rm = TRUE,
+             na.color = "#DDDDDD",
+             na.text = "Missing",
              fontsize.title=14, 
              fontsize.labels=11, 
              fontsize.legend=12,
@@ -445,7 +451,7 @@ treemap <-
             stop("Invalid aspRatio")
         
         args <- list(...)
-        args$na.rm <- TRUE
+        args$na.rm <- na.rm
         
         ###########
         ## prepare data for aggregation
@@ -533,7 +539,7 @@ treemap <-
             datlist$colorvalue <- NA
         } else {
             attr(datlist, "range") <- 1:2
-            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, mapping, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend, n, format.legend)
+            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, mapping, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend, n, na.color, na.text, format.legend)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
         

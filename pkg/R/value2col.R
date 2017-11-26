@@ -1,15 +1,16 @@
 value2col <-
-    function(dat, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping, n, format.legend) {
+    function(dat, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping, n, na.color, na.text, format.legend) {
         maxlev <- max(dat$l)
         
+        withNA <- any(is.na(dat$c))
  
         values_all <- dat$c
         values <- values_all[dat$l==maxlev]
 
         if (any(is.na(range))) {
-            range <- range(values)
+            range <- range(values, na.rm=TRUE)
         } else {
-            if (any(values < range[1]) || any(values > range[2])) warning("Values are found that exceed the provided range")            
+            if (length(which(values < range[1])) > 0 || length(which(values > range[2])) > 0) warning("Values are found that exceed the provided range")            
         }
         
         prettyV <- pretty(range, n=n)
@@ -23,8 +24,8 @@ value2col <-
         prettyV <- prettyV[first:last]
         
         
-        mx <- max(values)
-        mn <- min(values)
+        mx <- max(values, na.rm = TRUE)
+        mn <- min(values, na.rm = TRUE)
         m <- mean(c(mx, mn))
         absmx <- max(abs(c(mx, mn)))
         
@@ -59,7 +60,15 @@ value2col <-
         args.legend <- format.legend
         args.legend[["x"]] <- prettyV
         legendText <- do.call("format", args.legend)
-        if (position.legend!="none") drawLegend(legendText, colpal[prettyV.ids], position.legend=="bottom", border.col, fontfamily.legend)
+        
+        legendPal <- colpal[prettyV.ids]
+        
+        if (withNA) {
+            legendText <- c(legendText, na.text)
+            legendPal <- c(legendPal, na.color)
+        }
+        
+        if (position.legend!="none") drawLegend(legendText, legendPal, position.legend=="bottom", border.col, fontfamily.legend)
         
         return (list(colpal[value.ids], range(prettyV), values_all))
     }

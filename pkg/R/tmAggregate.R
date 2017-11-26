@@ -57,8 +57,21 @@ tmAggregateStep <- function(dtfDT, indexList, fun.aggregate, args) {
     
     ## aggregate numeric or categorical variable
     fn <- function(x) {
+        if (any(is.na(x))) {
+            y <- NA
+            mode(y) <- mode(x)
+            y
+        } else if (is.numeric(x)) {
+            sum(x)
+        } else {
+            which.max(table(x))
+        }
+    }
+    
+    fn_nna <- function(x) {
+        if (any(is.na(x)) && !args$na.rm) stop("NA values found in vSize variable", call. = FALSE)
         if (is.numeric(x)) {
-            sum(x, na.rm=TRUE)
+            sum(x, na.rm = TRUE)
         } else {
             which.max(table(x))
         }
@@ -66,15 +79,15 @@ tmAggregateStep <- function(dtfDT, indexList, fun.aggregate, args) {
     
     if (fun.aggregate=="weighted.mean") {
         if (isCat) {
-            dat <- dtfDT[ , list(s=fn(s), c=fn(c), i=fn(i), se=do.call("fun", c(list(se, w), args))), by=indexList]
+            dat <- dtfDT[ , list(s=fn_nna(s), c=fn(c), i=fn(i), se=do.call("fun", c(list(se, w), args))), by=indexList]
         } else {
-            dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c, w), args)), i=fn(i), se=do.call("fun", c(list(se, w), args))), by=indexList]
+            dat <- dtfDT[ , list(s=fn_nna(s), c=do.call("fun", c(list(c, w), args)), i=fn(i), se=do.call("fun", c(list(se, w), args))), by=indexList]
         }
     } else {
         if (isCat) {
-            dat <- dtfDT[ , list(s=fn(s), c=fn(c), i=fn(i), se=do.call("fun", c(list(se), args))), by=indexList]
+            dat <- dtfDT[ , list(s=fn_nna(s), c=fn(c), i=fn(i), se=do.call("fun", c(list(se), args))), by=indexList]
         } else {
-            dat <- dtfDT[ , list(s=fn(s), c=do.call("fun", c(list(c), args)), i=fn(i), se=do.call("fun", c(list(se), args))), by=indexList]
+            dat <- dtfDT[ , list(s=fn_nna(s), c=do.call("fun", c(list(c), args)), i=fn(i), se=do.call("fun", c(list(se), args))), by=indexList]
         }
     }
     

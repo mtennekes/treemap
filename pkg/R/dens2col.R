@@ -1,9 +1,12 @@
 dens2col <-
-function(dat, position.legend, palette, range, border.col, fontfamily.legend, n, format.legend) {
+function(dat, position.legend, palette, range, border.col, fontfamily.legend, n, na.color, na.text, format.legend) {
 	color <- colorRampPalette(palette,space="rgb")(99)
 
     values <- dat$c
+
+    withNA <- any(is.na(values))
     
+        
     if (any(is.na(range))) {
 	    prettyP <- pretty(values,n=n)
     } else {
@@ -26,17 +29,24 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend, n,
 	args.legend <- format.legend
 	args.legend[["x"]] <- prettyT
 	legendText <- do.call("format", args.legend)
+	
+	if (withNA) {
+	    legendText <- c(legendText, na.text)
+	    legCol <- c(legCol, na.color)
+	}
+	
+	
 	if (position.legend!="none") drawLegend(legendText, legCol,
 											position.legend=="bottom", border.col, fontfamily.legend)
 
 	scale <- floor((values - minP) / (maxP - minP) * 98) + 1
-	if (any(scale<1)) {
+	if (length(which(scale<1))>0) {
 	    warning("Values found that are lower than the minimum of range")
-	    scale[scale<1] <- 1
+	    scale[which(scale<1)] <- 1
 	}
-	if (any(scale>99)) {
+	if (length(which(scale>99))>0) {
 	    warning("Values found that are higher than the maximum of range")
-	    scale[scale>99] <- 99
+	    scale[which(scale>99)] <- 99
 	}
 	return (list(color[scale], range(prettyP), values))
 }

@@ -1,22 +1,22 @@
-tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, mapping, indexNames, palette.HCL.options, border.col, fontfamily.legend, n, format.legend = format.legend) {
+tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, mapping, indexNames, palette.HCL.options, border.col, fontfamily.legend, n, na.color, na.text, format.legend = format.legend) {
     if (position.legend!="none") {    
         pushViewport(vps$vpLeg)
     }
     
     res <- if (type == "comp") {
-        comp2col(datlist, position.legend, palette, range, border.col, fontfamily.legend, n=n)
+        comp2col(datlist, position.legend, palette, range, border.col, fontfamily.legend, n=n, na.color, na.text)
     } else if (type == "dens") {
-        dens2col(datlist, position.legend, palette, range, border.col, fontfamily.legend, n=n, format.legend = format.legend) 
+        dens2col(datlist, position.legend, palette, range, border.col, fontfamily.legend, n=n, na.color, na.text, format.legend = format.legend) 
     } else if (type == "depth") {
         depth2col(datlist, position.legend, palette, indexNames, palette.HCL.options, border.col, fontfamily.legend)
     } else if (type == "index") {
         index2col(datlist, position.legend, palette, levels(datlist$index1), palette.HCL.options, border.col, fontfamily.legend)
     } else if (type == "value") {
-        value2col(datlist, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping=TRUE, n=n, format.legend = format.legend)
+        value2col(datlist, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping=TRUE, n=n, na.color, na.text, format.legend = format.legend)
     } else if (type == "manual") {
-        value2col(datlist, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping=FALSE, n=n, format.legend = format.legend)
+        value2col(datlist, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping=FALSE, n=n, na.color, na.text, format.legend = format.legend)
     } else if (type == "categorical") {
-        cat2col(datlist, position.legend, palette, levels(datlist$c), palette.HCL.options, border.col, fontfamily.legend)
+        cat2col(datlist, position.legend, palette, levels(datlist$c), palette.HCL.options, border.col, na.color, na.text, fontfamily.legend)
     }
 
     if (type %in% c("comp", "dens", "value", "manual", "categorical")) {
@@ -32,6 +32,8 @@ tmColorsLegend <- function(datlist, vps, position.legend, type, palette, range, 
     
     if (position.legend!="none") upViewport()
     assign("range", range, envir=parent.frame()) # trick to prevent internal data.table copy on return
+    
+    datlist$color[is.na(datlist$color)] <- na.color
     
     datlist
 }

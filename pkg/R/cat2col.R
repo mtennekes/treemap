@@ -1,5 +1,5 @@
 cat2col <-
-function(dat, position.legend, palette, labels, palette.HCL.options, border.col, fontfamily.legend) {
+function(dat, position.legend, palette, labels, palette.HCL.options, border.col, na.color, na.text, fontfamily.legend) {
     
     l <- length(labels)
     

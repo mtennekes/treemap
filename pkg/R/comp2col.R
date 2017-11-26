@@ -1,5 +1,5 @@
 comp2col <-
-function(dat, position.legend, palette, range, border.col, fontfamily.legend, n) {
+function(dat, position.legend, palette, range, border.col, fontfamily.legend, n, na.color, na.text) {
     color <- colorRampPalette(palette,space="rgb")(99)
 	perc <-((dat$s - dat$c)/dat$c) * 100
 	
