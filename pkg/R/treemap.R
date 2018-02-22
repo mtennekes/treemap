@@ -364,7 +364,8 @@ treemap <-
         if (!is.numeric(fontsize.labels))
             stop("Invalid fontsize.labels")
         fontsize.labels <- rep(fontsize.labels, length.out=depth)
-        cex_indices <- fontsize.labels / max(min(fontsize.labels), 1)
+        #cex_indices <- fontsize.labels / max(min(fontsize.labels), 1)
+        cex_indices <- fontsize.labels / max(fontsize.labels)
         
         # fontsize.legend
         if (length(fontsize.legend)!=1 || 
