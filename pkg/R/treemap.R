@@ -321,7 +321,7 @@ treemap <-
                 if (palette[1]=="HCL" && !(type %in% c("depth", "index", "categorical"))) {
                     stop("HCL palette only applicable for treemap types \"depth\", \"index\" and \"categorical\".")
                 }
-                if (palette[1]!="HCL") if (is(try(col2rgb(palette), silent=TRUE)), "try-error") {
+                if (palette[1]!="HCL" & is(try(col2rgb(palette), silent=TRUE), "try-error")) {
                     stop("color palette is not correct")
                 }
             }
