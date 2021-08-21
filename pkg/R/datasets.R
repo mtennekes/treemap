@@ -4,8 +4,8 @@
 #'
 #' @name business
 #' @references 
-#' \href{http://en.wikipedia.org/wiki/Statistical_Classification_of_Economic_Activities_in_the_European_Community}{Statistical Classification of Economic Activities in the European Community (NACE)}
-#' \href{http://ec.europa.eu/eurostat/web/structural-business-statistics}{Eurostat - Structural business statistics (SBS)}
+#' \href{https://en.wikipedia.org/wiki/Statistical_Classification_of_Economic_Activities_in_the_European_Community}{Statistical Classification of Economic Activities in the European Community (NACE)}
+#' \href{https://ec.europa.eu/eurostat/web/structural-business-statistics}{Eurostat - Structural business statistics (SBS)}
 {}
 
 #' GNI 2014 Data
@@ -16,6 +16,6 @@
 #'
 #' @name GNI2014
 #' @references 
-#' \href{http://data.worldbank.org/data-catalog/GNI-per-capita-Atlas-and-PPP-table}{The World Bank - GNI per capita ranking}
-#' \href{http://www.naturalearthdata.com/}{Natural Earth Data}
+#' \href{https://datacatalog.worldbank.org/dataset/gni-capita-ranking-atlas-method-and-ppp-based}{The World Bank - GNI per capita ranking}
+#' \href{https://www.naturalearthdata.com/}{Natural Earth Data}
 {}

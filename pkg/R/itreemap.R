@@ -14,7 +14,7 @@
 #' data(business)
 #' itreemap(business)
 #' }
-#' @note This interface will no longer be maintained (except for small bugs), since there is a better interactive interface available: \url{https://github.com/timelyportfolio/d3treeR}.
+#' @note This interface will no longer be maintained (except for small bugs), since there is a better interactive interface available: \url{https://github.com/d3treeR/d3treeR}.
 #' @import data.table
 #' @import grid
 #' @import gridBase
