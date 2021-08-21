@@ -13,4 +13,3 @@ The GNI numbers from the World Bank are based on the Atlas. The population data 
 \href{http://data.worldbank.org/data-catalog/GNI-per-capita-Atlas-and-PPP-table}{The World Bank - GNI per capita ranking}
 \href{http://www.naturalearthdata.com/}{Natural Earth Data}
 }
-

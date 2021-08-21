@@ -1,8 +1,8 @@
 Package: treemap
 Type: Package
 Title: Treemap Visualization
-Version: 2.4-2
-Date: 2017-01-03
+Version: 2.4-3
+Date: 2021-08-21
 Authors@R: c(
 	person("Martijn", "Tennekes", email="mtennekes@gmail.com", role=c("aut", "cre")),
 	person("Peter", "Ellis", email="peter.ellis2013nz@gmail.com", role="ctb"))
@@ -24,6 +24,7 @@ Imports:
     RColorBrewer,
     shiny (>= 0.12.0)
 Suggests:
-    knitr
+    knitr,
+    markdown
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 7.1.1

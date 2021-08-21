@@ -12,4 +12,3 @@ tmPlot(...)
 \description{
 This function is migrated to \code{\link{treemap}}.
 }
-

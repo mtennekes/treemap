@@ -1,8 +1,11 @@
-drawLegend <- function(labels, colors, bottom, border.col, fontfamily.legend) {
+drawLegend <- function(labels, colors, bottom, border.col, fontfamily.legend, reverse.legend) {
 	n <- length(labels)
 	lineNpc <- convertHeight(unit(0.8,"lines"), "npc", valueOnly = TRUE)
 	
 	# display legend 
+	
+	rl = if (reverse.legend) rev else function(x) x
+	
 	if (bottom) {
 		cellWidth <- max(convertWidth(stringWidth(labels), "inches", valueOnly=TRUE))
 		totalWidth <- convertWidth(unit(1, "npc"), "inches", valueOnly=TRUE)
@@ -24,8 +27,8 @@ drawLegend <- function(labels, colors, bottom, border.col, fontfamily.legend) {
 				  width=unit(leg$W,"npc"), 
 				  height=unit(leg$H,"npc"), 
 				  just=c("left","bottom"), 
-				  gp = gpar(fill = as.character(leg$Col), col=border.col))
-		grid.text(labels,
+				  gp = gpar(fill = rl(as.character(leg$Col)), col=border.col))
+		grid.text(rl(labels),
 				  x=unit(leg$X+.5*leg$W, "npc"),
 				  y=unit(0, "npc") + unit(0.5,"lines"),
 				  gp=gpar(cex=0.8, fontfamily=fontfamily.legend))	
@@ -45,8 +48,8 @@ drawLegend <- function(labels, colors, bottom, border.col, fontfamily.legend) {
 				  width=unit(leg$W,"npc"), 
 				  height=unit(leg$H,"npc"), 
 				  just=c("left","bottom"), 
-				  gp = gpar(fill = as.character(leg$Col), col=border.col))
-		grid.text(labels,
+				  gp = gpar(fill = rl(as.character(leg$Col)), col=border.col))
+		grid.text(rl(labels),
 				  x=unit(leg$X+leg$W+0.02, "npc"),
 				  y=unit(leg$Y+.5*leg$H, "npc"),
 				  gp=gpar(cex=1, fontfamily=fontfamily.legend), just=c("left", "center"))	

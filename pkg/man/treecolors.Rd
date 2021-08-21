@@ -17,4 +17,3 @@ Tree Colors are color palettes for tree data structures. They are used in \code{
 treecolors()
 }
 }
-

@@ -66,6 +66,7 @@
 #' @param ymod.labels the vertical position modification of the labels in inches. Options: a single value, a vector or a list that specifies the modification for each aggregation level. If a list is provided, each list item consists of a single value or a named vector that specify the modification per label.
 #' @param eval.labels should the text labels, i.e. the factor labels of the \code{index} variables, be evaluated as expressions? Useful for printing mathematical symbols or equations.
 #' @param position.legend position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.
+#' @param reverse.legend should the legend be reversed?
 #' @param format.legend a list of additional arguments for the formatting of numbers in the legend to pass to \code{format()}; only applies if \code{type} is \code{"value"}, \code{"dens"} or \code{"manual"}.
 #' @param drop.unused.levels logical that determines whether unused levels (if any) are shown in the legend. Applicable for "categorical" treemap type.
 #' @param aspRatio preferred aspect ratio of the main rectangle, defined by width/height. When set to \code{NA}, the available window size is used.
@@ -140,6 +141,7 @@ treemap <-
              ymod.labels = 0,
              eval.labels = FALSE,
              position.legend=NULL,
+             reverse.legend=FALSE,
              format.legend=NULL,
              drop.unused.levels = TRUE,
              aspRatio=NA,
@@ -321,7 +323,7 @@ treemap <-
                 if (palette[1]=="HCL" && !(type %in% c("depth", "index", "categorical"))) {
                     stop("HCL palette only applicable for treemap types \"depth\", \"index\" and \"categorical\".")
                 }
-                if (palette[1]!="HCL" & is(try(col2rgb(palette), silent=TRUE), "try-error")) {
+                if (palette[1]!="HCL" & inherits(try(col2rgb(palette), silent=TRUE), "try-error")) {
                     stop("color palette is not correct")
                 }
             }
@@ -541,7 +543,7 @@ treemap <-
             datlist$colorvalue <- NA
         } else {
             attr(datlist, "range") <- 1:2
-            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, mapping, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend, n, na.color, na.text, format.legend)
+            datlist <- tmColorsLegend(datlist, vps, position.legend, type, palette, range, mapping, indexNames=index, palette.HCL.options=palette.HCL.options, border.col, fontfamily.legend, n, na.color, na.text, format.legend, reverse.legend)
         }
         datlist <- tmGenerateRect(datlist, vps, indexList, algorithm)
         

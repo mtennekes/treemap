@@ -1,5 +1,5 @@
 index2col <-
-function(dat, position.legend, palette, labels, palette.HCL.options, border.col, fontfamily.legend) {
+function(dat, position.legend, palette, labels, palette.HCL.options, border.col, fontfamily.legend, reverse.legend) {
     #require(colorspace)
     
     
@@ -17,7 +17,7 @@ function(dat, position.legend, palette, labels, palette.HCL.options, border.col,
  	if (position.legend!="none") {
  	    labels <- dat$n[dat$l==1]
   	    colorl <- dat$color[dat$l==1]
- 	    drawLegend(labels, colorl, position.legend=="bottom", border.col, fontfamily.legend)
+ 	    drawLegend(labels, colorl, position.legend=="bottom", border.col, fontfamily.legend, reverse.legend)
  	}
     
 	

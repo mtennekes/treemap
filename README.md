@@ -2,9 +2,6 @@ treemap
 =======
 
 R package for treemap visualisation
-![Treemap of fictive business statistcs data](http://www.von-tijn.nl/tijn/research/Treemap2HD.png)
-
-![Treemap of GNI data](http://www.von-tijn.nl/tijn/research/Treemap.png)
 
 Installation
 ------------

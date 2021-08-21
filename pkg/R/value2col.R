@@ -1,5 +1,5 @@
 value2col <-
-    function(dat, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping, n, na.color, na.text, format.legend) {
+    function(dat, position.legend, palette, range, mapping, border.col, fontfamily.legend, auto.col.mapping, n, na.color, na.text, format.legend, reverse.legend) {
         maxlev <- max(dat$l)
         
         withNA <- any(is.na(dat$c))
@@ -68,7 +68,7 @@ value2col <-
             legendPal <- c(legendPal, na.color)
         }
         
-        if (position.legend!="none") drawLegend(legendText, legendPal, position.legend=="bottom", border.col, fontfamily.legend)
+        if (position.legend!="none") drawLegend(legendText, legendPal, position.legend=="bottom", border.col, fontfamily.legend, reverse.legend)
         
         return (list(colpal[value.ids], range(prettyV), values_all))
     }

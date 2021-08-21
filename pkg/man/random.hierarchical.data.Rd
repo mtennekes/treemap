@@ -4,11 +4,20 @@
 \alias{random.hierarchical.data}
 \title{Create random hierarchical data}
 \usage{
-random.hierarchical.data(n = NULL, method = "random", number.children = 3,
-  children.root = 4, depth = 3, nodes.per.layer = NULL,
-  labels = c("LETTERS", "numbers", "letters"), labels.prefix = NULL,
-  sep = ".", colnames = c(paste("index", 1:depth, sep = ""), "x"),
-  value.generator = rlnorm, value.generator.args = NULL)
+random.hierarchical.data(
+  n = NULL,
+  method = "random",
+  number.children = 3,
+  children.root = 4,
+  depth = 3,
+  nodes.per.layer = NULL,
+  labels = c("LETTERS", "numbers", "letters"),
+  labels.prefix = NULL,
+  sep = ".",
+  colnames = c(paste("index", 1:depth, sep = ""), "x"),
+  value.generator = rlnorm,
+  value.generator.args = NULL
+)
 }
 \arguments{
 \item{n}{number of leaf nodes. This is a shortcut argument. If specified, the method is set to \code{"random.arcs"} with a nodes.per.layer such that the average number of children per layer is as constant as possible.}
@@ -52,4 +61,3 @@ treemap(d, index=names(d)[1:(ncol(d)-1)], vSize="x")
 d <- random.hierarchical.data(method="full.tree", number.children=3, value.generator=runif)
 treemap(d, index=names(d)[1:(ncol(d)-1)], vSize="x")
 }
-

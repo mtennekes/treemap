@@ -4,21 +4,56 @@
 \alias{treemap}
 \title{Create a treemap}
 \usage{
-treemap(dtf, index, vSize, vColor = NULL, stdErr = NULL, type = "index",
-  fun.aggregate = "sum", title = NA, title.legend = NA,
-  algorithm = "pivotSize", sortID = "-size", mirror.x = FALSE,
-  mirror.y = FALSE, palette = NA, palette.HCL.options = NULL,
-  range = NA, mapping = NA, n = 7, fontsize.title = 14,
-  fontsize.labels = 11, fontsize.legend = 12, fontcolor.labels = NULL,
+treemap(
+  dtf,
+  index,
+  vSize,
+  vColor = NULL,
+  stdErr = NULL,
+  type = "index",
+  fun.aggregate = "sum",
+  title = NA,
+  title.legend = NA,
+  algorithm = "pivotSize",
+  sortID = "-size",
+  mirror.x = FALSE,
+  mirror.y = FALSE,
+  palette = NA,
+  palette.HCL.options = NULL,
+  range = NA,
+  mapping = NA,
+  n = 7,
+  na.rm = TRUE,
+  na.color = "#DDDDDD",
+  na.text = "Missing",
+  fontsize.title = 14,
+  fontsize.labels = 11,
+  fontsize.legend = 12,
+  fontcolor.labels = NULL,
   fontface.labels = c("bold", rep("plain", length(index) - 1)),
-  fontfamily.title = "sans", fontfamily.labels = "sans",
-  fontfamily.legend = "sans", border.col = "black",
+  fontfamily.title = "sans",
+  fontfamily.labels = "sans",
+  fontfamily.legend = "sans",
+  border.col = "black",
   border.lwds = c(length(index) + 1, (length(index) - 1):1),
-  lowerbound.cex.labels = 0.4, inflate.labels = FALSE, bg.labels = NULL,
-  force.print.labels = FALSE, overlap.labels = 0.5,
-  align.labels = c("center", "center"), xmod.labels = 0, ymod.labels = 0,
-  eval.labels = FALSE, position.legend = NULL, format.legend = NULL,
-  drop.unused.levels = TRUE, aspRatio = NA, vp = NULL, draw = TRUE, ...)
+  lowerbound.cex.labels = 0.4,
+  inflate.labels = FALSE,
+  bg.labels = NULL,
+  force.print.labels = FALSE,
+  overlap.labels = 0.5,
+  align.labels = c("center", "center"),
+  xmod.labels = 0,
+  ymod.labels = 0,
+  eval.labels = FALSE,
+  position.legend = NULL,
+  reverse.legend = FALSE,
+  format.legend = NULL,
+  drop.unused.levels = TRUE,
+  aspRatio = NA,
+  vp = NULL,
+  draw = TRUE,
+  ...
+)
 }
 \arguments{
 \item{dtf}{a data.frame. Required.}
@@ -80,6 +115,12 @@ treemap(dtf, index, vSize, vColor = NULL, stdErr = NULL, type = "index",
 
 \item{n}{preferred number of categories by which numeric variables are discretized.}
 
+\item{na.rm}{ignore missing vlues for the vSize variable (by default TRUE)}
+
+\item{na.color}{color for missing values for the vColor variable}
+
+\item{na.text}{legend label for missing values for the vColor variable}
+
 \item{fontsize.title}{font size of the title}
 
 \item{fontsize.labels}{font size(s) of the data labels, which is either a single number that specifies the font size for all aggregation levels, or a vector that specifies the font size for each aggregation level. Use value \code{0} to omit the labels for the corresponding aggregation level.}
@@ -112,13 +153,15 @@ treemap(dtf, index, vSize, vColor = NULL, stdErr = NULL, type = "index",
 
 \item{align.labels}{object that specifies the alignment of the labels. Either a character vector of two values specifying the horizontal alignment (\code{"left"}, \code{"center"}, or \code{"right"}) and the vertical alignment (\code{"top"}, \code{"center"}, or \code{"bottom"}), or a list of sush character vectors, one for each aggregation level.}
 
-\item{xmod.labels}{the horizontal position modification of the labels in inches. Either a single value, or a vector that specifies the modification for each aggregation level.}
+\item{xmod.labels}{the horizontal position modification of the labels in inches. Options: a single value, a vector or a list that specifies the modification for each aggregation level. If a list is provided, each list item consists of a single value or a named vector that specify the modification per label.}
 
-\item{ymod.labels}{the vertical position modification of the labels in inches. Either a single value, or a vector that specifies the modification for each aggregation level.}
+\item{ymod.labels}{the vertical position modification of the labels in inches. Options: a single value, a vector or a list that specifies the modification for each aggregation level. If a list is provided, each list item consists of a single value or a named vector that specify the modification per label.}
 
 \item{eval.labels}{should the text labels, i.e. the factor labels of the \code{index} variables, be evaluated as expressions? Useful for printing mathematical symbols or equations.}
 
 \item{position.legend}{position of the legend: \code{"bottom"}, \code{"right"}, or \code{"none"}. For "categorical" and "index" treemaps, \code{"right"} is the default value, for "index" treemap, \code{"none"}, and for the other types, \code{"bottom"}.}
+
+\item{reverse.legend}{should the legend be reversed?}
 
 \item{format.legend}{a list of additional arguments for the formatting of numbers in the legend to pass to \code{format()}; only applies if \code{type} is \code{"value"}, \code{"dens"} or \code{"manual"}.}
 
@@ -337,4 +380,3 @@ Bederson, B., Shneiderman, B., Wattenberg, M. (2002) Ordered and Quantum Treemap
 
 Bruls, D.M., C. Huizing, J.J. van Wijk. Squarified Treemaps. In: W. de Leeuw, R. van Liere (eds.), Data Visualization 2000, Proceedings of the joint Eurographics and IEEE TCVG Symposium on Visualization, 2000, Springer, Vienna, p. 33-42.
 }
-

@@ -1,5 +1,5 @@
 comp2col <-
-function(dat, position.legend, palette, range, border.col, fontfamily.legend, n, na.color, na.text) {
+function(dat, position.legend, palette, range, border.col, fontfamily.legend, n, na.color, na.text, reverse.legend) {
     color <- colorRampPalette(palette,space="rgb")(99)
 	perc <-((dat$s - dat$c)/dat$c) * 100
 	
@@ -61,7 +61,7 @@ function(dat, position.legend, palette, range, border.col, fontfamily.legend, n,
         }
         
         drawLegend(prettyString, legCol,
-											position.legend=="bottom", border.col, fontfamily.legend)
+											position.legend=="bottom", border.col, fontfamily.legend, reverse.legend)
 	}
 	return (list(color[scale], range(prettyP), perc.orig))
 }

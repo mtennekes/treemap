@@ -4,8 +4,15 @@
 \alias{treepalette}
 \title{Obtain hierarchical color palettes (Tree Colors)}
 \usage{
-treepalette(dtf, index = names(dtf), method = "HCL", palette = NULL,
-  palette.HCL.options, return.parameters = TRUE, prepare.dat = TRUE)
+treepalette(
+  dtf,
+  index = names(dtf),
+  method = "HCL",
+  palette = NULL,
+  palette.HCL.options,
+  return.parameters = TRUE,
+  prepare.dat = TRUE
+)
 }
 \arguments{
 \item{dtf}{a data.frame or data.table. Required.}
@@ -38,4 +45,3 @@ Either a vector of colors, or a data.frame is return (see \code{return.parameter
 \description{
 Obtain hierarchical color palettes, either the so-called Tree Colors from the HCL color space model, or by using an existing color palette. The former method, which is recommended, is used by default in \code{\link{treemap}} (type \code{"index"}) and \code{\link{treegraph}}. Use \code{\link{treecolors}} to experiment with this method.
 }
-

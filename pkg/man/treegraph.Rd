@@ -4,12 +4,24 @@
 \alias{treegraph}
 \title{Create a tree graph}
 \usage{
-treegraph(dtf, index = names(dtf), directed = FALSE, palette.HCL.options,
-  show.labels = FALSE, rootlabel = "", vertex.layout = "reingold.tilford",
-  vertex.layout.params, truncate.labels = NULL, vertex.size = 3,
-  vertex.label.dist = 0.3, vertex.label.cex = 0.8,
-  vertex.label.family = "sans", vertex.label.color = "black", mai = c(0,
-  0, 0, 0), ...)
+treegraph(
+  dtf,
+  index = names(dtf),
+  directed = FALSE,
+  palette.HCL.options,
+  show.labels = FALSE,
+  rootlabel = "",
+  vertex.layout = "reingold.tilford",
+  vertex.layout.params,
+  truncate.labels = NULL,
+  vertex.size = 3,
+  vertex.label.dist = 0.3,
+  vertex.label.cex = 0.8,
+  vertex.label.family = "sans",
+  vertex.label.color = "black",
+  mai = c(0, 0, 0, 0),
+  ...
+)
 }
 \arguments{
 \item{dtf}{a data.frame or data.table. Required.}
@@ -69,4 +81,3 @@ treegraph(business[business$NACE1=="F - Construction",],
     index=c("NACE2", "NACE3", "NACE4"), show.labels=TRUE, truncate.labels=c(2,4,6),
     vertex.layout="fruchterman.reingold")
 }
-

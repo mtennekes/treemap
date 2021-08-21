@@ -4,8 +4,15 @@
 \alias{itreemap}
 \title{Interactive user interface for treemap}
 \usage{
-itreemap(dtf = NULL, index = NULL, vSize = NULL, vColor = NULL,
-  type = NULL, height = 700, command.line.output = TRUE)
+itreemap(
+  dtf = NULL,
+  index = NULL,
+  vSize = NULL,
+  vColor = NULL,
+  type = NULL,
+  height = 700,
+  command.line.output = TRUE
+)
 }
 \arguments{
 \item{dtf}{a data.frame (\code{\link{treemap}}) If not provided, then the first data.frame in the global workspace is loaded.}
@@ -34,4 +41,3 @@ data(business)
 itreemap(business)
 }
 }
-

@@ -14,4 +14,3 @@ The main function is \code{\link{treemap}}. See also \code{\link{itreemap}} for 
 Martijn Tennekes \email{mtennekes@gmail.com}
 }
 \keyword{treemap}
-
