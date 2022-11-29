@@ -407,7 +407,7 @@ treemap <-
         } else {
             if (length(bg.labels)!=1) stop("Invalid bg.labels")
             if (!is.numeric(bg.labels)) {
-                if (class(try(col2rgb(bg.labels), silent=TRUE))=="try-error") stop("Invalid bg.labels")
+                if (inherits(try(col2rgb(bg.labels), silent=TRUE), "try-error")) stop("Invalid bg.labels")
             } else {
                 if (bg.labels < 0 || bg.labels > 255) stop("bg.labels should be between 0 and 255")
             }
