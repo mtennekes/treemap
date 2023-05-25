@@ -10,6 +10,6 @@ Gross national income (per capita) in dollars and population totals per country 
 The GNI numbers from the World Bank are based on the Atlas. The population data are taken from Natural Earth Data.
 }
 \references{
-\href{https://datacatalog.worldbank.org/dataset/gni-capita-ranking-atlas-method-and-ppp-based}{The World Bank - GNI per capita ranking}
+\href{https://www.worldbank.org/en/home}{The World Bank - GNI per capita ranking}
 \href{https://www.naturalearthdata.com/}{Natural Earth Data}
 }

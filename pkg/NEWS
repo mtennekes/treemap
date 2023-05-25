@@ -1,3 +1,6 @@
+version 2.4-4
+- fixed internal bug 
+
 version 2.4-3
 - xlab.labels and ylab.labels support lists (which enable users to modify specific labels)
 - added reverse.legend

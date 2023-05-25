@@ -16,6 +16,6 @@
 #'
 #' @name GNI2014
 #' @references 
-#' \href{https://datacatalog.worldbank.org/dataset/gni-capita-ranking-atlas-method-and-ppp-based}{The World Bank - GNI per capita ranking}
+#' \href{https://www.worldbank.org/en/home}{The World Bank - GNI per capita ranking}
 #' \href{https://www.naturalearthdata.com/}{Natural Earth Data}
 {}

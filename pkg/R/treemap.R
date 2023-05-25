@@ -398,7 +398,7 @@ treemap <-
         
         # inflate.labels
         if (length(inflate.labels)!=1 ||
-            class(inflate.labels) !="logical")
+            !inherits(inflate.labels, "logical"))
             stop("Invalid inflate.labels")
         
         # bg.labels
@@ -415,7 +415,7 @@ treemap <-
         
         # force.print.labels
         if (length(force.print.labels)!=1 ||
-            class(force.print.labels) !="logical")
+            !inherits(force.print.labels, "logical"))
             stop("Invalid force.print.labels")
         
         # overlap.labels
@@ -447,7 +447,7 @@ treemap <-
         
         # drop.unused.levels
         if (length(drop.unused.levels)!=1 ||
-            class(drop.unused.levels) !="logical")
+            !inherits(drop.unused.levels, "logical"))
             stop("Invalid drop.unused.levels")
         
         # aspRatio
