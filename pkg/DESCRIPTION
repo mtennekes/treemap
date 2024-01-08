@@ -11,6 +11,7 @@ Description: A treemap is a space-filling visualization of hierarchical
     structures. This package offers great flexibility to draw treemaps.
 License: GPL-3
 LazyLoad: yes
+BugReports: https://github.com/mtennekes/treemap/issues
 Depends:
     R (>= 2.10)
 Imports:
